@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    command: ["uvicorn", "--reload", "--host", "0.0.0.0", "--port", "8099", "--factory", "server.main:create_app"]
+    env_file:
+      - .env
+    ports:
+      - 8099:8099
+    depends_on:
+      - db
+    volumes:
+      - ./:/opt/app/server
+      - ../core:/opt/app/core
+      - ../server_shell.py:/opt/app/server_shell.py
+
+  db:
+    image: postgres:14.5-alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
