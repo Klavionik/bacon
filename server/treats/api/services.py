@@ -1,7 +1,7 @@
 from sqlalchemy import select, desc, delete, literal
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.schemas import TreatOut
+from api import schemas
 from perekrestok.parser import PerekrestokParser, ProductData
 from storage.models import (
     User,
@@ -10,6 +10,7 @@ from storage.models import (
     Product,
     Price,
     Treat,
+    UserShopLocation,
 )
 
 
@@ -17,24 +18,10 @@ async def list_shops(session: AsyncSession):
     return (await session.scalars(select(Shop))).all()
 
 
-async def get_shop_id(session: AsyncSession, url: str) -> Shop:
+async def get_shop(session: AsyncSession, url: str) -> Shop:
     query = (
-        select(Shop.id)
+        select(Shop)
         .where(literal(url).regexp_match(Shop.url_rule))
-    )
-    return (await session.scalars(query)).first()
-
-
-async def get_user_shop_location(session: AsyncSession, shop_id: str, user_id: id):
-    key = f'shop_{shop_id}_location'
-    subquery = (
-        select(User.meta[key].label('location_id'))
-        .filter_by(id=user_id)
-    ).subquery()
-
-    query = (
-        select(ShopLocation)
-        .where(ShopLocation.location_id == subquery.c.location_id)
     )
     return (await session.scalars(query)).first()
 
@@ -58,10 +45,12 @@ async def list_treats(session: AsyncSession, user_id: int):
             latest_price_subquery.c.price,
             latest_price_subquery.c.old_price,
             Product.url,
-            ShopLocation.shop_id
+            ShopLocation.shop_id,
+            Shop.display_title,
         )
         .select_from(Product)
         .join(ShopLocation)
+        .join(Shop)
         .join(Treat)
         .join(latest_price_subquery)
         .where(Treat.user_id == user_id)
@@ -108,7 +97,7 @@ async def get_latest_price(session: AsyncSession, product_id: int, shop_location
 
 async def get_product_data(product_url: str, shop_location: ShopLocation) -> ProductData:
     parser = PerekrestokParser()
-    product_data = await parser.fetch(product_url, shop_location.location_id)
+    product_data = await parser.fetch(product_url, shop_location.external_id)
 
     if not product_data:
         raise RuntimeError(
@@ -137,34 +126,109 @@ async def create_product(session: AsyncSession, product_url, shop_location: Shop
     return product, price
 
 
-async def create_treat(session: AsyncSession, treat_url: str, user_id: int) -> TreatOut | None:
+async def create_treat(session: AsyncSession, treat_url: str, user_id: int) -> schemas.TreatOut | None:
     if await treat_exists_for_user(session, treat_url, user_id):
         return
 
-    shop_id = await get_shop_id(session, treat_url)
+    shop = await get_shop(session, treat_url)
 
-    if not shop_id:
+    if not shop:
         return
 
-    shop_location = await get_user_shop_location(session, shop_id, user_id)
-    product = await get_product(session, treat_url, shop_location)
+    user_shop_location = await get_user_shop_location_for_shop(session, user_id, shop.id)
+
+    if not user_shop_location:
+        return
+
+    product = await get_product(session, treat_url, user_shop_location)
 
     if not product:
-        product, price = await create_product(session, treat_url, shop_location)
+        product, price = await create_product(session, treat_url, user_shop_location)
     else:
-        price = await get_latest_price(session, product.id, shop_location.id)
+        price = await get_latest_price(session, product.id, user_shop_location.id)
 
     treat = Treat(user_id=user_id, product_id=product.id)
     session.add(treat)
     await session.commit()
 
-    treat_out = TreatOut(
+    treat_out = schemas.TreatOut(
         id=treat.id,
         title=product.title,
         available=product.available,
         url=treat_url,
         price=price.price,
         old_price=price.old_price,
-        shop_id=shop_id,
+        shop_id=shop.id,
+        display_title=shop.display_title,
     )
     return treat_out
+
+
+async def get_user_shop_locations_by_user(session: AsyncSession, user_id: int) -> list[ShopLocation]:
+    query = (
+        select(ShopLocation)
+        .join(UserShopLocation)
+        .where(UserShopLocation.user_id == user_id)
+    )
+
+    return (await session.scalars(query)).all()
+
+
+async def get_user_shop_location_for_shop(
+    session: AsyncSession,
+    user_id: int,
+    shop_id: int
+) -> ShopLocation | None:
+    query = (
+        select(ShopLocation)
+        .join(UserShopLocation)
+        .where(UserShopLocation.user_id == user_id, UserShopLocation.shop_id == shop_id)
+    )
+
+    return (await session.scalars(query)).first()
+
+
+async def ensure_shop_location(session: AsyncSession, shop_location: schemas.ShopLocationSuggestion):
+    select_query = select(ShopLocation.id).filter_by(
+        external_id=shop_location.external_id,
+        shop_id=shop_location.shop_id
+    )
+
+    result = (await session.scalars(select_query)).first()
+
+    if result:
+        return result
+
+    shop_location = ShopLocation(**shop_location.dict())
+    session.add(shop_location)
+    await session.flush([shop_location])
+    return shop_location.id
+
+
+async def save_user_shop_locations(
+    session: AsyncSession,
+    user_id: int,
+    locations: list[schemas.ShopLocationSuggestion]
+):
+    await drop_user_shop_locations(session, user_id)
+
+    for location in locations:
+        location_id = await ensure_shop_location(session, location)
+        user_shop_location = UserShopLocation(
+            user_id=user_id,
+            shop_location_id=location_id,
+            shop_id=location.shop_id
+        )
+        session.add(user_shop_location)
+
+    await session.commit()
+    return locations
+
+
+async def drop_user_shop_locations(session: AsyncSession, user_id: int):
+    query = delete(UserShopLocation).where(UserShopLocation.user_id == user_id)
+    await session.execute(query)
+
+
+async def get_user(session: AsyncSession, *, user_id: int):
+    return await session.get(User, user_id)

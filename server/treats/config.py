@@ -6,10 +6,12 @@ class Settings(BaseSettings):
     ROOT_DIR = Path(__file__).parent.parent
     DEBUG: int
     BOT_TOKEN: str
+    PEREKRESTOK_API_URL: str
     TELEGRAM_BASE_URL: str
     SERVER_URL: str
     SERVER_SECRET: str
-    WHITELIST: list
+    ALLOWED_USERS: list
+    CORS_ALLOWED_ORIGIN: list
 
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str

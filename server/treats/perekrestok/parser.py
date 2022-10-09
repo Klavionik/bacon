@@ -24,11 +24,11 @@ class PerekrestokParser:
     name = 'Перекресток'
     url_rule = re.compile(r'^https://(w{3}\.)?perekrestok\.ru/cat/.+$')
 
-    async def fetch_all(self, urls: list[str], shop_location_id: int) -> AsyncGenerator[ProductData, None]:
+    async def fetch_all(self, urls: list[str], shop_location_external_id: int) -> AsyncGenerator[ProductData, None]:
         client = PerekrestokClient('https://www.perekrestok.ru/api/customer/1.4.1.0')
 
         async with client:
-            await client.set_shop(shop_location_id)
+            await client.set_shop(shop_location_external_id)
 
             for url in urls:
                 plu = self._extract_plu_from_url(url)
@@ -45,11 +45,11 @@ class PerekrestokParser:
 
                 yield product
 
-    async def fetch(self, url: str, shop_location_id: int) -> ProductData:
+    async def fetch(self, url: str, shop_location_external_id: int) -> ProductData:
         client = PerekrestokClient('https://www.perekrestok.ru/api/customer/1.4.1.0')
 
         async with client:
-            await client.set_shop(shop_location_id)
+            await client.set_shop(shop_location_external_id)
             plu = self._extract_plu_from_url(url)
             data = await client.fetch_product_data(plu)
 

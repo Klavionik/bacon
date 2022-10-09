@@ -3,9 +3,9 @@ import asyncio
 from perekrestok.parser import PerekrestokParser
 
 
-async def main(url: str, shop_location_id: str):
+async def main(url: str, shop_location_external_id: int):
     parser = PerekrestokParser()
-    fetched = await parser.fetch(url, shop_location_id)
+    fetched = await parser.fetch(url, shop_location_external_id)
     print(fetched)
 
 

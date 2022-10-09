@@ -1,8 +1,9 @@
 from enum import Enum
 from typing import Callable
 
-from sqlalchemy import Column, Integer, Float, String, DateTime, JSON, func, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, Float, JSON, String, DateTime, func, ForeignKey, Boolean
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, AsyncSession
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import sessionmaker
 
 
@@ -33,8 +34,9 @@ class DateTimeField:
 
 
 class JSONField:
-    def __new__(cls, *, nullable=False, **kwargs):
-        return Column(JSON, nullable=nullable, **kwargs)
+    def __new__(cls, *, nullable=False, auto_dict=False, **kwargs):
+        default = dict if auto_dict else None
+        return Column(MutableDict.as_mutable(JSON), nullable=nullable, default=default, **kwargs)
 
 
 class ForeignKeyField:

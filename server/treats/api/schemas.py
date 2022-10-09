@@ -1,37 +1,8 @@
-from datetime import datetime
-
-from pydantic import BaseModel, HttpUrl, PositiveFloat
-
-
-class TokenData(BaseModel):
-    sub: int
+from pydantic import BaseModel, HttpUrl, Field
 
 
 class TreatInput(BaseModel):
     url: HttpUrl
-
-
-class Treat(BaseModel):
-    id: int
-    user_id: int
-    product_id: int
-    created_at: datetime
-
-
-class Product(BaseModel):
-    id: int
-    title: str
-    url: HttpUrl
-    shop_location_id: int
-    meta: dict
-
-
-class Price(BaseModel):
-    id: int
-    price: PositiveFloat
-    old_price: PositiveFloat | None = None
-    created_at: datetime
-    product_id: int
 
 
 class User(BaseModel):
@@ -46,7 +17,8 @@ class User(BaseModel):
 
 class Shop(BaseModel):
     id: int
-    name: str
+    title: str
+    display_title: str
     url_rule: str
 
     class Config:
@@ -55,8 +27,19 @@ class Shop(BaseModel):
 
 class ShopLocation(BaseModel):
     id: int
+    title: str
     address: str
-    location_id: int
+    external_id: int
+    shop_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ShopLocationSuggestion(BaseModel):
+    title: str
+    address: str
+    external_id: int
     shop_id: int
 
 
@@ -68,6 +51,7 @@ class TreatOut(BaseModel):
     price: float
     old_price: float | None
     shop_id: int
+    shop_display_title: str = Field(alias='display_title')
 
     class Config:
         orm_mode = True

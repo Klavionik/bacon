@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from storage.models import User
 from telegram.auth import create_token
 from telegram.deps import get_telegram_client
-from telegram.permissions import verify_token_dep, check_whitelist_dep
+from telegram.permissions import verify_token_dep, check_allowed_users_dep
 from telegram.schemas import Update, InitData, Token
 
 router = APIRouter()
@@ -17,7 +17,7 @@ async def receive_update(update: Update):
     return 200
 
 
-@router.post('/start', dependencies=[check_whitelist_dep])
+@router.post('/start', dependencies=[check_allowed_users_dep])
 async def start(init_data: InitData) -> Token:
     init_user = init_data.user
 

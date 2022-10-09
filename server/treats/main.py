@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.routes import router as api_router
 from storage import create_db_engine
+from perekrestok.client import PerekrestokClient
 from telegram.deps import get_telegram_client
 from telegram.routes import router as bot_router
 from config import settings
@@ -27,10 +29,22 @@ def setup_event_handlers(app):
     async def close_db():
         await app.state.db_engine.dispose()
 
+    @app.on_event('startup')
+    async def initialize_shops():
+        perekrestok = PerekrestokClient(settings.PEREKRESTOK_API_URL)
+        app.state.shop_clients = {1: perekrestok}
+
 
 def create_app():
     app = FastAPI()
     app.add_middleware(SessionMiddleware, secret_key=settings.SERVER_SECRET)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ALLOWED_ORIGIN,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.include_router(bot_router, prefix='/bot')
     app.include_router(api_router, prefix='/api')
 

@@ -12,14 +12,14 @@ def verify_token(token: str = Header(alias=TOKEN_HEADER)):
         raise HTTPException(status_code=403, detail=detail)
 
 
-def check_whitelist(init_data: InitData):
-    whitelist = settings.WHITELIST
+def check_allowed_users(init_data: InitData):
+    allowed_users = settings.ALLOWED_USERS
     username = init_data.user.username
 
-    if len(whitelist) and username not in whitelist:
+    if len(allowed_users) and username not in allowed_users:
         detail = f'{username} is not allowed to use this app.'
         raise HTTPException(status_code=403, detail=detail)
 
 
 verify_token_dep = Depends(verify_token)
-check_whitelist_dep = Depends(check_whitelist)
+check_allowed_users_dep = Depends(check_allowed_users)

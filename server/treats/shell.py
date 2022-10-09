@@ -6,7 +6,7 @@ engine = create_db_engine(settings.db_uri, echo=True)
 Session = create_db_session(engine)
 
 roma_data = dict(username='jediroman', language='ru', meta={'shop_1_location': 316})
-perekrestok_data = dict(name='Перекресток', url_rule=r'^https://(w{3}\.)?perekrestok\.ru/cat/.+$')
+perekrestok_data = dict(title='Перекресток', url_rule=r'^https://(w{3}\.)?perekrestok\.ru/cat/.+$')
 perekrestok_surgut_data = dict(location_id=316, name='Сургут Агора', address='г. Сургут, ул. Профсоюзов, д. 11')
 curd_snack = dict(
     title='Сырок Б.Ю. Александров',

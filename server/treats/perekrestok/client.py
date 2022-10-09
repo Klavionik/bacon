@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class PerekrestokClient:
+    name = "perekrestok"
+
     def __init__(self, base_url: str):
         self.base_url = base_url
         self.token = None
@@ -32,13 +34,17 @@ class PerekrestokClient:
         await self.client.aclose()
         self.client = None
 
-    async def get_location_coordinates(self, location: str) -> Tuple[float, float]:
+    async def get_location_coordinates(self, location: str) -> Tuple[float, float] | None:
         response = await self.client.get('/geocoder/suggests', params={'search': location})
         data = response.json()
         response.raise_for_status()
-        return data['content']['items'][0]['location']['coordinates']
+        items = data['content']['items']
 
-    async def get_shop_by_coordinates(self, coordinates: Tuple[float, float]) -> Tuple[int, str, str]:
+        if not items:
+            return
+        return items[0]['location']['coordinates']
+
+    async def get_shops_by_coordinates(self, coordinates: Tuple[float, float]) -> list:
         long, lat = coordinates
         params = {
             'orderBy': 'distance',
@@ -46,16 +52,12 @@ class PerekrestokClient:
             'lat': lat,
             'lng': long,
             'page': 1,
-            'perPage': 1
+            'perPage': 10
         }
         response = await self.client.get('/shop', params=params)
         data = response.json()
         response.raise_for_status()
-        [shop] = data['content']['items']
-        title = shop['title']
-        shop_id = shop['id']
-        address = shop['address']
-        return shop_id, title, address
+        return data['content']['items']
 
     async def fetch_product_data(self, item_plu: int) -> dict | None:
         url = f'catalog/product/plu{item_plu}'

@@ -30,24 +30,27 @@ class User(Base):
 
     username = CharField(max_length=64)
     language = CharField(max_length=2)
-    meta = JSONField(default=dict)
+    meta = JSONField(auto_dict=True)
     treats = relationship('Treat', back_populates='user')
+    shop_locations = relationship('UserShopLocation', back_populates='user')
 
 
 class Shop(Base):
     __tablename__ = 'shops'
 
-    name = CharField(max_length=64)
+    title = CharField(max_length=64)
+    display_title = CharField(max_length=64)
     url_rule = CharField(max_length=128)
     locations = relationship('ShopLocation', back_populates='shop')
 
 
 class ShopLocation(Base):
     __tablename__ = 'shop_locations'
+    __table_args__ = (UniqueConstraint('shop_id', 'external_id'),)
 
-    name = CharField(max_length=128)
+    title = CharField(max_length=128)
     address = CharField(max_length=128)
-    location_id = IntegerField()
+    external_id = IntegerField()
     shop_id = ForeignKeyField('shops.id', ondelete=CascadeAction.CASCADE.value)
     products = relationship('Product', back_populates='shop_location')
     shop = relationship('Shop', back_populates='locations')
@@ -59,7 +62,7 @@ class Product(Base):
     title = CharField(max_length=256)
     url = CharField(max_length=512)
     available = BooleanField()
-    meta = JSONField(default=dict)
+    meta = JSONField(auto_dict=True)
     shop_location_id = ForeignKeyField('shop_locations.id', ondelete=CascadeAction.RESTRICT.value)
     shop_location = relationship('ShopLocation', back_populates='products')
     prices = relationship('Price', back_populates='product')
@@ -78,6 +81,7 @@ class Price(Base):
 
 class Treat(Base):
     __tablename__ = 'treats'
+    __table_args__ = (UniqueConstraint('user_id', 'product_id'),)
 
     user_id = ForeignKeyField('users.id', ondelete=CascadeAction.CASCADE.value)
     product_id = ForeignKeyField('products.id', ondelete=CascadeAction.CASCADE.value)
@@ -85,4 +89,13 @@ class Treat(Base):
     user = relationship('User', back_populates='treats')
     product = relationship('Product', back_populates='treats')
 
-    __table_args__ = (UniqueConstraint('user_id', 'product_id'),)
+
+class UserShopLocation(Base):
+    __tablename__ = 'user_shop_locations'
+    __table_args__ = (UniqueConstraint('user_id', 'shop_id'),)
+
+    user_id = ForeignKeyField('users.id', ondelete=CascadeAction.CASCADE.value)
+    shop_id = ForeignKeyField('shops.id', ondelete=CascadeAction.RESTRICT.value)
+    shop_location_id = ForeignKeyField('shop_locations.id', ondelete=CascadeAction.RESTRICT.value)
+    user = relationship('User', back_populates='shop_locations')
+    shop_location = relationship('ShopLocation')
