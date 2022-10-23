@@ -13,20 +13,27 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
+import { useShopsStore } from "@/stores/shops"
 
 export default defineComponent({
   name: "TreatsTabs",
   props: {
     activeTab: {
       type: String,
-      default: "ALL",
+      default: "Все",
     },
   },
   emits: ["switch"],
   data() {
     return {
-      tabs: ["ALL", "DISCOUNTED"],
+      shopsStore: useShopsStore(),
     }
+  },
+  computed: {
+    tabs() {
+      const shopTabs = this.shopsStore.shops.map((shop) => shop.displayTitle)
+      return ["Все", "Со скидкой", ...shopTabs]
+    },
   },
 })
 </script>

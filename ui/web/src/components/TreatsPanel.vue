@@ -62,7 +62,7 @@ export default defineComponent({
       isCreating: false,
       deleting: [] as number[],
       search: "",
-      activeTab: "ALL",
+      activeTab: "Все",
       newTreatURL: "",
     }
   },
@@ -92,10 +92,12 @@ export default defineComponent({
       const discounted = (treat: Treat) => treat.oldPrice !== null && treat.price < treat.oldPrice
 
       switch (this.activeTab) {
-        case "DISCOUNTED":
+        case "Все":
+          return true
+        case "Со скидкой":
           return discounted(treat)
         default:
-          return true
+          return treat.shopTitle === this.activeTab
       }
     },
     async createTreat() {
