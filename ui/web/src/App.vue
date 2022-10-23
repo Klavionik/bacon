@@ -1,28 +1,36 @@
 <template>
-  <RouterView />
+  <AppLoading v-if="isLoading" />
+  <RouterView v-else />
 </template>
 
 <script lang="ts">
 import { RouterView } from "vue-router"
-import { useUserStore } from "@/stores/user"
-import { useTreatsStore } from "@/stores/treats"
 import { defineComponent } from "vue"
+import api from "@/services/api"
+import AppLoading from "@/components/AppLoading.vue"
 import { useShopsStore } from "@/stores/shops"
 
 export default defineComponent({
   name: "App",
-  components: { RouterView },
-  setup() {
-    const userStore = useUserStore()
-    const shopsStore = useShopsStore()
-    const treatsStore = useTreatsStore()
-    return { userStore, shopsStore, treatsStore }
+  components: { AppLoading, RouterView },
+  data() {
+    return {
+      isLoading: this.$auth0.isLoading,
+    }
   },
-  async mounted() {
-    await this.userStore.fetchUser()
-    await this.treatsStore.fetchTreats()
-    await this.shopsStore.fetchShops()
-    this.$router.push({ name: "treats" })
+  watch: {
+    async isLoading(loading) {
+      if (loading) return
+
+      if (this.$auth0.isAuthenticated) {
+        const accessToken = await this.$auth0.getAccessTokenSilently()
+        api.setToken(accessToken)
+      }
+    },
+  },
+  async beforeMount() {
+    const shopsStore = useShopsStore()
+    await shopsStore.fetchShops()
   },
 })
 </script>

@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api import schemas
 from perekrestok.parser import PerekrestokParser, ProductData
 from storage.models import (
-    User,
     Shop,
     ShopLocation,
     Product,
@@ -26,7 +25,7 @@ async def get_shop(session: AsyncSession, url: str) -> Shop:
     return (await session.scalars(query)).first()
 
 
-async def list_treats(session: AsyncSession, user_id: int):
+async def list_treats(session: AsyncSession, user_id: str):
     latest_price_subquery = (
         select(
             Price.price,
@@ -63,7 +62,7 @@ async def delete_treat_by_id(session: AsyncSession, treat_id: int):
     await session.commit()
 
 
-async def treat_exists_for_user(session: AsyncSession, url: str, user_id: int) -> bool:
+async def treat_exists_for_user(session: AsyncSession, url: str, user_id: str) -> bool:
     subquery = (
         select(Treat)
         .join(Product)
@@ -126,7 +125,7 @@ async def create_product(session: AsyncSession, product_url, shop_location: Shop
     return product, price
 
 
-async def create_treat(session: AsyncSession, treat_url: str, user_id: int) -> schemas.TreatOut | None:
+async def create_treat(session: AsyncSession, treat_url: str, user_id: str) -> schemas.TreatOut | None:
     if await treat_exists_for_user(session, treat_url, user_id):
         return
 
@@ -164,7 +163,7 @@ async def create_treat(session: AsyncSession, treat_url: str, user_id: int) -> s
     return treat_out
 
 
-async def get_user_shop_locations_by_user(session: AsyncSession, user_id: int) -> list[ShopLocation]:
+async def get_user_shop_locations_by_user(session: AsyncSession, user_id: str) -> list[ShopLocation]:
     query = (
         select(ShopLocation)
         .join(UserShopLocation)
@@ -176,7 +175,7 @@ async def get_user_shop_locations_by_user(session: AsyncSession, user_id: int) -
 
 async def get_user_shop_location_for_shop(
     session: AsyncSession,
-    user_id: int,
+    user_id: str,
     shop_id: int
 ) -> ShopLocation | None:
     query = (
@@ -207,7 +206,7 @@ async def ensure_shop_location(session: AsyncSession, shop_location: schemas.Sho
 
 async def save_user_shop_locations(
     session: AsyncSession,
-    user_id: int,
+    user_id: str,
     locations: list[schemas.ShopLocationSuggestion]
 ):
     await drop_user_shop_locations(session, user_id)
@@ -225,10 +224,6 @@ async def save_user_shop_locations(
     return locations
 
 
-async def drop_user_shop_locations(session: AsyncSession, user_id: int):
+async def drop_user_shop_locations(session: AsyncSession, user_id: str):
     query = delete(UserShopLocation).where(UserShopLocation.user_id == user_id)
     await session.execute(query)
-
-
-async def get_user(session: AsyncSession, *, user_id: int):
-    return await session.get(User, user_id)

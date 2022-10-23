@@ -5,16 +5,6 @@ class TreatInput(BaseModel):
     url: HttpUrl
 
 
-class User(BaseModel):
-    id: int
-    username: str
-    language: str
-    meta: dict
-
-    class Config:
-        orm_mode = True
-
-
 class Shop(BaseModel):
     id: int
     title: str

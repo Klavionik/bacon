@@ -48,10 +48,9 @@
 <script lang="ts">
 import VueSelect from "vue-select"
 import debounce from "lodash.debounce"
-import { useUserStore } from "@/stores/user"
 import { defineComponent } from "vue"
 import { useShopLocationsStore } from "@/stores/shop-locations"
-import type { Shop, ShopLocation } from "@/models/shop"
+import type { ShopLocation } from "@/models/shop"
 import { useShopsStore } from "@/stores/shops"
 
 export default defineComponent({
@@ -60,20 +59,18 @@ export default defineComponent({
   setup() {
     const shopsStore = useShopsStore()
     const shopLocationsStore = useShopLocationsStore()
-    const userStore = useUserStore()
-    return { shopsStore, shopLocationsStore, userStore }
+    return { shopsStore, shopLocationsStore }
   },
   data() {
     return {
       choosenShopLocations: new Map() as Map<number, ShopLocation | null>,
       shopLocationOptions: [] as Array<ShopLocation>,
       fetchOptions: null as any,
+      user: this.$auth0.idTokenClaims,
     }
   },
   async mounted() {
-    const userShopLocations = await this.shopLocationsStore.fetchUserShopLocations(
-      this.userStore.user.id
-    )
+    const userShopLocations = await this.shopLocationsStore.fetchUserShopLocations(this.user.sub)
     this.setChoosenShopLocations(userShopLocations)
     this.fetchOptions = debounce(this._fetchOptions, 800)
   },
@@ -114,7 +111,7 @@ export default defineComponent({
       ) as Array<ShopLocation>
 
       const savedLocations = await this.shopLocationsStore.saveUserShopLocations(
-        this.userStore.user.id,
+        this.user.sub,
         locations
       )
       this.setChoosenShopLocations(savedLocations)

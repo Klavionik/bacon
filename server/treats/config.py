@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     TELEGRAM_BASE_URL: str
     SERVER_URL: str
     SERVER_SECRET: str
+    AUTH0_DOMAIN: str
+    AUTH0_AUDIENCE: str
+    AUTH0_ID: str
+    AUTH0_SECRET: str
     ALLOWED_USERS: list
     CORS_ALLOWED_ORIGIN: list
 
@@ -27,6 +31,18 @@ class Settings(BaseSettings):
             path = self.ROOT_DIR / 'db.sqlite3'
             return f'sqlite+aiosqlite:///{path}'
         return f'postgres://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.DB_HOST}/{self.POSTGRES_DB}'
+
+    @property
+    def auth0_jwks_url(self):
+        return f'https://{self.AUTH0_DOMAIN}/.well-known/jwks.json'
+
+    @property
+    def auth0_issuer(self):
+        return f'https://{self.AUTH0_DOMAIN}/'
+
+    @property
+    def auth0_api_url(self):
+        return f'https://{self.AUTH0_DOMAIN}/api/v2/'
 
 
 settings = Settings()

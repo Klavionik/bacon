@@ -40,12 +40,10 @@ export default defineComponent({
     TreatsTabs,
     TreatsSearch,
   },
-  setup() {
-    const treatsStore = useTreatsStore()
-    return { treatsStore }
-  },
-  data: () => {
+  data() {
     return {
+      user: this.$auth0.idTokenClaims,
+      treatsStore: useTreatsStore(),
       isCreating: false,
       deleting: [] as number[],
       search: "",
@@ -60,6 +58,9 @@ export default defineComponent({
     emptyText(): string {
       return this.treatsStore.treats.length ? notFound : empty
     },
+  },
+  beforeMount() {
+    this.treatsStore.fetchTreats(this.user.sub)
   },
   methods: {
     isDeleting(treatId: number) {
@@ -84,7 +85,7 @@ export default defineComponent({
       let error = false
 
       try {
-        await this.treatsStore.createTreat(this.newTreatURL)
+        await this.treatsStore.createTreat(this.user.sub, this.newTreatURL)
       } catch (e) {
         error = true
         throw e

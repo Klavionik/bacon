@@ -17,12 +17,12 @@ class APIService {
     return this.client.get("shops").json()
   }
 
-  listUserTreats(userId: number): Promise<Array<any>> {
+  listUserTreats(userId: string): Promise<Array<any>> {
     const options = { searchParams: { user_id: userId } }
     return this.client.get("treats", options).json()
   }
 
-  createTreat(url: string, userId: number): Promise<any> {
+  createTreat(userId: string, url: string): Promise<any> {
     const options = { json: { url }, searchParams: { user_id: userId } }
     return this.client.post("treats", options).json()
   }
@@ -47,6 +47,12 @@ class APIService {
   saveUserShopLocations(userId: number, locations: Array<any>): Promise<Array<any>> {
     const options = { json: locations }
     return this.client.put(`user/${userId}/shop-locations`, options).json()
+  }
+
+  setToken(token: string) {
+    this.client = this.client.extend({
+      headers: { authorization: `Bearer ${token}` },
+    })
   }
 }
 

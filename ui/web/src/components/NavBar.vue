@@ -1,21 +1,36 @@
 <template>
-  <nav class="navbar is-light">
+  <nav class="navbar is-light is-spaced">
     <div class="navbar-brand">
       <RouterLink class="navbar-item" to="/">
         <img src="/logo.jpg" alt="Treats" />
       </RouterLink>
-      <RouterLink class="navbar-item" :to="{ name: 'treats' }"> Мои вкусняшки </RouterLink>
+      <RouterLink v-if="isAuthenticated" class="navbar-item" :to="{ name: 'treats' }">
+        Мои вкусняшки
+      </RouterLink>
+      <a
+        class="navbar-burger"
+        :class="{ 'is-active': isHamburgerOpen }"
+        @click="isHamburgerOpen = !isHamburgerOpen"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </a>
     </div>
-    <div class="navbar-menu is-active">
+    <div class="navbar-menu" :class="{ 'is-active': isHamburgerOpen }">
       <div class="navbar-start" />
       <div class="navbar-end">
-        <div class="navbar-item">
+        <div v-if="!isAuthenticated" class="navbar-item">
+          <button class="button" @click="login">Войти</button>
+        </div>
+        <div v-else class="navbar-item">
+          <p class="mx-3">{{ nickname }}</p>
           <div class="buttons">
             <RouterLink class="button is-light" :to="{ name: 'profile' }">
-              <i class="fa-sharp fa-solid fa-gear" />
+              <i class="fa-sharp fa-solid fa-gear fa-lg" />
             </RouterLink>
-            <a class="button is-light" @click="() => {}">
-              <i class="fa-sharp fa-solid fa-arrow-right-from-bracket" />
+            <a class="button is-light" @click="logout">
+              <i class="fa-sharp fa-solid fa-arrow-right-from-bracket fa-lg" />
             </a>
           </div>
         </div>
@@ -29,5 +44,25 @@ import { defineComponent } from "vue"
 
 export default defineComponent({
   name: "NavBar",
+  data() {
+    return {
+      isHamburgerOpen: false,
+      user: this.$auth0.idTokenClaims,
+      isAuthenticated: this.$auth0.isAuthenticated,
+    }
+  },
+  computed: {
+    nickname() {
+      return this.user.nickname
+    },
+  },
+  methods: {
+    logout() {
+      this.$auth0.logout()
+    },
+    async login() {
+      await this.$auth0.loginWithRedirect()
+    },
+  },
 })
 </script>

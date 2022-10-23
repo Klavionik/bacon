@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import services, schemas
-from deps import db_session, shop_client
+from auth import User
+from deps import db_session, shop_client, get_user
 from perekrestok.client import PerekrestokClient
 
 router = APIRouter()
@@ -14,17 +15,17 @@ async def list_shops(session: AsyncSession = db_session):
 
 
 @router.get('/treats', response_model=list[schemas.TreatOut], response_model_by_alias=False)
-async def list_user_treats(user_id: int, session: AsyncSession = db_session):
-    return await services.list_treats(session, user_id)
+async def list_user_treats(user: User = get_user, session: AsyncSession = db_session):
+    return await services.list_treats(session, user.id)
 
 
 @router.post('/treats', status_code=201, response_model=schemas.TreatOut, response_model_by_alias=False)
 async def create_treat(
         treat_input: schemas.TreatInput,
-        user_id: int,
+        user: User = get_user,
         session: AsyncSession = db_session,
 ):
-    treat = await services.create_treat(session, treat_input.url, user_id)
+    treat = await services.create_treat(session, treat_input.url, user.id)
 
     if not treat:
         raise HTTPException(status_code=404)
@@ -59,22 +60,16 @@ async def search_shop_locations(shop_id: int, address: str, client: PerekrestokC
     return result
 
 
-@router.get('/users/me', response_model=schemas.User)
-async def get_current_user(session: AsyncSession = db_session):
-    # For now, return user with ID 1.
-    return await services.get_user(session, user_id=1)
-
-
 @router.get('/user/{user_id}/shop-locations', response_model=list[schemas.ShopLocation])
-async def get_user_shop_locations(user_id: int, session: AsyncSession = db_session):
-    locations = await services.get_user_shop_locations_by_user(session, user_id)
+async def get_user_shop_locations(user: User = get_user, session: AsyncSession = db_session):
+    locations = await services.get_user_shop_locations_by_user(session, user.id)
     return locations
 
 
 @router.put('/user/{user_id}/shop-locations', response_model=list[schemas.ShopLocationSuggestion], status_code=201)
 async def save_user_shop_locations(
-        user_id: int,
         locations: list[schemas.ShopLocationSuggestion],
+        user: User = get_user,
         session: AsyncSession = db_session
 ):
-    return await services.save_user_shop_locations(session, user_id, locations)
+    return await services.save_user_shop_locations(session, user.id, locations)
