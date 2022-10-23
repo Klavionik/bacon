@@ -19,18 +19,20 @@ export default defineComponent({
   data() {
     return {
       isLoading: this.$auth0.isLoading,
+      isAuthenticated: this.$auth0.isAuthenticated,
+      user: this.$auth0.idTokenClaims,
     }
   },
   watch: {
     async isLoading(loading) {
       if (loading) return
 
-      if (this.$auth0.isAuthenticated) {
+      if (this.isAuthenticated) {
         const accessToken = await this.$auth0.getAccessTokenSilently()
         api.setToken(accessToken)
 
         const shopLocationsStore = useShopLocationsStore()
-        await shopLocationsStore.fetchUserShopLocations(this.$auth0.idTokenClaims.value.sub)
+        await shopLocationsStore.fetchUserShopLocations(this.user.sub)
         const shopsStore = useShopsStore()
         await shopsStore.fetchShops()
       }

@@ -1,6 +1,6 @@
 <template>
   <div class="width-75 mx-auto my-2">
-    <div class="card p-2">
+    <div class="card p-4">
       <h1 class="is-size-4 has-text-centered">Профиль</h1>
       <hr />
       <div class="card-content">
@@ -13,6 +13,7 @@
                   type="checkbox"
                   :checked="isShopChecked(shop.id)"
                   :value="shop.id"
+                  :disabled="saving"
                   @input="updateShop($event.target.checked, shop.id)"
                 />
                 {{ shop.displayTitle }}
@@ -26,6 +27,7 @@
               <strong>{{ getShopNameById(shopId) }}</strong>
               <div class="control mt-1">
                 <VueSelect
+                  :disabled="saving"
                   :model-value="choosenShopLocations.get(shopId)"
                   :options="shopLocationOptions"
                   :filterable="false"
@@ -39,7 +41,17 @@
               </div>
             </div>
           </template>
-          <button class="button mt-3 mx-auto" @click.prevent="saveShopLocations">Сохранить</button>
+          <div class="field mt-3 mx-auto">
+            <div class="control">
+              <button class="button" :disabled="saving" @click.prevent="saveShopLocations">
+                Сохранить
+              </button>
+            </div>
+            <p v-if="saved" class="help has-text-centered is-absolute">
+              <i class="fa-sharp fa-solid fa-circle-check has-text-success"></i>
+              Сохранено!
+            </p>
+          </div>
         </form>
       </div>
     </div>
@@ -63,7 +75,8 @@ export default defineComponent({
   },
   data() {
     return {
-      show: false,
+      saving: false,
+      saved: false,
       choosenShopLocations: new Map() as Map<number, ShopLocation | null>,
       shopLocationOptions: [] as Array<ShopLocation>,
       fetchOptions: null as any,
@@ -71,6 +84,10 @@ export default defineComponent({
     }
   },
   async mounted() {
+    this.shopLocationsStore.$subscribe((mutation, state) => {
+      this.setChoosenShopLocations(state.userShopLocations)
+    })
+
     this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
     this.fetchOptions = debounce(this._fetchOptions, 800)
   },
@@ -110,8 +127,15 @@ export default defineComponent({
         (value) => value !== null
       ) as Array<ShopLocation>
 
-      await this.shopLocationsStore.saveUserShopLocations(this.user.sub, locations)
-      this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
+      this.saving = true
+
+      try {
+        await this.shopLocationsStore.saveUserShopLocations(this.user.sub, locations)
+      } finally {
+        this.saving = false
+        this.showSavedNotification()
+      }
+      // this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
     },
     async _fetchOptions(shopId: number, search: string, loading: Function) {
       if (!search) return
@@ -127,6 +151,10 @@ export default defineComponent({
         loading(false)
       }
     },
+    showSavedNotification() {
+      this.saved = true
+      setTimeout(() => (this.saved = false), 2000)
+    },
   },
 })
 </script>
@@ -135,7 +163,12 @@ export default defineComponent({
 .width-75 {
   width: 75%;
 }
+
 hr {
   margin: 0.5rem;
+}
+
+.is-absolute {
+  position: absolute;
 }
 </style>
