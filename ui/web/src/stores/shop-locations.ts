@@ -3,6 +3,16 @@ import type { ShopLocation } from "@/models/shop"
 import api from "@/services/api"
 
 export const useShopLocationsStore = defineStore("shop-locations", {
+  state: () => {
+    return {
+      userShopLocations: [] as Array<ShopLocation>,
+    }
+  },
+  getters: {
+    noShopLocationsConfigured(): boolean {
+      return !this.userShopLocations.length
+    },
+  },
   actions: {
     adaptFromServer(location: any): ShopLocation {
       return {
@@ -27,16 +37,19 @@ export const useShopLocationsStore = defineStore("shop-locations", {
       const locations = await api.searchShopLocations(shopId, address)
       return locations.map(this.adaptFromServer)
     },
-    async fetchUserShopLocations(userId: number): Promise<Array<ShopLocation>> {
+    async fetchUserShopLocations(userId: number) {
       const locations = await api.getUserShopLocations(userId)
-      return locations.map(this.adaptFromServer)
+      this.userShopLocations = locations.map(this.adaptFromServer)
     },
     async saveUserShopLocations(userId: number, updatedLocations: Array<ShopLocation>) {
       const locations = await api.saveUserShopLocations(
         userId,
         updatedLocations.map(this.adaptToServer)
       )
-      return locations.map(this.adaptFromServer)
+      this.userShopLocations = locations.map(this.adaptFromServer)
+    },
+    isShopLocationConfigured(shopId: number) {
+      return this.userShopLocations.some((location) => location.shopId === shopId)
     },
   },
 })

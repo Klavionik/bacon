@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-wrapper">
+  <div class="width-75 mx-auto my-2">
     <div class="card p-2">
       <h1 class="is-size-4 has-text-centered">Профиль</h1>
       <hr />
@@ -63,6 +63,7 @@ export default defineComponent({
   },
   data() {
     return {
+      show: false,
       choosenShopLocations: new Map() as Map<number, ShopLocation | null>,
       shopLocationOptions: [] as Array<ShopLocation>,
       fetchOptions: null as any,
@@ -70,8 +71,7 @@ export default defineComponent({
     }
   },
   async mounted() {
-    const userShopLocations = await this.shopLocationsStore.fetchUserShopLocations(this.user.sub)
-    this.setChoosenShopLocations(userShopLocations)
+    this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
     this.fetchOptions = debounce(this._fetchOptions, 800)
   },
   beforeUnmount() {
@@ -110,11 +110,8 @@ export default defineComponent({
         (value) => value !== null
       ) as Array<ShopLocation>
 
-      const savedLocations = await this.shopLocationsStore.saveUserShopLocations(
-        this.user.sub,
-        locations
-      )
-      this.setChoosenShopLocations(savedLocations)
+      await this.shopLocationsStore.saveUserShopLocations(this.user.sub, locations)
+      this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
     },
     async _fetchOptions(shopId: number, search: string, loading: Function) {
       if (!search) return
@@ -135,11 +132,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.profile-wrapper {
-  width: 50%;
-  margin: 0.5rem auto;
+.width-75 {
+  width: 75%;
 }
-
 hr {
   margin: 0.5rem;
 }

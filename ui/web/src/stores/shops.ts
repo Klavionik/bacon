@@ -10,12 +10,18 @@ export const useShopsStore = defineStore("shops", {
   },
   getters: {
     shopUrlRules(): Array<RegExp> {
-      return this.shops.map((shop) => new RegExp(shop["urlRule"]))
+      return this.shops.map((shop) => new RegExp(shop.urlRule))
     },
   },
   actions: {
     async fetchShops() {
       this.shops = (await api.listShops()).map(this.adaptFromServer)
+    },
+    getShopByTreatURL(url: string) {
+      return this.shops.find((shop) => {
+        const urlRule = new RegExp(shop.urlRule)
+        return urlRule.test(url)
+      })
     },
     adaptFromServer(shop: any): Shop {
       return {

@@ -11,6 +11,7 @@ import { defineComponent } from "vue"
 import api from "@/services/api"
 import AppLoading from "@/components/AppLoading.vue"
 import { useShopsStore } from "@/stores/shops"
+import { useShopLocationsStore } from "@/stores/shop-locations"
 
 export default defineComponent({
   name: "App",
@@ -27,12 +28,13 @@ export default defineComponent({
       if (this.$auth0.isAuthenticated) {
         const accessToken = await this.$auth0.getAccessTokenSilently()
         api.setToken(accessToken)
+
+        const shopLocationsStore = useShopLocationsStore()
+        await shopLocationsStore.fetchUserShopLocations(this.$auth0.idTokenClaims.value.sub)
+        const shopsStore = useShopsStore()
+        await shopsStore.fetchShops()
       }
     },
-  },
-  async beforeMount() {
-    const shopsStore = useShopsStore()
-    await shopsStore.fetchShops()
   },
 })
 </script>

@@ -1,10 +1,18 @@
 <template>
   <div class="panel-block">
-    <div class="is-flex width-100">
-      <p class="control is-flex-grow-1">
-        <input :value="url" class="input" type="text" placeholder="Ссылка" @input="emitURL" />
+    <div class="field has-addons width-100">
+      <p class="control is-flex-grow-1 has-icons-left">
+        <input
+          :value="url"
+          class="input"
+          :disabled="noShopLocationsConfigured"
+          type="text"
+          placeholder="Добавить"
+          @input="emitURL"
+        />
+        <span class="icon is-left"><i class="fas fa-link" /></span>
       </p>
-      <p class="control ml-1">
+      <p class="control">
         <button
           :disabled="!isValidURL"
           class="button"
@@ -24,6 +32,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import { useShopsStore } from "@/stores/shops"
+import { useShopLocationsStore } from "@/stores/shop-locations"
 
 export default defineComponent({
   name: "NewTreat",
@@ -38,13 +47,22 @@ export default defineComponent({
     },
   },
   emits: ["submit", "update:url"],
-  setup() {
-    const shopsStore = useShopsStore()
-    return { shopsStore }
+  data() {
+    return {
+      shopsStore: useShopsStore(),
+      shopLocationsStore: useShopLocationsStore(),
+    }
   },
   computed: {
     isValidURL() {
-      return this.shopsStore.shopUrlRules.some((rule) => rule.test(this.url))
+      const shop = this.shopsStore.getShopByTreatURL(this.url)
+
+      if (!shop) return false
+
+      return this.shopLocationsStore.isShopLocationConfigured(shop.id)
+    },
+    noShopLocationsConfigured() {
+      return this.shopLocationsStore.noShopLocationsConfigured
     },
   },
   methods: {

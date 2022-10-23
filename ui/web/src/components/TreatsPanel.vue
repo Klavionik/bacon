@@ -2,7 +2,18 @@
   <div class="panel">
     <TreatsSearch v-model:search="search" />
     <TreatsTabs :active-tab="activeTab" @switch="activeTab = $event" />
-    <template v-if="filteredTreats.length">
+    <template v-if="noShopsConfigured">
+      <div class="panel-block is-justify-content-center">
+        <article class="message is-small is-warning mb-0">
+          <div class="message-body">
+            Прежде чем начать добавлять вкусняшки, нужно
+            <RouterLink :to="{ name: 'profile' }">настроить магазины</RouterLink>
+            , в которых мы будем следить за ценами.
+          </div>
+        </article>
+      </div>
+    </template>
+    <template v-else-if="filteredTreats.length">
       <TreatsItem
         v-for="treat in filteredTreats"
         :key="treat.id"
@@ -28,6 +39,8 @@ import NewTreat from "./NewTreat.vue"
 import { useTreatsStore } from "@/stores/treats"
 import { defineComponent } from "vue"
 import type { Treat } from "@/models/treat"
+import { useShopLocationsStore } from "@/stores/shop-locations"
+import { RouterLink } from "vue-router"
 
 const notFound = "Ни одной вкусняшки не найдено"
 const empty = "Пока не добавлено ни одной вкусняшки"
@@ -39,11 +52,13 @@ export default defineComponent({
     TreatsItem,
     TreatsTabs,
     TreatsSearch,
+    RouterLink,
   },
   data() {
     return {
       user: this.$auth0.idTokenClaims,
       treatsStore: useTreatsStore(),
+      shopLocationsStore: useShopLocationsStore(),
       isCreating: false,
       deleting: [] as number[],
       search: "",
@@ -58,6 +73,9 @@ export default defineComponent({
     emptyText(): string {
       return this.treatsStore.treats.length ? notFound : empty
     },
+    noShopsConfigured() {
+      return !this.shopLocationsStore.userShopLocations.length
+    },
   },
   beforeMount() {
     this.treatsStore.fetchTreats(this.user.sub)
@@ -66,11 +84,11 @@ export default defineComponent({
     isDeleting(treatId: number) {
       return this.deleting.includes(treatId)
     },
-    filterBySearch(treat: Treat) {
+    filterBySearch(treat: Treat): boolean {
       if (!this.search) return true
       return treat.title.toLowerCase().includes(this.search.toLowerCase())
     },
-    filterByTab(treat: Treat) {
+    filterByTab(treat: Treat): boolean {
       const discounted = (treat: Treat) => treat.oldPrice !== null && treat.price < treat.oldPrice
 
       switch (this.activeTab) {

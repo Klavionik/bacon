@@ -2,10 +2,11 @@
   <img :src="oval" alt="loading" :width="width" :height="height" />
 </template>
 
-<script>
+<script lang="ts">
 import oval from "@/assets/oval.svg"
+import { defineComponent } from "vue"
 
-export default {
+export default defineComponent({
   name: "AppLoader",
   props: {
     width: {
@@ -22,5 +23,5 @@ export default {
       oval,
     }
   },
-}
+})
 </script>
