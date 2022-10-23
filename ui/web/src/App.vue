@@ -1,6 +1,8 @@
 <template>
-  <AppLoading v-if="isLoading" />
-  <RouterView v-else />
+  <div class="container">
+    <AppLoading v-if="isLoading" />
+    <RouterView v-else />
+  </div>
 </template>
 
 <script lang="ts">

@@ -1,13 +1,11 @@
 <template>
-  <div class="container">
-    <NavBar />
-    <section class="hero">
-      <div class="hero-body">
-        <p class="title">Вкусняшки</p>
-        <p class="subtitle has-text-danger">Пора купить!</p>
-      </div>
-    </section>
-  </div>
+  <NavBar />
+  <section class="hero">
+    <div class="hero-body">
+      <p class="title">Вкусняшки</p>
+      <p class="subtitle has-text-danger">Пора купить!</p>
+    </div>
+  </section>
 </template>
 
 <script lang="ts">
