@@ -1,5 +1,6 @@
 from sqlalchemy import select, desc, delete, literal
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import functions
 
 from api import schemas
 from perekrestok.parser import PerekrestokParser, ProductData
@@ -26,14 +27,14 @@ async def get_shop(session: AsyncSession, url: str) -> Shop:
 
 
 async def list_treats(session: AsyncSession, user_id: str):
-    latest_price_subquery = (
+    latest_prices_subquery = (
         select(
             Price.price,
             Price.old_price,
-            Price.product_id
+            Price.product_id,
+            functions.max(Price.created_at),
         )
-        .order_by(desc(Price.created_at))
-        .limit(1)
+        .group_by(Price.product_id)
     ).subquery('latest_price')
 
     treats_query = (
@@ -41,8 +42,8 @@ async def list_treats(session: AsyncSession, user_id: str):
             Treat.id,
             Product.title,
             Product.available,
-            latest_price_subquery.c.price,
-            latest_price_subquery.c.old_price,
+            latest_prices_subquery.c.price,
+            latest_prices_subquery.c.old_price,
             Product.url,
             ShopLocation.shop_id,
             Shop.display_title,
@@ -51,7 +52,7 @@ async def list_treats(session: AsyncSession, user_id: str):
         .join(ShopLocation)
         .join(Shop)
         .join(Treat)
-        .join(latest_price_subquery)
+        .join(latest_prices_subquery)
         .where(Treat.user_id == user_id)
     )
     return (await session.execute(treats_query)).mappings().all()
