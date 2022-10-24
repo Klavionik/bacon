@@ -1,17 +1,22 @@
 <template>
-  <article class="panel-block" :class="{ 'is-disabled': isDeleting }">
+  <article class="panel-block" :class="{ 'is-disabled': isDeleting || !treat.available }">
     <div class="media is-flex-grow-1">
       <div class="media-content pl-3">
         <div class="content">
-          <p>
+          <div>
             <strong>{{ treat.title }}</strong>
-            <a class="tag mx-2 is-light is-info" :href="treat.url">{{ treat.shopTitle }}</a>
+            <span class="mx-2">
+              <a class="tag mx-1 is-light is-info" :href="treat.url">{{ treat.shopTitle }}</a>
+              <span v-if="!treat.available" class="tag mx-1 is-light is-warning"
+                >Нет в наличии</span
+              >
+            </span>
             <br />
             <span
               >Цена: <del v-if="discounted">{{ treat.oldPrice }} &#8381;</del>
               {{ treat.price }} &#8381;
             </span>
-          </p>
+          </div>
         </div>
       </div>
       <div class="my-auto">
