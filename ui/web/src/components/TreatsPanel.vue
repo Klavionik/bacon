@@ -127,3 +127,10 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped>
+.panel {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+</style>
