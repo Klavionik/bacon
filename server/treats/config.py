@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     AUTH0_SECRET: str
     ALLOWED_USERS: list
     CORS_ALLOWED_ORIGIN: list
+    SENTRY_DSN: str
+    LOGTAIL_TOKEN: str
 
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str

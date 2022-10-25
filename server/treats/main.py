@@ -8,6 +8,7 @@ from perekrestok.client import PerekrestokClient
 from telegram.deps import get_telegram_client
 from telegram.routes import router as bot_router
 from config import settings
+from telemetry import configure_sentry, configure_logger
 
 
 def setup_event_handlers(app):
@@ -49,4 +50,6 @@ def create_app():
     app.include_router(api_router, prefix='/api')
 
     setup_event_handlers(app)
+    configure_sentry()
+    configure_logger()
     return app
