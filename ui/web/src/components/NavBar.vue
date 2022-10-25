@@ -4,9 +4,6 @@
       <RouterLink class="navbar-item" to="/">
         <img src="/logo.jpg" alt="Treats" />
       </RouterLink>
-      <RouterLink v-if="isAuthenticated" class="navbar-item" :to="{ name: 'treats' }">
-        Мои вкусняшки
-      </RouterLink>
       <a
         class="navbar-burger"
         :class="{ 'is-active': isHamburgerOpen }"
@@ -18,14 +15,18 @@
       </a>
     </div>
     <div class="navbar-menu" :class="{ 'is-active': isHamburgerOpen }">
-      <div class="navbar-start" />
+      <div class="navbar-start">
+        <RouterLink v-if="isAuthenticated" class="navbar-item" :to="{ name: 'treats' }">
+          Мои вкусняшки
+        </RouterLink>
+      </div>
       <div class="navbar-end">
         <div v-if="!isAuthenticated" class="navbar-item">
           <button class="button" @click="login">Войти</button>
         </div>
-        <div v-else class="navbar-item">
-          <p class="mx-3">{{ nickname }}</p>
-          <div class="buttons">
+        <template v-else-if="isAuthenticated && !isHamburgerOpen">
+          <div class="navbar-item mx-3">{{ nickname }}</div>
+          <div class="navbar-item buttons">
             <RouterLink class="button is-light" :to="{ name: 'profile' }">
               <i class="fa-sharp fa-solid fa-gear fa-lg" />
             </RouterLink>
@@ -33,7 +34,11 @@
               <i class="fa-sharp fa-solid fa-arrow-right-from-bracket fa-lg" />
             </a>
           </div>
-        </div>
+        </template>
+        <template v-else>
+          <RouterLink class="navbar-item" :to="{ name: 'profile' }">Профиль</RouterLink>
+          <a class="navbar-item" href="#" @click="logout">Выйти</a>
+        </template>
       </div>
     </div>
   </nav>
