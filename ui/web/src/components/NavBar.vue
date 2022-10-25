@@ -25,7 +25,7 @@
           <button class="button" @click="login">Войти</button>
         </div>
         <template v-else-if="isAuthenticated && !isHamburgerOpen">
-          <div class="navbar-item mx-3">{{ nickname }}</div>
+          <div class="navbar-item mx-3">{{ email }}</div>
           <div class="navbar-item buttons">
             <RouterLink class="button is-light" :to="{ name: 'profile' }">
               <i class="fa-sharp fa-solid fa-gear fa-lg" />
@@ -57,8 +57,8 @@ export default defineComponent({
     }
   },
   computed: {
-    nickname() {
-      return this.user.nickname
+    email() {
+      return this.user?.email
     },
   },
   methods: {
