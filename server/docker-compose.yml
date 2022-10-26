@@ -14,6 +14,7 @@ services:
       - ./:/opt/app/server
       - ../core:/opt/app/core
       - ../server_shell.py:/opt/app/server_shell.py
+      - huey:/var/lib/huey/data
 
   db:
     image: postgres:14.5-alpine
@@ -24,3 +25,4 @@ services:
 
 volumes:
   pgdata:
+  huey:
