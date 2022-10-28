@@ -22,7 +22,7 @@
       </div>
       <div class="navbar-end">
         <div v-if="!isAuthenticated" class="navbar-item">
-          <button class="button" @click="login">Войти</button>
+          <RouterLink is="button" class="button" :to="{ name: 'login' }">Войти</RouterLink>
         </div>
         <template v-else-if="isAuthenticated && !isHamburgerOpen">
           <div class="navbar-item mx-3">{{ email }}</div>
