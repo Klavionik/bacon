@@ -16,8 +16,11 @@ class TelegramClient:
         data = {'url': urljoin(self.server_url, webhook_route), 'secret_token': self.server_secret}
         return await self.request('POST', 'setWebhook', data)
 
-    async def send_message(self, chat_id: int, text: str) -> dict:
+    async def send_message(self, chat_id: int, text: str, *, markdown: bool = False) -> dict:
         data = {'chat_id': chat_id, 'text': text}
+
+        if markdown:
+            data.update(parse_mode='Markdown')
         return await self.request('POST', 'sendMessage', data)
 
     async def request(self, method: str, url: str, data: dict = None):

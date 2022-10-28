@@ -1,18 +1,18 @@
 from fastapi import APIRouter
 
-from telegram.auth import create_token
+from config import settings
 from telegram.deps import get_telegram_client
 from telegram.permissions import verify_token_dep, check_allowed_users_dep
-from telegram.schemas import Update, InitData, Token
+from telegram.schemas import InitData, Token
 
 router = APIRouter()
 
 
 @router.post('/update', dependencies=[verify_token_dep])
-async def receive_update(update: Update):
+async def receive_update():
     client = get_telegram_client()
-    msg = 'Привет! Чтобы использовать этого бота, нажми кнопку Меню внизу слева.'
-    await client.send_message(update.message.chat.id, msg)
+    msg = f'Привет! Чтобы использовать этого бота, нажми кнопку Меню внизу слева.'
+    await client.send_message(settings.BOT_CHAT_ID, msg)
     return 200
 
 
