@@ -41,6 +41,7 @@ import { defineComponent } from "vue"
 import type { Treat } from "@/models/treat"
 import { useShopLocationsStore } from "@/stores/shop-locations"
 import { RouterLink } from "vue-router"
+import { useUserStore } from "@/stores/users"
 
 const notFound = "Ни одной вкусняшки не найдено"
 const empty = "Пока не добавлено ни одной вкусняшки"
@@ -54,9 +55,12 @@ export default defineComponent({
     TreatsSearch,
     RouterLink,
   },
+  setup() {
+    const { user } = useUserStore()
+    return { user }
+  },
   data() {
     return {
-      user: this.$auth0.idTokenClaims,
       treatsStore: useTreatsStore(),
       shopLocationsStore: useShopLocationsStore(),
       isCreating: false,
@@ -78,7 +82,7 @@ export default defineComponent({
     },
   },
   beforeMount() {
-    this.treatsStore.fetchTreats(this.user.sub)
+    this.treatsStore.fetchTreats(this.user.id)
   },
   methods: {
     isDeleting(treatId: number) {
@@ -105,7 +109,7 @@ export default defineComponent({
       let error = false
 
       try {
-        await this.treatsStore.createTreat(this.user.sub, this.newTreatURL)
+        await this.treatsStore.createTreat(this.user.id, this.newTreatURL)
       } catch (e) {
         error = true
         throw e

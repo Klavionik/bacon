@@ -1,8 +1,8 @@
 """Create initial tables
 
-Revision ID: 1a2e31dc5241
+Revision ID: 4d11d10a51df
 Revises: 
-Create Date: 2022-10-09 21:23:47.403831
+Create Date: 2022-10-29 12:14:00.131009
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1a2e31dc5241'
+revision = '4d11d10a51df'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,16 @@ def upgrade() -> None:
     sa.Column('url_rule', sa.String(length=128), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('user',
+    sa.Column('email', sa.String(length=320), nullable=False),
+    sa.Column('hashed_password', sa.String(length=1024), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('is_superuser', sa.Boolean(), nullable=False),
+    sa.Column('is_verified', sa.Boolean(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
     op.create_table('shop_locations',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=128), nullable=False),
@@ -47,7 +57,7 @@ def upgrade() -> None:
     )
     op.create_table('user_shop_locations',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.String(), nullable=True),
+    sa.Column('user_id', sa.String(length=128), nullable=False),
     sa.Column('shop_id', sa.Integer(), nullable=True),
     sa.Column('shop_location_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['shop_id'], ['shops.id'], ondelete='RESTRICT'),
@@ -66,7 +76,7 @@ def upgrade() -> None:
     )
     op.create_table('treats',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.String(), nullable=True),
+    sa.Column('user_id', sa.String(length=128), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
@@ -83,5 +93,7 @@ def downgrade() -> None:
     op.drop_table('user_shop_locations')
     op.drop_table('products')
     op.drop_table('shop_locations')
+    op.drop_index(op.f('ix_user_email'), table_name='user')
+    op.drop_table('user')
     op.drop_table('shops')
     # ### end Alembic commands ###

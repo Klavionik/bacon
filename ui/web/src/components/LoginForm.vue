@@ -55,6 +55,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["submit:signup", "submit:login"],
   setup() {
     return { v: useVuelidate() }
   },
@@ -76,7 +77,6 @@ export default defineComponent({
       password: { required, minLength: minLength(8) },
       repeatPassword: {
         requiredIf: requiredIf(this.signupMode),
-        minLength: minLength(8),
         sameAs: sameAs(this.password),
       },
     }
@@ -92,11 +92,19 @@ export default defineComponent({
       this.email = this.password = this.repeatPassword = ""
     },
     async submit() {
+      if (!this.signupMode) {
+        this.repeatPassword = this.password
+      }
+
       const isFormValid = await this.v.$validate()
 
       if (!isFormValid) return
 
-      console.log(this.$data)
+      this.$emit(`submit:${this.mode}`, {
+        email: this.email,
+        password: this.password,
+        repeatPassword: this.repeatPassword,
+      })
     },
   },
 })

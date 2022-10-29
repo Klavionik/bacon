@@ -1,29 +1,31 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import services, schemas
-from auth import User
-from deps import db_session, shop_client, get_user
+from auth.schemas import UserRead
+from auth import get_user
+from deps import db_session, shop_client
 from perekrestok.client import PerekrestokClient
+from storage.models import User
 
 router = APIRouter()
 
 
 @router.get('/shops', response_model=list[schemas.Shop])
-async def list_shops(session: AsyncSession = db_session):
+async def list_shops(session: AsyncSession = Depends(db_session)):
     return await services.list_shops(session)
 
 
 @router.get('/treats', response_model=list[schemas.TreatOut], response_model_by_alias=False)
-async def list_user_treats(user: User = get_user, session: AsyncSession = db_session):
+async def list_user_treats(user: User = Depends(get_user), session: AsyncSession = Depends(db_session)):
     return await services.list_treats(session, user.id)
 
 
 @router.post('/treats', status_code=201, response_model=schemas.TreatOut, response_model_by_alias=False)
 async def create_treat(
         treat_input: schemas.TreatInput,
-        user: User = get_user,
-        session: AsyncSession = db_session,
+        user: UserRead = Depends(get_user),
+        session: AsyncSession = Depends(db_session),
 ):
     treat = await services.create_treat(session, treat_input.url, user.id)
 
@@ -33,7 +35,7 @@ async def create_treat(
 
 
 @router.delete('/treats/{treat_id}', status_code=204)
-async def delete_treat(treat_id: int, session: AsyncSession = db_session) -> None:
+async def delete_treat(treat_id: int, session: AsyncSession = Depends(db_session)) -> None:
     await services.delete_treat_by_id(session, treat_id)
 
 
@@ -61,7 +63,7 @@ async def search_shop_locations(shop_id: int, address: str, client: PerekrestokC
 
 
 @router.get('/user/{user_id}/shop-locations', response_model=list[schemas.ShopLocation])
-async def get_user_shop_locations(user: User = get_user, session: AsyncSession = db_session):
+async def get_user_shop_locations(user: UserRead = Depends(get_user), session: AsyncSession = Depends(db_session)):
     locations = await services.get_user_shop_locations_by_user(session, user.id)
     return locations
 
@@ -69,7 +71,7 @@ async def get_user_shop_locations(user: User = get_user, session: AsyncSession =
 @router.put('/user/{user_id}/shop-locations', response_model=list[schemas.ShopLocationSuggestion], status_code=201)
 async def save_user_shop_locations(
         locations: list[schemas.ShopLocationSuggestion],
-        user: User = get_user,
-        session: AsyncSession = db_session
+        user: UserRead = Depends(get_user),
+        session: AsyncSession = Depends(db_session)
 ):
     return await services.save_user_shop_locations(session, user.id, locations)

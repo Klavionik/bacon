@@ -29,7 +29,3 @@ class InitData(BaseModel):
         if not validate_init_data(values, settings.BOT_TOKEN):
             raise ValueError('Integrity check failed.')
         return values
-
-
-class Token(BaseModel):
-    token: str

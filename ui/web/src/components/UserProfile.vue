@@ -64,6 +64,7 @@ import { defineComponent } from "vue"
 import { useShopLocationsStore } from "@/stores/shop-locations"
 import type { ShopLocation } from "@/models/shop"
 import { useShopsStore } from "@/stores/shops"
+import { useUserStore } from "@/stores/users"
 
 export default defineComponent({
   name: "UserProfile",
@@ -71,7 +72,8 @@ export default defineComponent({
   setup() {
     const shopsStore = useShopsStore()
     const shopLocationsStore = useShopLocationsStore()
-    return { shopsStore, shopLocationsStore }
+    const { user } = useUserStore()
+    return { shopsStore, shopLocationsStore, user }
   },
   data() {
     return {
@@ -80,7 +82,6 @@ export default defineComponent({
       choosenShopLocations: new Map() as Map<number, ShopLocation | null>,
       shopLocationOptions: [] as Array<ShopLocation>,
       fetchOptions: null as any,
-      user: this.$auth0.idTokenClaims,
     }
   },
   async mounted() {
@@ -130,7 +131,7 @@ export default defineComponent({
       this.saving = true
 
       try {
-        await this.shopLocationsStore.saveUserShopLocations(this.user.sub, locations)
+        await this.shopLocationsStore.saveUserShopLocations(this.user.id, locations)
       } finally {
         this.saving = false
         this.showSavedNotification()

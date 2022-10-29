@@ -8,35 +8,33 @@
 <script lang="ts">
 import { RouterView } from "vue-router"
 import { defineComponent } from "vue"
-import api from "@/services/api"
+import { useUserStore } from "@/stores/users"
 import AppLoading from "@/components/AppLoading.vue"
-import { useShopsStore } from "@/stores/shops"
 import { useShopLocationsStore } from "@/stores/shop-locations"
+import { useShopsStore } from "@/stores/shops"
 
 export default defineComponent({
   name: "App",
   components: { AppLoading, RouterView },
   data() {
     return {
-      isLoading: this.$auth0.isLoading,
-      isAuthenticated: this.$auth0.isAuthenticated,
-      user: this.$auth0.idTokenClaims,
+      isLoading: false,
     }
   },
-  watch: {
-    async isLoading(loading) {
-      if (loading) return
+  async created() {
+    const token = localStorage.getItem("treatsToken")
 
-      if (this.isAuthenticated) {
-        const accessToken = await this.$auth0.getAccessTokenSilently()
-        api.setToken(accessToken)
+    if (token) {
+      this.isLoading = true
+      const userStore = useUserStore()
+      await userStore.loginByToken(token)
 
-        const shopLocationsStore = useShopLocationsStore()
-        await shopLocationsStore.fetchUserShopLocations(this.user.sub)
-        const shopsStore = useShopsStore()
-        await shopsStore.fetchShops()
-      }
-    },
+      const shopLocationsStore = useShopLocationsStore()
+      await shopLocationsStore.fetchUserShopLocations(userStore.user.id)
+      const shopsStore = useShopsStore()
+      await shopsStore.fetchShops()
+      this.isLoading = false
+    }
   },
 })
 </script>

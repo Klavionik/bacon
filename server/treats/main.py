@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
+from auth.routes import router as auth_router
 from api.routes import router as api_router
 from storage import create_db_engine
 from perekrestok.client import PerekrestokClient
@@ -48,6 +49,7 @@ def create_app():
     )
     app.include_router(bot_router, prefix='/bot')
     app.include_router(api_router, prefix='/api')
+    app.include_router(auth_router, prefix='/auth')
 
     setup_event_handlers(app)
     configure_sentry()

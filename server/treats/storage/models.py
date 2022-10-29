@@ -1,5 +1,6 @@
 from sqlalchemy import UniqueConstraint, MetaData
 from sqlalchemy.orm import declarative_base, relationship
+from fastapi_users.db import SQLAlchemyBaseUserTable
 
 from storage.utils import (
     CharField,
@@ -23,6 +24,10 @@ class Base:
 
 
 Base = declarative_base(cls=Base, metadata=metadata)
+
+
+class User(SQLAlchemyBaseUserTable[int], Base):
+    pass
 
 
 class Shop(Base):

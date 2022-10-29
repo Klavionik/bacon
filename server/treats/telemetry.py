@@ -39,7 +39,7 @@ def configure_logger():
 def configure_sentry() -> None:
     global sentry_configured
 
-    if not settings.DEBUG or sentry_configured:
+    if settings.DEBUG or sentry_configured:
         return
 
     sentry_configured = True

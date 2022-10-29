@@ -16,15 +16,15 @@
     </div>
     <div class="navbar-menu" :class="{ 'is-active': isHamburgerOpen }">
       <div class="navbar-start">
-        <RouterLink v-if="isAuthenticated" class="navbar-item" :to="{ name: 'treats' }">
+        <RouterLink v-if="loggedIn" class="navbar-item" :to="{ name: 'treats' }">
           Мои вкусняшки
         </RouterLink>
       </div>
       <div class="navbar-end">
-        <div v-if="!isAuthenticated" class="navbar-item">
+        <div v-if="!loggedIn" class="navbar-item">
           <RouterLink is="button" class="button" :to="{ name: 'login' }">Войти</RouterLink>
         </div>
-        <template v-else-if="isAuthenticated && !isHamburgerOpen">
+        <template v-else-if="loggedIn && !isHamburgerOpen">
           <div class="navbar-item mx-3">{{ email }}</div>
           <div class="navbar-item buttons">
             <RouterLink class="button is-light" :to="{ name: 'profile' }">
@@ -46,27 +46,28 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
+import { useUserStore } from "@/stores/users"
 
 export default defineComponent({
   name: "NavBar",
   data() {
     return {
       isHamburgerOpen: false,
-      user: this.$auth0.idTokenClaims,
-      isAuthenticated: this.$auth0.isAuthenticated,
+      userStore: useUserStore(),
     }
   },
   computed: {
     email() {
-      return this.user?.email
+      return this.userStore.user.email
+    },
+    loggedIn() {
+      return this.userStore.loggedIn
     },
   },
   methods: {
     logout() {
-      this.$auth0.logout()
-    },
-    async login() {
-      await this.$auth0.loginWithRedirect()
+      this.userStore.logout()
+      this.$router.push("/")
     },
   },
 })

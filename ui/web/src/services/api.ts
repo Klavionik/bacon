@@ -17,12 +17,12 @@ class APIService {
     return this.client.get("shops").json()
   }
 
-  listUserTreats(userId: string): Promise<Array<any>> {
+  listUserTreats(userId: number): Promise<Array<any>> {
     const options = { searchParams: { user_id: userId } }
     return this.client.get("treats", options).json()
   }
 
-  createTreat(userId: string, url: string): Promise<any> {
+  createTreat(userId: number, url: string): Promise<any> {
     const options = { json: { url }, searchParams: { user_id: userId } }
     return this.client.post("treats", options).json()
   }
@@ -34,10 +34,6 @@ class APIService {
   searchShopLocations(shopId: number, address: string): Promise<Array<any>> {
     const options = { searchParams: { address } }
     return this.client.get(`shops/${shopId}/locations/search`, options).json()
-  }
-
-  getUser(): Promise<any> {
-    return this.client.get("users/me").json()
   }
 
   getUserShopLocations(userId: number): Promise<Array<ShopLocation>> {

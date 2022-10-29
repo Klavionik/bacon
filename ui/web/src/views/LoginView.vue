@@ -17,7 +17,7 @@
                 </li>
               </ul>
             </div>
-            <LoginForm :mode="activeTab" />
+            <LoginForm :mode="activeTab" @submit:login="login" @submit:signup="signup" />
           </div>
         </div>
       </div>
@@ -30,6 +30,8 @@ import { defineComponent } from "vue"
 import NavBar from "@/components/NavBar.vue"
 import LoginForm from "@/components/LoginForm.vue"
 import { LoginFormMode } from "@/consts"
+import { useUserStore } from "@/stores/users"
+import type { UserCreate } from "@/models/user"
 
 export default defineComponent({
   name: "LoginView",
@@ -37,6 +39,7 @@ export default defineComponent({
   data() {
     return {
       activeTab: LoginFormMode.LOGIN as LoginFormMode,
+      userStore: useUserStore(),
     }
   },
   computed: {
@@ -50,6 +53,14 @@ export default defineComponent({
     },
     activateSignupTab() {
       this.activeTab = LoginFormMode.SIGNUP
+    },
+    async login(payload: UserCreate) {
+      await this.userStore.login(payload)
+      this.$router.push("/")
+    },
+    async signup(payload: UserCreate) {
+      await this.userStore.signup(payload)
+      this.$router.push("/")
     },
   },
 })

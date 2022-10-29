@@ -21,10 +21,10 @@ export const useTreatsStore = defineStore("treats", {
         shopId: treat["shop_id"],
       }
     },
-    async fetchTreats(userId: string) {
+    async fetchTreats(userId: number) {
       this.treats = (await api.listUserTreats(userId)).map(this.adaptFromServer)
     },
-    async createTreat(userId: string, url: string) {
+    async createTreat(userId: number, url: string) {
       let treat = await api.createTreat(userId, url)
       treat = this.adaptFromServer(treat)
       this.treats.push(treat)
