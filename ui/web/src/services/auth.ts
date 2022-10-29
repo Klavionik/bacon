@@ -1,8 +1,8 @@
 import ky from "ky"
 import type { KyInstance } from "ky/distribution/types/ky"
-import type { UserCreate, UserLogin, UserRead, UserToken } from "@/models/user"
+import type { UserCreate, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
 
-class APIService {
+class AuthService {
   public client: KyInstance
 
   constructor(baseUrl: string, prefix: string) {
@@ -28,6 +28,10 @@ class APIService {
     return this.client.get("me").json()
   }
 
+  updateMe(user: UserUpdate): Promise<UserRead> {
+    return this.client.patch("me", { json: user }).json()
+  }
+
   setToken(token: string) {
     this.client = this.client.extend({
       headers: { authorization: `Bearer ${token}` },
@@ -35,4 +39,4 @@ class APIService {
   }
 }
 
-export default new APIService(import.meta.env.VITE_API_URL, "auth")
+export default new AuthService(import.meta.env.VITE_API_URL, "auth")

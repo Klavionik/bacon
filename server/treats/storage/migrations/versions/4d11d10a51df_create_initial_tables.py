@@ -31,6 +31,7 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_superuser', sa.Boolean(), nullable=False),
     sa.Column('is_verified', sa.Boolean(), nullable=False),
+    sa.Column('meta', sa.JSON(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )

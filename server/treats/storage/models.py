@@ -27,7 +27,7 @@ Base = declarative_base(cls=Base, metadata=metadata)
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
-    pass
+    meta: dict = JSONField(auto_dict=True)
 
 
 class Shop(Base):

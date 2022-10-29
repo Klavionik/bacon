@@ -1,4 +1,5 @@
 from fastapi_users.schemas import BaseUserCreate, BaseUser, BaseUserUpdate
+from pydantic import BaseModel, Field
 
 
 def to_lower_camel(string: str) -> str:
@@ -12,16 +13,36 @@ def to_lower_camel(string: str) -> str:
     return ''.join(camelised)
 
 
-class UserCreate(BaseUserCreate):
-    repeat_password: str
+class UserMeta(BaseModel):
+    telegram_id: int | None = None
+    telegram_notifications: bool = False
 
     class Config:
         alias_generator = to_lower_camel
+        allow_population_by_field_name = True
+
+
+class UserCreate(BaseUserCreate):
+    repeat_password: str
+    meta: UserMeta
+
+    class Config:
+        alias_generator = to_lower_camel
+        allow_population_by_field_name = True
 
 
 class UserRead(BaseUser[int]):
-    pass
+    meta: UserMeta
+
+    class Config:
+        alias_generator = to_lower_camel
+        allow_population_by_field_name = True
 
 
 class UserUpdate(BaseUserUpdate):
-    pass
+    meta: UserMeta
+
+    class Config:
+        alias_generator = to_lower_camel
+        allow_population_by_field_name = True
+

@@ -19,9 +19,25 @@ const router = createRouter({
       component: () => import("@/views/TreatsView.vue"),
     },
     {
-      name: "profile",
-      path: "/profile",
-      component: () => import("@/views/ProfileView.vue"),
+      path: "/settings",
+      component: () => import("@/views/SettingsView.vue"),
+      children: [
+        {
+          name: "profile",
+          path: "profile",
+          component: () => import("@/components/UserProfile.vue"),
+        },
+        {
+          name: "shops",
+          path: "shops",
+          component: () => import("@/components/UserShops.vue"),
+        },
+        {
+          name: "notifications",
+          path: "notifications",
+          component: () => import("@/components/UserNotifications.vue"),
+        },
+      ],
     },
     {
       name: "forbidden",

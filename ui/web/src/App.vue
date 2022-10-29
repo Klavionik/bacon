@@ -26,14 +26,16 @@ export default defineComponent({
 
     if (token) {
       this.isLoading = true
-      const userStore = useUserStore()
-      await userStore.loginByToken(token)
-
-      const shopLocationsStore = useShopLocationsStore()
-      await shopLocationsStore.fetchUserShopLocations(userStore.user.id)
-      const shopsStore = useShopsStore()
-      await shopsStore.fetchShops()
-      this.isLoading = false
+      try {
+        const userStore = useUserStore()
+        await userStore.loginByToken(token)
+        const shopLocationsStore = useShopLocationsStore()
+        await shopLocationsStore.fetchUserShopLocations(userStore.user.id)
+        const shopsStore = useShopsStore()
+        await shopsStore.fetchShops()
+      } finally {
+        this.isLoading = false
+      }
     }
   },
 })

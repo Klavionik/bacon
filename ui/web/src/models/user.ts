@@ -1,3 +1,8 @@
+export type UserMeta = {
+  telegramId?: number
+  telegramNotifications?: boolean
+}
+
 export type UserCreate = {
   email: string
   password: string
@@ -7,6 +12,7 @@ export type UserCreate = {
 export type UserRead = {
   id: number
   email: string
+  meta: UserMeta
 }
 
 export type UserLogin = {
@@ -16,4 +22,10 @@ export type UserLogin = {
 
 export type UserToken = {
   access_token: string
+}
+
+export type UserUpdate = {
+  email?: string
+  password?: string
+  meta?: UserMeta
 }

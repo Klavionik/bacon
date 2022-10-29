@@ -1,18 +1,38 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 
-from config import settings
-from telegram.deps import get_telegram_client
+from auth.manager import get_user_manager, UserManager
+from auth.schemas import UserUpdate, UserMeta
+from telegram.client import TelegramClient
+from telegram.deps import get_telegram_client, make_deep_link, decode_deep_link_token
 from telegram.permissions import check_allowed_users_dep
-from telegram.schemas import InitData
+from telegram.schemas import InitData, Update, DeepLink
 
 router = APIRouter()
 
 
 @router.post('/update')
-async def receive_update():
-    client = get_telegram_client()
+async def receive_update(
+    update: Update,
+    client: TelegramClient = Depends(get_telegram_client),
+    user_manager: UserManager = Depends(get_user_manager),
+):
+    if update.is_deep_link:
+        user_data = decode_deep_link_token(update.deep_link_token)
+        user_id = int(user_data.split(':')[1])
+        user = await user_manager.get(user_id)
+        user_update = UserUpdate(
+            meta=UserMeta(
+                telegram_id=update.message.chat.id,
+                telegram_notifications=True,
+            )
+        )
+        await user_manager.update(user_update, user)
+        msg = 'Вы успешно подписались на уведомления.'
+        await client.send_message(update.message.chat.id, msg)
+        return 200
+
     msg = f'Привет! Чтобы использовать этого бота, нажми кнопку Меню внизу слева.'
-    await client.send_message(settings.BOT_CHAT_ID, msg)
+    await client.send_message(update.message.chat.id, msg)
     return 200
 
 
@@ -21,3 +41,8 @@ async def start(init_data: InitData):
     init_user = init_data.user
     ...
     return init_user
+
+
+@router.get('/deep_link', response_model=DeepLink)
+async def get_deep_link(deep_link: DeepLink = Depends(make_deep_link)):
+    return deep_link
