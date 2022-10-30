@@ -1,23 +1,27 @@
 <template>
   <NavBar />
-  <div class="section width-35 mx-auto">
-    <div class="card">
-      <div class="card-content">
-        <div class="p-5">
-          <h1 class="is-size-4 has-text-centered">Добро пожаловать!</h1>
-          <h1 class="is-size-7 has-text-centered">Вкусняшки уже ждут</h1>
-          <div class="mt-5">
-            <div class="tabs is-centered is-toggle">
-              <ul>
-                <li :class="{ 'is-active': !signupTabActive }" @click="activateLoginTab">
-                  <a>Вход</a>
-                </li>
-                <li :class="{ 'is-active': signupTabActive }" @click="activateSignupTab">
-                  <a>Регистрация</a>
-                </li>
-              </ul>
+  <div class="columns is-centered">
+    <div class="column is-two-fifths">
+      <div class="section mx-auto">
+        <div class="card">
+          <div class="card-content">
+            <div class="p-5">
+              <h1 class="is-size-4 has-text-centered">Добро пожаловать!</h1>
+              <h1 class="is-size-7 has-text-centered">Вкусняшки уже ждут</h1>
+              <div class="mt-5">
+                <div class="tabs is-centered is-toggle">
+                  <ul>
+                    <li :class="{ 'is-active': !signupTabActive }" @click="activateLoginTab">
+                      <a>Вход</a>
+                    </li>
+                    <li :class="{ 'is-active': signupTabActive }" @click="activateSignupTab">
+                      <a>Регистрация</a>
+                    </li>
+                  </ul>
+                </div>
+                <LoginForm :mode="activeTab" @submit:login="login" @submit:signup="signup" />
+              </div>
             </div>
-            <LoginForm :mode="activeTab" @submit:login="login" @submit:signup="signup" />
           </div>
         </div>
       </div>
@@ -65,9 +69,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style scoped>
-.width-35 {
-  width: 35%;
-}
-</style>
