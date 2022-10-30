@@ -11,6 +11,7 @@ import { useShopsStore } from "@/stores/shops"
 import { useTreatsStore } from "@/stores/treats"
 import { useShopLocationsStore } from "@/stores/shop-locations"
 import { useUserStore } from "@/stores/users"
+import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({
   name: "TreatsView",
@@ -20,11 +21,12 @@ export default defineComponent({
     const shopsStore = useShopsStore()
     const treatsStore = useTreatsStore()
     const shopLocationsStore = useShopLocationsStore()
-    await Promise.all([
+    const promise = Promise.all([
       shopsStore.fetchShops(),
       treatsStore.fetchTreats(user.id),
       shopLocationsStore.fetchUserShopLocations(),
     ])
+    await useProgress().attach(promise)
   },
 })
 </script>

@@ -2,6 +2,9 @@ import { useUserStore } from "@/stores/users"
 import type { RouteLocationNormalized } from "vue-router"
 import { RouteName } from "@/router/enums"
 import storage from "@/services/storage"
+import { type ProgressFinisher, useProgress } from "@marcoschulte/vue3-progress"
+
+const progresses = [] as ProgressFinisher[]
 
 export const checkLoggedIn = (to: RouteLocationNormalized) => {
   const { loggedIn } = useUserStore()
@@ -20,4 +23,12 @@ export const authenticate = async () => {
 
   const userStore = useUserStore()
   await userStore.loginByToken(savedToken)
+}
+
+export const startProgress = () => {
+  progresses.push(useProgress().start())
+}
+
+export const finishProgress = () => {
+  progresses.pop()?.finish()
 }

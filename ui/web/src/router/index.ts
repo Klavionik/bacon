@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
-import { checkLoggedIn, authenticate } from "@/router/guards"
+import { checkLoggedIn, authenticate, startProgress, finishProgress } from "@/router/guards"
 import { RouteName } from "@/router/enums"
-import auth from "@/services/auth"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,6 +55,9 @@ const router = createRouter({
   ],
 })
 
+router.beforeEach(startProgress)
 router.beforeEach(authenticate)
+
+router.beforeResolve(finishProgress)
 
 export default router

@@ -59,6 +59,7 @@ import { useUserStore } from "@/stores/users"
 import { settingsTabs } from "@/consts"
 import type { ShopLocation } from "@/models/shop"
 import debounce from "lodash.debounce"
+import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({
   name: "UserShops",
@@ -66,7 +67,11 @@ export default defineComponent({
   async beforeRouteEnter() {
     const shopsStore = useShopsStore()
     const shopLocationsStore = useShopLocationsStore()
-    await Promise.all([shopsStore.fetchShops(), shopLocationsStore.fetchUserShopLocations()])
+    const promise = Promise.all([
+      shopsStore.fetchShops(),
+      shopLocationsStore.fetchUserShopLocations(),
+    ])
+    await useProgress().attach(promise)
   },
   setup() {
     const { user } = useUserStore()
