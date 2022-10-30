@@ -1,46 +1,50 @@
 import { createRouter, createWebHistory } from "vue-router"
+import { checkLoggedIn } from "@/router/guards"
+import { RouteName } from "@/router/enums"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      name: "home",
+      name: RouteName.HOME,
       path: "/",
       component: () => import("@/views/HomeView.vue"),
     },
     {
-      name: "login",
+      name: RouteName.LOGIN,
       path: "/login",
       component: () => import("@/views/LoginView.vue"),
     },
     {
-      name: "treats",
+      name: RouteName.TREATS,
       path: "/treats",
       component: () => import("@/views/TreatsView.vue"),
+      beforeEnter: checkLoggedIn,
     },
     {
       path: "/settings",
       component: () => import("@/views/SettingsView.vue"),
+      beforeEnter: checkLoggedIn,
       children: [
         {
-          name: "profile",
+          name: RouteName.SETTINGS_PROFILE,
           path: "profile",
           component: () => import("@/components/UserProfile.vue"),
         },
         {
-          name: "shops",
+          name: RouteName.SETTINGS_SHOPS,
           path: "shops",
           component: () => import("@/components/UserShops.vue"),
         },
         {
-          name: "notifications",
+          name: RouteName.SETTINGS_NOTIFICATIONS,
           path: "notifications",
           component: () => import("@/components/UserNotifications.vue"),
         },
       ],
     },
     {
-      name: "forbidden",
+      name: RouteName.FORBIDDEN,
       path: "/forbidden",
       component: () => import("@/views/ForbiddenView.vue"),
     },
