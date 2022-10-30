@@ -3,6 +3,7 @@ import type { UserCreate, UserLogin, UserRead } from "@/models/user"
 import auth from "@/services/auth"
 import api from "@/services/api"
 import bot from "@/services/bot"
+import storage from "@/services/storage"
 
 export const useUserStore = defineStore("users", {
   state: () => {
@@ -23,7 +24,7 @@ export const useUserStore = defineStore("users", {
       auth.setToken(accessToken)
       api.setToken(accessToken)
       bot.setToken(accessToken)
-      localStorage.setItem("treatsToken", accessToken)
+      storage.setItem("accessToken", accessToken)
       this.user = await auth.getMe()
     },
     async loginByToken(token: string) {
@@ -39,7 +40,7 @@ export const useUserStore = defineStore("users", {
       bot.setToken("")
       this.user = {} as UserRead
       this.loggedIn = false
-      localStorage.removeItem("treatsToken")
+      storage.removeItem("accessToken")
     },
   },
 })

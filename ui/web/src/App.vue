@@ -12,6 +12,7 @@ import { useUserStore } from "@/stores/users"
 import AppLoading from "@/components/AppLoading.vue"
 import { useShopLocationsStore } from "@/stores/shop-locations"
 import { useShopsStore } from "@/stores/shops"
+import storage from "@/services/storage"
 
 export default defineComponent({
   name: "App",
@@ -22,7 +23,7 @@ export default defineComponent({
     }
   },
   async created() {
-    const token = localStorage.getItem("treatsToken")
+    const token = storage.getItem("accessToken")
 
     if (token) {
       this.isLoading = true

@@ -9,3 +9,5 @@ export const checkLoggedIn = (to: RouteLocationNormalized) => {
     return { name: RouteName.LOGIN }
   }
 }
+
+export const authenticate = (to: RouteLocationNormalized) => {}
