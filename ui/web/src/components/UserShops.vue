@@ -63,11 +63,14 @@ import debounce from "lodash.debounce"
 export default defineComponent({
   name: "UserShops",
   components: { VueSelect },
-  setup() {
+  async beforeRouteEnter() {
     const shopsStore = useShopsStore()
     const shopLocationsStore = useShopLocationsStore()
+    await Promise.all([shopsStore.fetchShops(), shopLocationsStore.fetchUserShopLocations()])
+  },
+  setup() {
     const { user } = useUserStore()
-    return { shopsStore, shopLocationsStore, user }
+    return { user }
   },
   data() {
     return {
@@ -77,6 +80,8 @@ export default defineComponent({
       choosenShopLocations: new Map() as Map<number, ShopLocation | null>,
       shopLocationOptions: [] as Array<ShopLocation>,
       fetchOptions: null as any,
+      shopsStore: useShopsStore(),
+      shopLocationsStore: useShopLocationsStore(),
     }
   },
   async mounted() {
@@ -126,12 +131,11 @@ export default defineComponent({
       this.saving = true
 
       try {
-        await this.shopLocationsStore.saveUserShopLocations(this.user.id, locations)
+        await this.shopLocationsStore.saveUserShopLocations(locations)
       } finally {
         this.saving = false
         this.showSavedNotification()
       }
-      // this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
     },
     async _fetchOptions(shopId: number, search: string, loading: Function) {
       if (!search) return

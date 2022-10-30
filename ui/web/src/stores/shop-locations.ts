@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import type { ShopLocation } from "@/models/shop"
 import api from "@/services/api"
+import { useUserStore } from "@/stores/users"
 
 export const useShopLocationsStore = defineStore("shop-locations", {
   state: () => {
@@ -37,13 +38,15 @@ export const useShopLocationsStore = defineStore("shop-locations", {
       const locations = await api.searchShopLocations(shopId, address)
       return locations.map(this.adaptFromServer)
     },
-    async fetchUserShopLocations(userId: number) {
-      const locations = await api.getUserShopLocations(userId)
+    async fetchUserShopLocations() {
+      const { user } = useUserStore()
+      const locations = await api.getUserShopLocations(user.id)
       this.userShopLocations = locations.map(this.adaptFromServer)
     },
-    async saveUserShopLocations(userId: number, updatedLocations: Array<ShopLocation>) {
+    async saveUserShopLocations(updatedLocations: Array<ShopLocation>) {
+      const { user } = useUserStore()
       const locations = await api.saveUserShopLocations(
-        userId,
+        user.id,
         updatedLocations.map(this.adaptToServer)
       )
       this.userShopLocations = locations.map(this.adaptFromServer)

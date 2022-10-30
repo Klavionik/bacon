@@ -81,9 +81,6 @@ export default defineComponent({
       return !this.shopLocationsStore.userShopLocations.length
     },
   },
-  beforeMount() {
-    this.treatsStore.fetchTreats(this.user.id)
-  },
   methods: {
     isDeleting(treatId: number) {
       return this.deleting.includes(treatId)
