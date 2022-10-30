@@ -24,7 +24,7 @@ class UserMeta(BaseModel):
 
 class UserCreate(BaseUserCreate):
     repeat_password: str
-    meta: UserMeta
+    meta: UserMeta = UserMeta()
 
     class Config:
         alias_generator = to_lower_camel
