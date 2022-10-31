@@ -7,10 +7,10 @@
 import TreatsPanel from "@/components/TreatsPanel.vue"
 import NavBar from "@/components/NavBar.vue"
 import { defineComponent } from "vue"
-import { useShopsStore } from "@/stores/shops"
-import { useTreatsStore } from "@/stores/treats"
-import { useShopLocationsStore } from "@/stores/shop-locations"
-import { useUserStore } from "@/stores/users"
+import { useShopsStore } from "@/stores/shop"
+import { useTreatsStore } from "@/stores/treat"
+import { useShopLocationsStore } from "@/stores/shop-location"
+import { useUserStore } from "@/stores/user"
 import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({

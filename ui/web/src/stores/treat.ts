@@ -2,7 +2,7 @@ import { defineStore } from "pinia/dist/pinia"
 import api from "@/services/api"
 import type { Treat } from "@/models/treat"
 
-export const useTreatsStore = defineStore("treats", {
+export const useTreatsStore = defineStore("treat", {
   state: () => {
     return {
       treats: [] as Array<Treat>,
@@ -24,12 +24,12 @@ export const useTreatsStore = defineStore("treats", {
     async fetchTreats(userId: number) {
       this.treats = (await api.listUserTreats(userId)).map(this.adaptFromServer)
     },
-    async createTreat(userId: number, url: string) {
+    async create(userId: number, url: string) {
       let treat = await api.createTreat(userId, url)
       treat = this.adaptFromServer(treat)
       this.treats.push(treat)
     },
-    async deleteTreat(id: number) {
+    async delete(id: number) {
       const response = await api.deleteTreat(id)
 
       if (response.status !== 204) {

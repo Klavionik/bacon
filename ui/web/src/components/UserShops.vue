@@ -3,7 +3,7 @@
     <div class="field">
       Выберите магазины, в которых станет возможным отслеживание вкусняшек.
       <div class="control mt-3">
-        <label v-for="shop in shopsStore.shops" :key="shop.id" class="checkbox">
+        <label v-for="shop in shopStore.shops" :key="shop.id" class="checkbox">
           <input
             type="checkbox"
             :checked="isShopChecked(shop.id)"
@@ -53,13 +53,13 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import VueSelect from "vue-select"
-import { useShopsStore } from "@/stores/shops"
-import { useShopLocationsStore } from "@/stores/shop-locations"
-import { useUserStore } from "@/stores/users"
+import { useShopsStore } from "@/stores/shop"
+import { useShopLocationsStore } from "@/stores/shop-location"
 import { settingsTabs } from "@/consts"
 import type { ShopLocation } from "@/models/shop"
 import debounce from "lodash.debounce"
 import { useProgress } from "@marcoschulte/vue3-progress"
+import { mapStores } from "pinia"
 
 export default defineComponent({
   name: "UserShops",
@@ -73,10 +73,6 @@ export default defineComponent({
     ])
     await useProgress().attach(promise)
   },
-  setup() {
-    const { user } = useUserStore()
-    return { user }
-  },
   data() {
     return {
       settingsTabs,
@@ -85,20 +81,21 @@ export default defineComponent({
       choosenShopLocations: new Map() as Map<number, ShopLocation | null>,
       shopLocationOptions: [] as Array<ShopLocation>,
       fetchOptions: null as any,
-      shopsStore: useShopsStore(),
-      shopLocationsStore: useShopLocationsStore(),
+      unsubscribe: () => {},
     }
   },
+  computed: mapStores(useShopsStore, useShopLocationsStore),
   async mounted() {
-    this.shopLocationsStore.$subscribe((mutation, state) => {
+    this.unsubscribe = this.shopLocationStore.$subscribe((mutation, state) => {
       this.setChoosenShopLocations(state.userShopLocations)
     })
 
-    this.setChoosenShopLocations(this.shopLocationsStore.userShopLocations)
+    this.setChoosenShopLocations(this.shopLocationStore.userShopLocations)
     this.fetchOptions = debounce(this._fetchOptions, 800)
   },
   beforeUnmount() {
     this.fetchOptions.cancel()
+    this.unsubscribe()
   },
   methods: {
     setChoosenShopLocations(shopLocations: Array<ShopLocation>) {
@@ -123,7 +120,7 @@ export default defineComponent({
       }
     },
     getShopNameById(id: number) {
-      return this.shopsStore.shops.find((shop) => shop.id === id)?.displayTitle
+      return this.shopStore.shops.find((shop) => shop.id === id)?.displayTitle
     },
     getShopLocationOptionLabel(shopLocation: ShopLocation) {
       return `${shopLocation.address} (${shopLocation.title})`
@@ -136,7 +133,7 @@ export default defineComponent({
       this.saving = true
 
       try {
-        await this.shopLocationsStore.saveUserShopLocations(locations)
+        await this.shopLocationStore.saveUserShopLocations(locations)
       } finally {
         this.saving = false
         this.showSavedNotification()
@@ -148,7 +145,7 @@ export default defineComponent({
       loading(true)
 
       try {
-        this.shopLocationOptions = await this.shopLocationsStore.fetchShopLocationSuggestions(
+        this.shopLocationOptions = await this.shopLocationStore.fetchShopLocationSuggestions(
           shopId,
           search
         )

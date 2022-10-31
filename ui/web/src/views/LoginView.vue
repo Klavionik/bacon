@@ -34,8 +34,9 @@ import { defineComponent } from "vue"
 import NavBar from "@/components/NavBar.vue"
 import LoginForm from "@/components/LoginForm.vue"
 import { LoginFormMode } from "@/consts"
-import { useUserStore } from "@/stores/users"
+import { useUserStore } from "@/stores/user"
 import type { UserCreate } from "@/models/user"
+import { mapStores } from "pinia"
 
 export default defineComponent({
   name: "LoginView",
@@ -43,10 +44,10 @@ export default defineComponent({
   data() {
     return {
       activeTab: LoginFormMode.LOGIN as LoginFormMode,
-      userStore: useUserStore(),
     }
   },
   computed: {
+    ...mapStores(useUserStore),
     signupTabActive() {
       return this.activeTab === LoginFormMode.SIGNUP
     },

@@ -36,12 +36,13 @@ import TreatsItem from "./TreatsItem.vue"
 import TreatsTabs from "./TreatsTabs.vue"
 import TreatsSearch from "./TreatsSearch.vue"
 import NewTreat from "./NewTreat.vue"
-import { useTreatsStore } from "@/stores/treats"
+import { useTreatsStore } from "@/stores/treat"
 import { defineComponent } from "vue"
 import type { Treat } from "@/models/treat"
-import { useShopLocationsStore } from "@/stores/shop-locations"
+import { useShopLocationsStore } from "@/stores/shop-location"
 import { RouterLink } from "vue-router"
-import { useUserStore } from "@/stores/users"
+import { useUserStore } from "@/stores/user"
+import { mapState, mapActions } from "pinia"
 
 const notFound = "Ни одной вкусняшки не найдено"
 const empty = "Пока не добавлено ни одной вкусняшки"
@@ -55,14 +56,8 @@ export default defineComponent({
     TreatsSearch,
     RouterLink,
   },
-  setup() {
-    const { user } = useUserStore()
-    return { user }
-  },
   data() {
     return {
-      treatsStore: useTreatsStore(),
-      shopLocationsStore: useShopLocationsStore(),
       isCreating: false,
       deleting: [] as number[],
       search: "",
@@ -71,17 +66,21 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapState(useUserStore, ["user"]),
+    ...mapState(useTreatsStore, ["treats"]),
+    ...mapState(useShopLocationsStore, ["userShopLocations"]),
     filteredTreats(): Array<Treat> {
-      return this.treatsStore.treats.filter(this.filterBySearch).filter(this.filterByTab)
+      return this.treats.filter(this.filterBySearch).filter(this.filterByTab)
     },
     emptyText(): string {
-      return this.treatsStore.treats.length ? notFound : empty
+      return this.treats.length ? notFound : empty
     },
     noShopsConfigured() {
-      return !this.shopLocationsStore.userShopLocations.length
+      return !this.userShopLocations.length
     },
   },
   methods: {
+    ...mapActions(useTreatsStore, ["create", "delete"]),
     isDeleting(treatId: number) {
       return this.deleting.includes(treatId)
     },
@@ -106,7 +105,7 @@ export default defineComponent({
       let error = false
 
       try {
-        await this.treatsStore.createTreat(this.user.id, this.newTreatURL)
+        await this.create(this.user.id, this.newTreatURL)
       } catch (e) {
         error = true
         throw e
@@ -120,7 +119,7 @@ export default defineComponent({
       this.deleting.push(id)
 
       try {
-        await this.treatsStore.deleteTreat(id)
+        await this.delete(id)
       } finally {
         this.deleting = this.deleting.filter((id_) => id_ !== id)
       }

@@ -24,7 +24,8 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import bot from "@/services/bot"
-import { useUserStore } from "@/stores/users"
+import { useUserStore } from "@/stores/user"
+import { mapWritableState } from "pinia"
 import auth from "@/services/auth"
 
 export default defineComponent({
@@ -32,12 +33,12 @@ export default defineComponent({
   data() {
     return {
       botDeepLink: "",
-      userStore: useUserStore(),
     }
   },
   computed: {
+    ...mapWritableState(useUserStore, ["user"]),
     telegramEnabled() {
-      return this.userStore.user.meta.telegramNotifications
+      return this.user.meta.telegramNotifications
     },
   },
   async mounted() {
@@ -49,7 +50,7 @@ export default defineComponent({
   methods: {
     async disableTelegram() {
       const payload = { meta: { telegramNotifications: false } }
-      this.userStore.user = await auth.updateMe(payload)
+      this.user = await auth.updateMe(payload)
     },
   },
 })

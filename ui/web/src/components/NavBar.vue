@@ -46,17 +46,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { useUserStore } from "@/stores/users"
+import { mapStores } from "pinia"
+import { useUserStore } from "@/stores/user"
 
 export default defineComponent({
   name: "NavBar",
   data() {
     return {
       isHamburgerOpen: false,
-      userStore: useUserStore(),
     }
   },
   computed: {
+    ...mapStores(useUserStore),
     email() {
       return this.userStore.user.email
     },

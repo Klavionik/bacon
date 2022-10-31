@@ -13,7 +13,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { useShopsStore } from "@/stores/shops"
+import { mapState } from "pinia"
+import { useShopsStore } from "@/stores/shop"
 
 export default defineComponent({
   name: "TreatsTabs",
@@ -24,14 +25,10 @@ export default defineComponent({
     },
   },
   emits: ["switch"],
-  data() {
-    return {
-      shopsStore: useShopsStore(),
-    }
-  },
   computed: {
+    ...mapState(useShopsStore, ["shops"]),
     tabs() {
-      const shopTabs = this.shopsStore.shops.map((shop) => shop.displayTitle)
+      const shopTabs = this.shops.map((shop) => shop.displayTitle)
       return ["Все", "Со скидкой", ...shopTabs]
     },
   },

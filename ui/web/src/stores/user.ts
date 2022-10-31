@@ -5,7 +5,7 @@ import api from "@/services/api"
 import bot from "@/services/bot"
 import storage from "@/services/storage"
 
-export const useUserStore = defineStore("users", {
+export const useUserStore = defineStore("user", {
   state: () => {
     return {
       user: {} as UserRead,

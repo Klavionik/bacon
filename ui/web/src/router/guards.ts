@@ -1,4 +1,4 @@
-import { useUserStore } from "@/stores/users"
+import { useUserStore } from "@/stores/user"
 import type { RouteLocationNormalized } from "vue-router"
 import { RouteName } from "@/router/enums"
 import storage from "@/services/storage"

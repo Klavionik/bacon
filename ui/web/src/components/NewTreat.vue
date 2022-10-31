@@ -31,8 +31,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { useShopsStore } from "@/stores/shops"
-import { useShopLocationsStore } from "@/stores/shop-locations"
+import { mapStores } from "pinia"
+import { useShopsStore } from "@/stores/shop"
+import { useShopLocationsStore } from "@/stores/shop-location"
 
 export default defineComponent({
   name: "NewTreat",
@@ -47,22 +48,17 @@ export default defineComponent({
     },
   },
   emits: ["submit", "update:url"],
-  data() {
-    return {
-      shopsStore: useShopsStore(),
-      shopLocationsStore: useShopLocationsStore(),
-    }
-  },
   computed: {
+    ...mapStores(useShopsStore, useShopLocationsStore),
     isValidURL() {
-      const shop = this.shopsStore.getShopByTreatURL(this.url)
+      const shop = this.shopStore.getShopByTreatURL(this.url)
 
       if (!shop) return false
 
-      return this.shopLocationsStore.isShopLocationConfigured(shop.id)
+      return this.shopLocationStore.isShopLocationConfigured(shop.id)
     },
     noShopLocationsConfigured() {
-      return this.shopLocationsStore.noShopLocationsConfigured
+      return this.shopLocationStore.noShopLocationsConfigured
     },
   },
   methods: {
