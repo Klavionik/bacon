@@ -30,5 +30,5 @@ export const startProgress = () => {
 }
 
 export const finishProgress = () => {
-  progresses.pop()?.finish()
+  progresses.forEach((progress) => progress.finish())
 }

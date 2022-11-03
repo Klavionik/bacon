@@ -20,11 +20,17 @@ const router = createRouter({
       path: "/treats",
       component: () => import("@/views/TreatsView.vue"),
       beforeEnter: checkLoggedIn,
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: "/settings",
       component: () => import("@/views/SettingsView.vue"),
       beforeEnter: checkLoggedIn,
+      meta: {
+        requiresAuth: true,
+      },
       children: [
         {
           name: RouteName.SETTINGS_PROFILE,
@@ -58,6 +64,6 @@ const router = createRouter({
 router.beforeEach(startProgress)
 router.beforeEach(authenticate)
 
-router.beforeResolve(finishProgress)
+router.afterEach(finishProgress)
 
 export default router
