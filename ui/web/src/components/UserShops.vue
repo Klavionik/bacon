@@ -9,7 +9,7 @@
             :checked="isShopChecked(shop.id)"
             :value="shop.id"
             :disabled="saving"
-            @input="updateShop($event.target.checked, shop.id)"
+            @input="updateShop($event, shop.id)"
           />
           {{ shop.displayTitle }}
         </label>
@@ -28,7 +28,7 @@
             :filterable="false"
             placeholder="Поиск"
             :get-option-label="getShopLocationOptionLabel"
-            @search="(search, loading) => fetchOptions(shopId, search, loading)"
+            @search="(search: string, loading: () => void) => fetchOptions(shopId, search, loading)"
             @update:model-value="updateShopLocation(shopId, $event)"
           >
             <template #no-options> Нет результатов </template>
@@ -112,8 +112,10 @@ export default defineComponent({
       this.choosenShopLocations.set(shopId, shopLocation)
       this.shopLocationOptions = []
     },
-    updateShop(checked: boolean, shopId: number) {
-      if (checked) {
+    updateShop(event: Event, shopId: number) {
+      const target = event.target as HTMLInputElement
+
+      if (target.checked) {
         this.choosenShopLocations.set(shopId, null)
       } else {
         this.choosenShopLocations.delete(shopId)

@@ -37,8 +37,8 @@ export default defineComponent({
   },
   computed: {
     ...mapWritableState(useUserStore, ["user"]),
-    telegramEnabled() {
-      return this.user.meta.telegramNotifications
+    telegramEnabled(): boolean {
+      return Boolean(this.user.meta.telegramNotifications)
     },
   },
   async mounted() {

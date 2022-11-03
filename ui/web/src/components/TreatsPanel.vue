@@ -75,7 +75,7 @@ export default defineComponent({
     emptyText(): string {
       return this.treats.length ? notFound : empty
     },
-    noShopsConfigured() {
+    noShopsConfigured(): boolean {
       return !this.userShopLocations.length
     },
   },

@@ -33,6 +33,9 @@ export default defineComponent({
   },
   computed: {
     activeTab() {
+      if (typeof this.$route?.name !== "string") {
+        throw Error("Route has no name.")
+      }
       return this.$route.name
     },
   },

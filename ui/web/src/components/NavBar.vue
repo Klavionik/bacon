@@ -58,10 +58,10 @@ export default defineComponent({
   },
   computed: {
     ...mapStores(useUserStore),
-    email() {
+    email(): string {
       return this.userStore.user.email
     },
-    loggedIn() {
+    loggedIn(): boolean {
       return this.userStore.loggedIn
     },
   },
