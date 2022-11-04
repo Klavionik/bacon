@@ -28,11 +28,11 @@ export const useUserStore = defineStore("user", {
       this.user = await auth.getMe()
     },
     async loginByToken(token: string) {
+      this.user = await auth.getMe()
+      this.loggedIn = true
       auth.setToken(token)
       api.setToken(token)
       bot.setToken(token)
-      this.user = await auth.getMe()
-      this.loggedIn = true
     },
     async logout() {
       auth.setToken("")

@@ -61,10 +61,16 @@ export default defineComponent({
     },
     async login(payload: UserCreate) {
       await this.userStore.login(payload)
-      this.$router.push("/")
+      this.redirectNext()
     },
     async signup(payload: UserCreate) {
       await this.userStore.signup(payload)
+      this.$router.push("/")
+    },
+    redirectNext() {
+      const { next } = this.$route.query
+
+      if (next) return this.$router.push(next as string)
       this.$router.push("/")
     },
   },
