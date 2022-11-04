@@ -5,6 +5,15 @@ import { useToast } from "vue-toastification"
 type RequestOptions = [url: string, options?: Options]
 
 export class Unauthorized extends Error {}
+export class BadRequest extends Error {
+  public detail: string
+
+  constructor(message: string, detail: string, options?: object) {
+    // @ts-ignore
+    super(message, options)
+    this.detail = detail
+  }
+}
 
 const toast = useToast()
 
@@ -19,9 +28,9 @@ const request = () => {
   }
 }
 
-const handleError = (e: any) => {
+const handleError = async (e: any) => {
   if (e instanceof HTTPError) {
-    handleHTTPError(e)
+    await handleHTTPError(e)
   }
 
   if (e instanceof TimeoutError) {
@@ -31,9 +40,14 @@ const handleError = (e: any) => {
   throw e
 }
 
-const handleHTTPError = (e: HTTPError) => {
+const handleHTTPError = async (e: HTTPError) => {
   if (e.response.status === 401) {
     throw new Unauthorized("Unauthorized")
+  }
+
+  if (e.response.status === 400) {
+    const { detail } = await e.response.json()
+    throw new BadRequest("Bad Request", detail)
   }
 
   throw e

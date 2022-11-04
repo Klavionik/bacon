@@ -61,7 +61,10 @@ export default defineComponent({
     },
     async login(payload: UserCreate) {
       await this.userStore.login(payload)
-      this.redirectNext()
+
+      if (this.userStore.loggedIn) {
+        this.redirectNext()
+      }
     },
     async signup(payload: UserCreate) {
       await this.userStore.signup(payload)
