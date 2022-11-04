@@ -2,23 +2,27 @@ import type { UserCreate, UserLogin, UserRead, UserToken, UserUpdate } from "@/m
 import { BaseHTTPService } from "@/services/http"
 
 class AuthService extends BaseHTTPService {
-  signup(user: UserCreate): Promise<UserRead> {
-    return this.client.post("register", { json: user }).json()
+  async signup(user: UserCreate): Promise<UserRead> {
+    const response = await this._post("register", { json: user })
+    return response.json()
   }
 
-  login(user: UserLogin): Promise<UserToken> {
+  async login(user: UserLogin): Promise<UserToken> {
     const formData = new FormData()
     formData.append("username", user.email)
     formData.append("password", user.password)
-    return this.client.post("login", { body: formData }).json()
+    const response = await this._post("login", { body: formData })
+    return response.json()
   }
 
-  getMe(): Promise<UserRead> {
-    return this.client.get("me").json()
+  async getMe(): Promise<UserRead> {
+    const response = await this._get("me")
+    return response.json()
   }
 
-  updateMe(user: UserUpdate): Promise<UserRead> {
-    return this.client.patch("me", { json: user }).json()
+  async updateMe(user: UserUpdate): Promise<UserRead> {
+    const response = await this._patch("me", { json: user })
+    return response.json()
   }
 }
 

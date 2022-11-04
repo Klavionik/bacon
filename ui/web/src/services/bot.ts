@@ -2,8 +2,9 @@ import type { DeepLink } from "@/models/bot"
 import { BaseHTTPService } from "@/services/http"
 
 class BotService extends BaseHTTPService {
-  getDeepLink(): Promise<DeepLink> {
-    return this.client.get("deep_link").json()
+  async getDeepLink(): Promise<DeepLink> {
+    const response = await this._get("deep_link")
+    return response.json()
   }
 }
 

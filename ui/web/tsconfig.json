@@ -6,9 +6,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "strict": true
+    "strict": true,
+    "experimentalDecorators": true,
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"

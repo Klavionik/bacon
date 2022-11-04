@@ -1,38 +1,43 @@
-import type { ResponsePromise } from "ky"
 import type { ShopLocation } from "@/models/shop"
 import { BaseHTTPService } from "@/services/http"
 
 class APIService extends BaseHTTPService {
-  listShops(): Promise<Array<any>> {
-    return this.client.get("shops").json()
+  async listShops(): Promise<Array<any>> {
+    const response = await this._get("shops")
+    return response.json()
   }
 
-  listUserTreats(userId: number): Promise<Array<any>> {
+  async listUserTreats(userId: number): Promise<Array<any>> {
     const options = { searchParams: { user_id: userId } }
-    return this.client.get("treats", options).json()
+    const response = await this._get("treats", options)
+    return response.json()
   }
 
-  createTreat(userId: number, url: string): Promise<any> {
+  async createTreat(userId: number, url: string): Promise<any> {
     const options = { json: { url }, searchParams: { user_id: userId } }
-    return this.client.post("treats", options).json()
+    const response = await this._post("treats", options)
+    return response.json()
   }
 
-  deleteTreat(id: number): ResponsePromise {
-    return this.client.delete(`treats/${id}`)
+  deleteTreat(id: number): Promise<any> {
+    return this._delete(`treats/${id}`)
   }
 
-  searchShopLocations(shopId: number, address: string): Promise<Array<any>> {
+  async searchShopLocations(shopId: number, address: string): Promise<Array<any>> {
     const options = { searchParams: { address } }
-    return this.client.get(`shops/${shopId}/locations/search`, options).json()
+    const response = await this._get(`shops/${shopId}/locations/search`, options)
+    return response.json()
   }
 
-  getUserShopLocations(userId: number): Promise<Array<ShopLocation>> {
-    return this.client.get(`user/${userId}/shop-locations`).json()
+  async getUserShopLocations(userId: number): Promise<Array<ShopLocation>> {
+    const response = await this._get(`user/${userId}/shop-locations`)
+    return response.json()
   }
 
-  saveUserShopLocations(userId: number, locations: Array<any>): Promise<Array<any>> {
+  async saveUserShopLocations(userId: number, locations: Array<any>): Promise<Array<any>> {
     const options = { json: locations }
-    return this.client.put(`user/${userId}/shop-locations`, options).json()
+    const response = await this._put(`user/${userId}/shop-locations`, options)
+    return response.json()
   }
 }
 
