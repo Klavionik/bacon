@@ -1,26 +1,9 @@
-import ky from "ky"
-import type { KyInstance } from "ky/distribution/types/ky"
 import type { DeepLink } from "@/models/bot"
+import { BaseHTTPService } from "@/services/http"
 
-class BotService {
-  public client: KyInstance
-
-  constructor(baseUrl: string, prefix: string) {
-    const prefixUrl = String(new URL(prefix, baseUrl))
-    this.client = ky.create({
-      prefixUrl,
-      timeout: 15000,
-    })
-  }
-
+class BotService extends BaseHTTPService {
   getDeepLink(): Promise<DeepLink> {
     return this.client.get("deep_link").json()
-  }
-
-  setToken(token: string) {
-    this.client = this.client.extend({
-      headers: { authorization: `Bearer ${token}` },
-    })
   }
 }
 

@@ -1,18 +1,7 @@
-import ky from "ky"
-import type { KyInstance } from "ky/distribution/types/ky"
 import type { UserCreate, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
+import { BaseHTTPService } from "@/services/http"
 
-class AuthService {
-  public client: KyInstance
-
-  constructor(baseUrl: string, prefix: string) {
-    const prefixUrl = String(new URL(prefix, baseUrl))
-    this.client = ky.create({
-      prefixUrl,
-      timeout: 15000,
-    })
-  }
-
+class AuthService extends BaseHTTPService {
   signup(user: UserCreate): Promise<UserRead> {
     return this.client.post("register", { json: user }).json()
   }
@@ -30,12 +19,6 @@ class AuthService {
 
   updateMe(user: UserUpdate): Promise<UserRead> {
     return this.client.patch("me", { json: user }).json()
-  }
-
-  setToken(token: string) {
-    this.client = this.client.extend({
-      headers: { authorization: `Bearer ${token}` },
-    })
   }
 }
 

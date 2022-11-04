@@ -1,18 +1,8 @@
-import ky, { type ResponsePromise } from "ky"
-import type { KyInstance } from "ky/distribution/types/ky"
+import type { ResponsePromise } from "ky"
 import type { ShopLocation } from "@/models/shop"
+import { BaseHTTPService } from "@/services/http"
 
-class APIService {
-  public client: KyInstance
-
-  constructor(baseUrl: string, prefix: string) {
-    const prefixUrl = String(new URL(prefix, baseUrl))
-    this.client = ky.create({
-      prefixUrl,
-      timeout: 15000,
-    })
-  }
-
+class APIService extends BaseHTTPService {
   listShops(): Promise<Array<any>> {
     return this.client.get("shops").json()
   }
@@ -43,12 +33,6 @@ class APIService {
   saveUserShopLocations(userId: number, locations: Array<any>): Promise<Array<any>> {
     const options = { json: locations }
     return this.client.put(`user/${userId}/shop-locations`, options).json()
-  }
-
-  setToken(token: string) {
-    this.client = this.client.extend({
-      headers: { authorization: `Bearer ${token}` },
-    })
   }
 }
 
