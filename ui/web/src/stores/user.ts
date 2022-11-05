@@ -4,7 +4,7 @@ import auth from "@/services/auth"
 import api from "@/services/api"
 import bot from "@/services/bot"
 import storage from "@/services/storage"
-import { BadRequest } from "@/services/http"
+import { BadRequest, Unauthorized } from "@/services/http"
 import { useToast } from "vue-toastification"
 
 const BAD_CREDENTIALS = "LOGIN_BAD_CREDENTIALS"
@@ -67,6 +67,23 @@ export const useUserStore = defineStore("user", {
       this.user = {} as UserRead
       this.loggedIn = false
       storage.removeItem("accessToken")
+    },
+    async restoreSession() {
+      const savedToken = storage.getItem("accessToken")
+      if (savedToken === null) return false
+
+      auth.setToken(savedToken)
+
+      try {
+        await this.loginByToken(savedToken)
+        return true
+      } catch (e: any) {
+        if (!(e instanceof Unauthorized)) throw e
+
+        storage.removeItem("accessToken")
+        auth.removeToken()
+        return false
+      }
     },
   },
 })
