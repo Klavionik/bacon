@@ -1,10 +1,9 @@
 import { defineStore } from "pinia"
 import type { UserCreate, UserLogin, UserRead } from "@/models/user"
-import auth from "@/services/auth"
-import api from "@/services/api"
-import bot from "@/services/bot"
-import storage from "@/services/storage"
-import { BadRequest, Unauthorized } from "@/services/http"
+import auth from "@/http/services/auth"
+import client from "@/http/client"
+import storage from "@/storage"
+import { BadRequest, Unauthorized } from "@/http/errors"
 import { useToast } from "vue-toastification"
 
 const BAD_CREDENTIALS = "LOGIN_BAD_CREDENTIALS"
@@ -23,9 +22,7 @@ export const useUserStore = defineStore("user", {
     async onLogin(data: any) {
       this.loggedIn = true
       const accessToken = data["access_token"]
-      auth.setToken(accessToken)
-      api.setToken(accessToken)
-      bot.setToken(accessToken)
+      client.setToken(accessToken)
       storage.setItem("accessToken", accessToken)
       this.user = await auth.getMe()
     },
@@ -56,14 +53,10 @@ export const useUserStore = defineStore("user", {
     async loginByToken(token: string) {
       this.user = await auth.getMe()
       this.loggedIn = true
-      auth.setToken(token)
-      api.setToken(token)
-      bot.setToken(token)
+      client.setToken(token)
     },
     async logout() {
-      auth.removeToken()
-      api.removeToken()
-      bot.removeToken()
+      client.removeToken()
       this.user = {} as UserRead
       this.loggedIn = false
       storage.removeItem("accessToken")
@@ -72,7 +65,7 @@ export const useUserStore = defineStore("user", {
       const savedToken = storage.getItem("accessToken")
       if (savedToken === null) return false
 
-      auth.setToken(savedToken)
+      client.setToken(savedToken)
 
       try {
         await this.loginByToken(savedToken)
@@ -81,7 +74,7 @@ export const useUserStore = defineStore("user", {
         if (!(e instanceof Unauthorized)) throw e
 
         storage.removeItem("accessToken")
-        auth.removeToken()
+        client.removeToken()
         return false
       }
     },

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia/dist/pinia"
-import api from "@/services/api"
+import api from "@/http/services/api"
 import type { Treat } from "@/models/treat"
 
 export const useTreatsStore = defineStore("treat", {

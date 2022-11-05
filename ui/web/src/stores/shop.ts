@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import type { Shop } from "@/models/shop"
-import api from "@/services/api"
+import api from "@/http/services/api"
 
 export const useShopsStore = defineStore("shop", {
   state: () => {

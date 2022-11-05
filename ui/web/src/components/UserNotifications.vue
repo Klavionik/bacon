@@ -23,10 +23,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import bot from "@/services/bot"
+import bot from "@/http/services/bot"
 import { useUserStore } from "@/stores/user"
 import { mapWritableState } from "pinia"
-import auth from "@/services/auth"
+import auth from "@/http/services/auth"
 
 export default defineComponent({
   name: "UserNotifications",
