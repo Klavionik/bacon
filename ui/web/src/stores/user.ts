@@ -61,9 +61,9 @@ export const useUserStore = defineStore("user", {
       bot.setToken(token)
     },
     async logout() {
-      auth.setToken("")
-      api.setToken("")
-      bot.setToken("")
+      auth.removeToken()
+      api.removeToken()
+      bot.removeToken()
       this.user = {} as UserRead
       this.loggedIn = false
       storage.removeItem("accessToken")
