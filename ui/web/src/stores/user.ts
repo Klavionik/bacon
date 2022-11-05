@@ -8,6 +8,7 @@ import { BadRequest } from "@/services/http"
 import { useToast } from "vue-toastification"
 
 const BAD_CREDENTIALS = "LOGIN_BAD_CREDENTIALS"
+const DUPLICATE_USER = "REGISTER_USER_ALREADY_EXISTS"
 
 const toast = useToast()
 
@@ -29,8 +30,16 @@ export const useUserStore = defineStore("user", {
       this.user = await auth.getMe()
     },
     async signup(user: UserCreate) {
-      await auth.signup(user)
-      await this.login(user)
+      try {
+        await auth.signup(user)
+        await this.login(user)
+      } catch (e) {
+        if (!(e instanceof BadRequest)) throw e
+
+        if (e.detail === DUPLICATE_USER) {
+          toast.warning("Пользователь с таким email уже существует.")
+        }
+      }
     },
     async login(user: UserLogin) {
       try {

@@ -68,7 +68,10 @@ export default defineComponent({
     },
     async signup(payload: UserCreate) {
       await this.userStore.signup(payload)
-      this.$router.push("/")
+
+      if (this.userStore.loggedIn) {
+        this.$router.push("/")
+      }
     },
     redirectNext() {
       const { next } = this.$route.query
