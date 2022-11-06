@@ -3,6 +3,7 @@ from typing import Generator
 from sqlalchemy import select, bindparam, update
 from sqlalchemy.sql import functions
 from sqlalchemy.ext.asyncio import AsyncSession
+from loguru import logger
 
 from config import settings
 from storage.models import Product, Price, ShopLocation
@@ -51,8 +52,8 @@ async def update_perekrestok_products():
         .where(Product.id == bindparam('p_id'))
         .values(available=bindparam('available'))
     )
-    to_update = []
-    updated_prices = 0
+    availablity_updated = []
+    price_updated = []
 
     async with Session() as session:
         products = await get_products(session, shop_id=1)
@@ -67,15 +68,19 @@ async def update_perekrestok_products():
                     product_id=product.id
                 )
                 session.add(price)
-                updated_prices += 1
+                price_updated.append(
+                    {'id': product.id, 'price_before': product.price, 'price_after': new_product.price}
+                )
             elif new_product.available != product.available:
-                to_update.append({'p_id': product.id, 'available': new_product.available})
+                availablity_updated.append(
+                    {'p_id': product.id, 'available': new_product.available}
+                )
 
-        if to_update:
-            await session.execute(update_availability_query, to_update)
+        if len(availablity_updated):
+            await session.execute(update_availability_query, availablity_updated)
 
         await session.commit()
 
-        print(f'Updated product price: {updated_prices}')
-        print(f'Update availability: {len(to_update)}')
-
+        logger.info("Updates prices for Perekrestok.")
+        logger.info(f'Updated product price: {len(price_updated)} items.')
+        logger.info(f'Updated availability: {len(availablity_updated)} items.')
