@@ -4,7 +4,7 @@ from config import settings
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.SERVER_SECRET, lifetime_seconds=3600)
+    return JWTStrategy(secret=settings.SERVER_SECRET, lifetime_seconds=604800)  # A week.
 
 
 auth_backend = AuthenticationBackend(
