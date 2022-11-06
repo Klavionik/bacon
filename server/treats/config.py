@@ -10,10 +10,6 @@ class Settings(BaseSettings):
     TELEGRAM_BASE_URL: str
     SERVER_URL: str
     SERVER_SECRET: str
-    AUTH0_DOMAIN: str
-    AUTH0_AUDIENCE: str
-    AUTH0_ID: str
-    AUTH0_SECRET: str
     ALLOWED_USERS: list
     CORS_ALLOWED_ORIGIN: list
     SENTRY_DSN: str
