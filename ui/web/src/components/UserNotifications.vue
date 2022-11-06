@@ -23,10 +23,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import bot from "@/http/services/bot"
 import { useUserStore } from "@/stores/user"
 import { mapWritableState } from "pinia"
-import auth from "@/http/services/auth"
+import { services } from "@/http"
 
 export default defineComponent({
   name: "UserNotifications",
@@ -43,14 +42,14 @@ export default defineComponent({
   },
   async mounted() {
     if (!this.telegramEnabled) {
-      const data = await bot.getDeepLink()
+      const data = await services.getDeepLink()
       this.botDeepLink = data.link
     }
   },
   methods: {
     async disableTelegram() {
       const payload = { meta: { telegramNotifications: false } }
-      this.user = await auth.updateMe(payload)
+      this.user = await services.updateMe(payload)
     },
   },
 })

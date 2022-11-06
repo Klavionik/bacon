@@ -11,8 +11,3 @@ export interface HTTPClient {
   patch(...args: RequestOptions): Promise<any>
   delete(...args: RequestOptions): Promise<any>
 }
-
-export interface HTTPService {
-  readonly client: HTTPClient
-  readonly prefix: string
-}

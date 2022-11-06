@@ -1,7 +1,8 @@
 import { useToast } from "vue-toastification"
 import { HTTPError, TimeoutError } from "ky"
 import { Unauthorized, BadRequest } from "@/http/errors"
-import type { HTTPService, HTTPClient, RequestOptions } from "@/http/types"
+import type { HTTPClient, RequestOptions } from "@/http/types"
+import type { HTTPService } from "@/http/services/types"
 
 const toast = useToast()
 const proxiedMethods: string[] = ["get", "post", "put", "patch", "delete"]

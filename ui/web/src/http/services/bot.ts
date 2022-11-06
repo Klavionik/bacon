@@ -1,9 +1,9 @@
 import type { DeepLink } from "@/models/bot"
-import client from "@/http/client"
-import type { HTTPService, HTTPClient } from "@/http/types"
+import type { HTTPService } from "@/http/services/types"
+import type { HTTPClient } from "@/http/types"
 import { clientServiceProxy } from "@/http/utils"
 
-class BotService implements HTTPService {
+export class BotService implements HTTPService {
   client
   prefix = "bot/"
 
@@ -16,5 +16,3 @@ class BotService implements HTTPService {
     return response.json()
   }
 }
-
-export default new BotService(client)

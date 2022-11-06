@@ -1,7 +1,6 @@
 import { defineStore } from "pinia"
 import type { UserCreate, UserLogin, UserRead } from "@/models/user"
-import auth from "@/http/services/auth"
-import client from "@/http/client"
+import { services, client } from "@/http/"
 import storage from "@/storage"
 import { BadRequest, Unauthorized } from "@/http/errors"
 import { useToast } from "vue-toastification"
@@ -24,11 +23,11 @@ export const useUserStore = defineStore("user", {
       const accessToken = data["access_token"]
       client.setToken(accessToken)
       storage.setItem("accessToken", accessToken)
-      this.user = await auth.getMe()
+      this.user = await services.getMe()
     },
     async signup(user: UserCreate) {
       try {
-        await auth.signup(user)
+        await services.signup(user)
         await this.login(user)
       } catch (e) {
         if (!(e instanceof BadRequest)) throw e
@@ -40,7 +39,7 @@ export const useUserStore = defineStore("user", {
     },
     async login(user: UserLogin) {
       try {
-        const data = await auth.login(user)
+        const data = await services.login(user)
         await this.onLogin(data)
       } catch (e) {
         if (!(e instanceof BadRequest)) throw e
@@ -51,7 +50,7 @@ export const useUserStore = defineStore("user", {
       }
     },
     async loginByToken(token: string) {
-      this.user = await auth.getMe()
+      this.user = await services.getMe()
       this.loggedIn = true
       client.setToken(token)
     },

@@ -1,9 +1,9 @@
 import type { UserCreate, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
-import client from "@/http/client"
-import type { HTTPService, HTTPClient } from "@/http/types"
+import type { HTTPService } from "@/http/services/types"
+import type { HTTPClient } from "@/http/types"
 import { clientServiceProxy } from "@/http/utils"
 
-class AuthService implements HTTPService {
+export class AuthService implements HTTPService {
   client
   prefix = "auth/"
 
@@ -34,5 +34,3 @@ class AuthService implements HTTPService {
     return response.json()
   }
 }
-
-export default new AuthService(client)

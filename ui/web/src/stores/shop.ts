@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import type { Shop } from "@/models/shop"
-import api from "@/http/services/api"
+import { services } from "@/http"
 
 export const useShopsStore = defineStore("shop", {
   state: () => {
@@ -15,7 +15,7 @@ export const useShopsStore = defineStore("shop", {
   },
   actions: {
     async fetchShops() {
-      this.shops = (await api.listShops()).map(this.adaptFromServer)
+      this.shops = (await services.listShops()).map(this.adaptFromServer)
     },
     getShopByTreatURL(url: string) {
       return this.shops.find((shop) => {

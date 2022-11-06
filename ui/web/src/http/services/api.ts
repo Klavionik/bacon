@@ -1,9 +1,9 @@
 import type { ShopLocation } from "@/models/shop"
-import client from "@/http/client"
-import type { HTTPService, HTTPClient } from "@/http/types"
+import type { HTTPService } from "@/http/services/types"
+import type { HTTPClient } from "@/http/types"
 import { clientServiceProxy } from "@/http/utils"
 
-class APIService implements HTTPService {
+export class APIService implements HTTPService {
   client
   prefix = "api/"
 
@@ -49,5 +49,3 @@ class APIService implements HTTPService {
     return response.json()
   }
 }
-
-export default new APIService(client)

@@ -50,5 +50,3 @@ export class Client implements HTTPClient {
     this.client.extend({ headers: { authorization: undefined } })
   }
 }
-
-export default new Client(import.meta.env.VITE_API_URL)

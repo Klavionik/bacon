@@ -1,5 +1,5 @@
 import { defineStore } from "pinia/dist/pinia"
-import api from "@/http/services/api"
+import { services } from "@/http"
 import type { Treat } from "@/models/treat"
 
 export const useTreatsStore = defineStore("treat", {
@@ -22,15 +22,15 @@ export const useTreatsStore = defineStore("treat", {
       }
     },
     async fetchTreats(userId: number) {
-      this.treats = (await api.listUserTreats(userId)).map(this.adaptFromServer)
+      this.treats = (await services.listUserTreats(userId)).map(this.adaptFromServer)
     },
     async create(userId: number, url: string) {
-      let treat = await api.createTreat(userId, url)
+      let treat = await services.createTreat(userId, url)
       treat = this.adaptFromServer(treat)
       this.treats.push(treat)
     },
     async delete(id: number) {
-      const response = await api.deleteTreat(id)
+      const response = await services.deleteTreat(id)
 
       if (response.status !== 204) {
         throw Error(`Cannot delete treat with id ${id}.`)
