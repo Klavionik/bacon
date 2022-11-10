@@ -1,7 +1,6 @@
 import asyncio
 
 from huey import FileHuey, MemoryHuey, crontab
-from loguru import logger
 from sqlalchemy import select
 
 from config import settings
