@@ -1,6 +1,15 @@
-from .schemas import Product
-from perekrestok.parser import ProductData
+from .schemas import ProductInDB
+from perekrestok.parser import ProductData, PerekrestokParser
 
 
-def price_changed(product: Product, new_product: ProductData):
+def is_price_changed(product: ProductInDB, new_product: ProductData) -> bool:
     return new_product.price != product.price or new_product.old_price != product.old_price
+
+
+def is_availablity_changed(product: ProductInDB, new_product: ProductData) -> bool:
+    return new_product.available != product.available
+
+
+def get_parser(shop_id: int):
+    # For now return only PerekrestokParser.
+    return PerekrestokParser()

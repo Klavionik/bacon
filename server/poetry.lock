@@ -574,6 +574,14 @@ docs = ["sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
 tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
+name = "pymitter"
+version = "0.4.0"
+description = "Python port of the extended Node.js EventEmitter 2 approach providing namespaces, wildcards and TTL."
+category = "main"
+optional = false
+python-versions = ">=3.5, <4"
+
+[[package]]
 name = "pyparsing"
 version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -888,7 +896,7 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "865a1c2cf3bbd41134bd5f68a4d1db6c1f3850f67bf43108b49804f9585b8a5f"
+content-hash = "6f7e5b99d479e4bf490c9ae968b5a12465d5f60ea31de6b03251a15253532cc2"
 
 [metadata.files]
 aiosqlite = [
@@ -1413,6 +1421,9 @@ Pygments = [
 PyJWT = [
     {file = "PyJWT-2.5.0-py3-none-any.whl", hash = "sha256:8d82e7087868e94dd8d7d418e5088ce64f7daab4b36db654cbaedb46f9d1ca80"},
     {file = "PyJWT-2.5.0.tar.gz", hash = "sha256:e77ab89480905d86998442ac5788f35333fa85f65047a534adc38edf3c88fc3b"},
+]
+pymitter = [
+    {file = "pymitter-0.4.0.tar.gz", hash = "sha256:eb95ae2144f51b1eb4a5d39b316d0779b3d2ef99df7052670d23ea2928834a06"},
 ]
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},

@@ -20,7 +20,7 @@ class TelegramClient:
         data = {'chat_id': chat_id, 'text': text}
 
         if markdown:
-            data.update(parse_mode='Markdown')
+            data.update(parse_mode='MarkdownV2')
         return await self.request('POST', 'sendMessage', data)
 
     async def request(self, method: str, url: str, data: dict = None):
