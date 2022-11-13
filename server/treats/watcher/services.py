@@ -1,5 +1,3 @@
-from typing import Generator
-
 from sqlalchemy import select, update, bindparam, Boolean
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import functions
@@ -8,7 +6,7 @@ from storage.models import Product, Price, ShopLocation, User, Treat
 from .schemas import ProductInDB
 
 
-async def get_products(session: AsyncSession, shop_id: int) -> Generator[ProductInDB, None, None]:
+async def get_products(session: AsyncSession, shop_id: int) -> list[ProductInDB]:
     latest_prices_cte = (
         select(
             Price.product_id,
@@ -34,7 +32,7 @@ async def get_products(session: AsyncSession, shop_id: int) -> Generator[Product
         .where(ShopLocation.shop_id == shop_id)
     )
     result = await session.execute(products_query)
-    return (ProductInDB(**data) for data in result.mappings())
+    return [ProductInDB(**data) for data in result.mappings()]
 
 
 async def update_product_availability(session: AsyncSession, products: list[dict]):

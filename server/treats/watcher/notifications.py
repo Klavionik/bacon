@@ -44,6 +44,9 @@ async def notify_on_product_update(
     products: list[ProductUpdate],
     timestamp: datetime
 ):
+    if not len(products):
+        return
+
     logger.info(f"Notify on product update. Update OpID was {op_id}.")
 
     for product in products:
