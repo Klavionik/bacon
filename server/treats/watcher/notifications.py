@@ -10,7 +10,7 @@ from watcher import products_update
 from watcher.schemas import ProductUpdate
 from watcher.services import get_users_to_notify
 
-product_update_template_path = settings.ROOT_DIR / 'treats' / 'watcher' / 'product_update.mako'
+product_update_template_path = settings.ROOT_DIR / 'watcher' / 'product_update.mako'
 product_update_template = Template(filename=str(product_update_template_path))
 
 

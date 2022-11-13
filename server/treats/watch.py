@@ -16,7 +16,7 @@ if settings.DEBUG:
     huey = MemoryHuey()
     schedule = crontab()
 else:
-    huey = FileHuey('/var/lib/huey/data')
+    huey = FileHuey(path='/var/lib/huey/data')
     schedule = crontab(minute='0', hour='*/1')
 
 
