@@ -78,7 +78,7 @@ class Treat(Base):
     __tablename__ = 'treats'
     __table_args__ = (UniqueConstraint('user_id', 'product_id'),)
 
-    user_id = CharField(max_length=128)
+    user_id = IntegerField()
     product_id = ForeignKeyField('products.id', ondelete=CascadeAction.CASCADE.value)
     created_at = DateTimeField(auto_add_now=True)
     product = relationship('Product', back_populates='treats')
@@ -88,7 +88,7 @@ class UserShopLocation(Base):
     __tablename__ = 'user_shop_locations'
     __table_args__ = (UniqueConstraint('user_id', 'shop_id'),)
 
-    user_id = CharField(max_length=128)
+    user_id = IntegerField()
     shop_id = ForeignKeyField('shops.id', ondelete=CascadeAction.RESTRICT.value)
     shop_location_id = ForeignKeyField('shop_locations.id', ondelete=CascadeAction.RESTRICT.value)
     shop_location = relationship('ShopLocation')

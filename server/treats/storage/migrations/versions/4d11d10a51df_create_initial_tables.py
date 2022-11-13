@@ -58,7 +58,7 @@ def upgrade() -> None:
     )
     op.create_table('user_shop_locations',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.String(length=128), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('shop_id', sa.Integer(), nullable=True),
     sa.Column('shop_location_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['shop_id'], ['shops.id'], ondelete='RESTRICT'),
@@ -77,7 +77,7 @@ def upgrade() -> None:
     )
     op.create_table('treats',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.String(length=128), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
