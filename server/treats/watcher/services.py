@@ -9,28 +9,27 @@ from .schemas import ProductInDB
 
 
 async def get_products(session: AsyncSession, shop_id: int) -> Generator[ProductInDB, None, None]:
-    latest_prices_subquery = (
+    latest_prices_cte = (
         select(
-            Price.price,
-            Price.old_price,
             Price.product_id,
-            functions.max(Price.created_at),
+            functions.max(Price.created_at).label('latest_date'),
         )
         .group_by(Price.product_id)
-    ).subquery('latest_prices')
+    ).cte()
 
     products_query = (
         select(
             Product.id,
             Product.title,
-            latest_prices_subquery.c.price,
-            latest_prices_subquery.c.old_price,
             Product.url,
             Product.available,
+            Price.price,
+            Price.old_price,
             ShopLocation.external_id,
         )
         .select_from(Product)
-        .join(latest_prices_subquery)
+        .join(latest_prices_cte)
+        .join(Price, (latest_prices_cte.c.latest_date == Price.created_at) & (Price.product_id == Product.id))
         .join(ShopLocation)
         .where(ShopLocation.shop_id == shop_id)
     )

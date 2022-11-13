@@ -27,23 +27,21 @@ async def get_shop(session: AsyncSession, url: str) -> Shop:
 
 
 async def list_treats(session: AsyncSession, user_id: int):
-    latest_prices_subquery = (
+    latest_prices_cte = (
         select(
-            Price.price,
-            Price.old_price,
             Price.product_id,
-            functions.max(Price.created_at),
+            functions.max(Price.created_at).label('latest_date')
         )
         .group_by(Price.product_id)
-    ).subquery('latest_price')
+    ).cte()
 
     treats_query = (
         select(
             Treat.id,
             Product.title,
             Product.available,
-            latest_prices_subquery.c.price,
-            latest_prices_subquery.c.old_price,
+            Price.price,
+            Price.old_price,
             Product.url,
             ShopLocation.shop_id,
             Shop.display_title,
@@ -52,7 +50,8 @@ async def list_treats(session: AsyncSession, user_id: int):
         .join(ShopLocation)
         .join(Shop)
         .join(Treat)
-        .join(latest_prices_subquery)
+        .join(latest_prices_cte)
+        .join(Price, (latest_prices_cte.c.latest_date == Price.created_at) & (Price.product_id == Product.id))
         .where(Treat.user_id == user_id)
     )
     return (await session.execute(treats_query)).mappings().all()
