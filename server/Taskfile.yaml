@@ -7,20 +7,19 @@ dotenv:
 
 tasks:
   makemigration:
-    dir: treats
     cmds:
-      - alembic -c storage/alembic.ini revision --autogenerate {{.CLI_ARGS}}
+      - docker-compose exec web alembic -c storage/alembic.ini revision --autogenerate {{.CLI_ARGS}}
 
   migrate:
-    dir: treats
     cmds:
-      - alembic -c storage/alembic.ini upgrade {{.CLI_ARGS}}
+      - docker-compose exec web alembic -c storage/alembic.ini upgrade head
 
   shell:
     cmds:
-      - docker-compose exec web python server_shell.py
+      - docker-compose exec web python shell.py
 
-  run:
-    dir: treats
+  up:
     cmds:
-      - uvicorn --port 8055 --reload --factory main:create_app
+      - docker-compose up -d web db
+      - task: migrate
+      - docker-compose up -d watcher
