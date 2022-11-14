@@ -6,6 +6,19 @@ dotenv:
   - .env
 
 tasks:
+  install:
+    dir: treats
+    cmds:
+      - poetry install --no-root --only main,dev
+
+  build.dev:
+    cmds:
+      - docker-compose build
+
+  build:
+    cmds:
+      - docker-compose -f docker-compose.yml build
+
   makemigration:
     cmds:
       - docker-compose exec web alembic -c storage/alembic.ini revision --autogenerate {{.CLI_ARGS}}
@@ -17,6 +30,10 @@ tasks:
   shell:
     cmds:
       - docker-compose exec web python shell.py
+
+  web.shell:
+    cmds:
+      - docker-compose exec web bash
 
   up:
     cmds:
