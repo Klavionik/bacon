@@ -3,39 +3,33 @@ services:
     build:
       context: treats
       dockerfile: Dockerfile
-    command: ["uvicorn", "--reload", "--host", "0.0.0.0", "--port", "8099", "--factory", "main:create_app"]
+      args:
+        INSTALL_GROUPS: "main,production"
+    command: ["gunicorn", "--bind", "0.0.0.0:8099", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "main:create_app()"]
     env_file:
       - .env
     ports:
       - 8099:8099
     depends_on:
       - db
-    volumes:
-      - ./treats:/home/app/
-      - huey:/var/lib/huey/data
 
   watcher:
     build:
       context: treats
       dockerfile: Dockerfile
+      args:
+        INSTALL_GROUPS: "main,production"
     command: ["huey_consumer.py", "watch.huey"]
     env_file:
       - .env
     depends_on:
       - db
     volumes:
-      - ./treats:/home/app/
-      - huey:/var/lib/huey/data
+      - /mnt/vdb1/var/huey:/var/lib/huey/data
 
   db:
     image: postgres:14.5-alpine
-    ports:
-      - 5432:5432
     env_file:
       - .env
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
-  huey:
+      - /mnt/vdb1/var/pgdata:/var/lib/postgresql/data
