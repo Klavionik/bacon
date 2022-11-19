@@ -1,0 +1,77 @@
+version: "2.4"
+
+x-build:
+  &build
+  context: server
+  dockerfile: Dockerfile
+  args:
+    INSTALL_GROUPS: "main,production"
+
+x-env:
+  &env
+  - DEBUG
+  - HOST
+  - CORS_ALLOWED_ORIGIN
+  - SERVER_SECRET
+  - DB_URI
+  - BOT_TOKEN
+  - SENTRY_DSN
+  - LOGTAIL_TOKEN
+
+services:
+  proxy:
+    image: caddy:2-alpine
+    command: ["caddy", "reverse-proxy", "--from", $HOST, "--to", "web:8099", "--change-host-header"]
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /mnt/vdb1/caddy_data:/data
+      - /mnt/vdb1/caddy_config:/config
+
+  web:
+    build: *build
+    environment: *env
+    command: ["gunicorn", "--bind", "0.0.0.0:8099", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "main:create_app()"]
+    depends_on:
+      migrate_db:
+        condition: service_completed_successfully
+    healthcheck:
+      test: curl localhost:8099/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  watcher:
+    build: *build
+    environment: *env
+    command: ["huey_consumer.py", "watcher.main.huey"]
+    depends_on:
+      migrate_db:
+        condition: service_completed_successfully
+    volumes:
+      - /mnt/vdb1/var/huey:/var/lib/huey/data
+
+  db:
+    image: postgres:14.5-alpine
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes:
+      - /mnt/vdb1/var/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready --username $POSTGRES_USER || exit 1
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  migrate_db:
+    build: *build
+    environment: *env
+    command: ["alembic", "-c", "storage/alembic.ini", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy

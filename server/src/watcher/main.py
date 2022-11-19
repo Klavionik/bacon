@@ -7,7 +7,7 @@ from storage.models import Shop
 from watcher.api import update_products
 from watcher.utils import async_task
 
-engine = create_db_engine(settings.db_uri)
+engine = create_db_engine(settings.DB_URI)
 Session = create_db_session(engine)
 
 

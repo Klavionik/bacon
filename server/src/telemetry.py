@@ -1,8 +1,10 @@
 import loguru
-import sentry_sdk
-import logtail
 import sys
 from config import settings
+
+if not settings.DEBUG:
+    import sentry_sdk
+    import logtail
 
 logger_configured = False
 sentry_configured = False

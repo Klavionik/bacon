@@ -1,0 +1,43 @@
+version: "2.4"
+
+x-build:
+  &build
+  args:
+    INSTALL_GROUPS: "main,dev"
+
+services:
+  proxy:
+    restart: on-failure:5
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+  web:
+    build: *build
+    command: ["uvicorn", "--reload", "--host", "0.0.0.0", "--port", "8099", "--factory", "main:create_app"]
+    restart: on-failure:5
+    volumes:
+      - ./server/src:/home/app/server
+
+  watcher:
+    build: *build
+    restart: on-failure:5
+    volumes:
+      - ./server/src:/home/app/server
+      - huey:/var/lib/huey/data
+
+  db:
+    ports:
+      - "5432:5432"
+    restart: on-failure:5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  migrate_db:
+    build: *build
+
+volumes:
+  pgdata:
+  huey:
+  caddy_data:
+  caddy_config:

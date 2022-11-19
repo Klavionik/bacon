@@ -37,6 +37,4 @@ tasks:
 
   up:
     cmds:
-      - docker-compose up -d web db
-      - task: migrate
-      - docker-compose up -d watcher
+      - docker-compose up -d
