@@ -1,0 +1,43 @@
+name: Build and publish
+on:
+  push:
+    paths:
+      - 'server/**'
+
+env:
+  IMAGE_NAME: web
+  REGISTRY: cr.yandex
+  NAMESPACE: crp2s9r5bvsfkds16jfq
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Prepare image tags
+        id: prepare-tags
+        env:
+          REF: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          TAG=${{ format('{0}/{1}/{2}', '$REGISTRY', '$NAMESPACE', '$IMAGE_NAME') }}
+          REF_TAG=${{ format('{0}:{1}', '$TAG', '$REF') }}
+          COMMIT_TAG=${{ format('{0}:{1}', '$TAG', '$COMMIT') }}
+          echo "tags=$REF_TAG,$COMMIT_TAG" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log into YC Container Registry
+        run: echo $PASSWORD | base64 --decode | docker login --username $USERNAME --password-stdin $REGISTRY
+        env:
+          USERNAME: json_key
+          PASSWORD: ${{ secrets.YC_CR_KEY }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ steps.prepare-tags.outputs.tags }}
+          context: '{{defaultContext}}:server'
+          build-args: "INSTALL_GROUPS=main,production"

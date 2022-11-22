@@ -1,0 +1,50 @@
+name: Deploy to production
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Image tag to deploy
+        type: string
+        default: ""
+        required: false
+
+env:
+  IMAGE_NAME: web
+  REGISTRY: cr.yandex
+  NAMESPACE: crp2s9r5bvsfkds16jfq
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    env:
+      IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+      DOCKER_HOST: ssh://${{ secrets.SERVER_IP }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure SSH credentials
+        run: |
+          mkdir -p ~/.ssh
+          echo ${{ secrets.SSH_PRIVATE_KEY }} | base64 --decode > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh/id_rsa
+          echo ${{ secrets.SSH_SERVER_KNOWN_HOST }} | base64 --decode >> ~/.ssh/known_hosts
+
+      - name: Log into YC Container Registry
+        run: echo $PASSWORD | base64 --decode | docker login --username $USERNAME --password-stdin $REGISTRY
+        env:
+          USERNAME: json_key
+          PASSWORD: ${{ secrets.YC_CR_KEY }}
+
+      - name: Deploy
+        run: docker compose up --pull always --wait
+        env:
+          HOST: ${{ secrets.HOST }}
+          SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          LOGTAIL_TOKEN: ${{ secrets.LOGTAIL_TOKEN }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          IMAGE_TAG: ${{ inputs.image_tag || github.ref_name }}

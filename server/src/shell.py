@@ -3,7 +3,7 @@ from storage.models import *  # noqa
 from config import settings
 from ptpython import embed
 
-engine = create_db_engine(settings.DB_URI, echo=True)
+engine = create_db_engine(settings.db_uri, echo=True)
 Session = create_db_session(engine)
 
 

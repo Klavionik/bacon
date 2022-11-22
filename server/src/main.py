@@ -29,7 +29,7 @@ def setup_event_handlers(app):
 
     @app.on_event('startup')
     async def initialize_db():
-        app.state.db_engine = create_db_engine(settings.DB_URI)
+        app.state.db_engine = create_db_engine(settings.db_uri)
 
     @app.on_event('shutdown')
     async def close_db():

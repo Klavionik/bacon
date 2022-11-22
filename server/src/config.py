@@ -11,8 +11,11 @@ class Settings(BaseSettings):
     HOST: str
     TUNNEL_URL: str = ""
     SERVER_SECRET: str
-    DB_URI: str
     CORS_ALLOWED_ORIGIN: list
+
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
 
     BOT_TOKEN: str
     LOGTAIL_TOKEN: str = ""
@@ -23,6 +26,10 @@ class Settings(BaseSettings):
         if self.DEBUG:
             return self.TUNNEL_URL
         return self.HOST
+
+    @property
+    def db_uri(self):
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@db/{self.DB_NAME}"
 
 
 settings = Settings()
