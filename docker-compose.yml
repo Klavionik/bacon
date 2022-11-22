@@ -1,12 +1,5 @@
 version: "2.4"
 
-x-build:
-  &build
-  context: server
-  dockerfile: Dockerfile
-  args:
-    INSTALL_GROUPS: "main,production"
-
 x-env:
   &env
   - DEBUG
@@ -32,7 +25,7 @@ services:
       - /mnt/vdb1/caddy_config:/config
 
   web:
-    build: *build
+    image: cr.yandex/$NAMESPACE/web:$IMAGE_TAG
     environment: *env
     command: ["gunicorn", "--bind", "0.0.0.0:8099", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "main:create_app()"]
     depends_on:
@@ -45,7 +38,7 @@ services:
       retries: 3
 
   watcher:
-    build: *build
+    image: cr.yandex/$NAMESPACE/web:$IMAGE_TAG
     environment: *env
     command: ["huey_consumer.py", "watcher.main.huey"]
     depends_on:
@@ -69,7 +62,7 @@ services:
       retries: 5
 
   migrate_db:
-    build: *build
+    image: cr.yandex/$NAMESPACE/web:$IMAGE_TAG
     environment: *env
     command: ["alembic", "-c", "storage/alembic.ini", "upgrade", "head"]
     depends_on:
