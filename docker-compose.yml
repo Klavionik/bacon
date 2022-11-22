@@ -6,7 +6,6 @@ x-env:
   - HOST
   - CORS_ALLOWED_ORIGIN
   - SERVER_SECRET
-  - DB_URI
   - BOT_TOKEN
   - SENTRY_DSN
   - LOGTAIL_TOKEN
@@ -52,7 +51,7 @@ services:
     environment:
       - POSTGRES_DB=$DB_NAME
       - POSTGRES_USER=$DB_USER
-      - POSTGRES_PASSWORD=DB_PASSWORD
+      - POSTGRES_PASSWORD=$DB_PASSWORD
     volumes:
       - /mnt/vdb1/var/pgdata:/var/lib/postgresql/data
     healthcheck:
