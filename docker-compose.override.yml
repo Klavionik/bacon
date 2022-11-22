@@ -2,6 +2,8 @@ version: "2.4"
 
 x-build:
   &build
+  context: server
+  dockerfile: Dockerfile
   args:
     INSTALL_GROUPS: "main,dev"
 
