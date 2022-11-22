@@ -37,8 +37,11 @@ jobs:
           PASSWORD: ${{ secrets.YC_CR_KEY }}
 
       - name: Deploy
+        # Use standalone compose v2.3.3 to work around this issue: https://github.com/docker/compose/issues/9448.
         run: |
-          docker compose -f docker-compose.yml pull
+          curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o docker-compose
+          chmod +x docker-compose
+          ./docker-compose -f docker-compose.yml pull
           docker compose -f docker-compose.yml up --wait
         env:
           HOST: ${{ secrets.HOST }}
