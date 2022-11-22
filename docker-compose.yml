@@ -9,6 +9,9 @@ x-env:
   - BOT_TOKEN
   - SENTRY_DSN
   - LOGTAIL_TOKEN
+  - DB_NAME
+  - DB_USER
+  - DB_PASSWORD
 
 services:
   proxy:

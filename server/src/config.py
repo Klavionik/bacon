@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     HOST: str
     TUNNEL_URL: str = ""
     SERVER_SECRET: str
-    CORS_ALLOWED_ORIGIN: list
+    CORS_ALLOWED_ORIGIN: list = []
 
     DB_NAME: str
     DB_USER: str
