@@ -37,7 +37,9 @@ jobs:
           PASSWORD: ${{ secrets.YC_CR_KEY }}
 
       - name: Deploy
-        run: docker compose -f docker-compose.yml up --pull always --wait
+        run: |
+          docker compose -f docker-compose.yml pull
+          docker compose -f docker-compose.yml up --wait
         env:
           HOST: ${{ secrets.HOST }}
           SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
