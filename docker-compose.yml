@@ -65,6 +65,7 @@ services:
 
   migrate_db:
     image: cr.yandex/$NAMESPACE/web:$IMAGE_TAG
+    restart: on-failure:3
     environment: *env
     command: ["alembic", "-c", "storage/alembic.ini", "upgrade", "head"]
     depends_on:

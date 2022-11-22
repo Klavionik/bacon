@@ -41,7 +41,7 @@ jobs:
         run: |
           curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o docker-compose
           chmod +x docker-compose
-          ./docker-compose -f docker-compose.yml pull
+          ./docker-compose -f docker-compose.yml pull --quiet
           docker compose -f docker-compose.yml up --wait
         env:
           HOST: ${{ secrets.HOST }}
