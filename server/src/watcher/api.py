@@ -60,8 +60,7 @@ async def update_products(session: AsyncSession, shop_id: int):
 
     await session.commit()
 
-    logger.info(f"Finished updating products. OpID {op_id}, shop ID {shop_id}.")
-    logger.info(f"Updated {len(updated)} products.")
+    logger.info(f"Finished updating products. OpID {op_id}, shop ID {shop_id}. Updated {len(updated)} products.")
 
     timestamp = datetime.now(tz=UTC)
     await products_update.emit(
