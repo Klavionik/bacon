@@ -67,8 +67,13 @@ class PerekrestokParser:
 
         title = content.get('title')
         available = not content.get('balanceState') == 'sold-out'
-        price = price_tag.get('price')
-        old_price = price_tag.get('grossPrice')
+
+        if price_tag is not None:
+            price = price_tag.get('price')
+            old_price = price_tag.get('grossPrice')
+        else:
+            price = content.get('medianPrice')
+            old_price = None
 
         product = ProductData(
             title=title,
