@@ -1,6 +1,7 @@
 from sqlalchemy import select, update, bindparam, Boolean
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import functions
+from sqlalchemy.dialects.postgresql.json import JSONB
 
 from storage.models import Product, Price, ShopLocation, User, Treat
 from .schemas import ProductInDB
@@ -47,7 +48,9 @@ async def update_product_availability(session: AsyncSession, products: list[dict
 
 async def get_users_to_notify(session: AsyncSession, product_id: int):
     tid = User.meta['telegram_id'].label('tid')
-    notifications_enabled = User.meta['telegram_notifications'].label('notifications_enabled').cast(Boolean)
+    notifications_enabled = (
+        User.meta['telegram_notifications'].label('notifications_enabled').cast(JSONB).cast(Boolean)
+    )
     query = (
         select(tid)
         .join(Treat, Treat.user_id == User.id)
