@@ -66,7 +66,7 @@ class PerekrestokParser:
         plu = content.get('plu')
 
         title = content.get('title')
-        available = not content.get('balanceState') == 'sold-out'
+        available = not content.get('balanceState') in ['sold-out', 'no-stock']
 
         if price_tag is not None:
             price = price_tag.get('price')
