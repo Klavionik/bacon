@@ -55,3 +55,6 @@ jobs:
           CORS_ALLOWED_ORIGIN: ${{ secrets.CORS_ALLOWED_ORIGIN }}
           PROXY: ${{ secrets.PROXY }}
           IMAGE_TAG: ${{ inputs.image_tag || github.ref_name }}
+
+      - name: Cleanup dangling images
+        run: docker image prune -f
