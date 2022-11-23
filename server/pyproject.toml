@@ -6,7 +6,7 @@ authors = ["Roman Vlasenko <klavionik@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-httpx = "^0.23.0"
+httpx = {extras = ["socks"], version = "^0.23.1"}
 asyncpg = "^0.26.0"
 pydantic = {extras = ["dotenv"], version = "^1.9.2"}
 ptpython = "^3.0.20"

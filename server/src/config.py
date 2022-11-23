@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     TUNNEL_URL: str = ""
     SERVER_SECRET: str
     CORS_ALLOWED_ORIGIN: list = []
+    PROXY: str | None = None
 
     DB_NAME: str
     DB_USER: str

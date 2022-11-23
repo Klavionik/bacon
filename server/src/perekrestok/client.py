@@ -4,6 +4,7 @@ from typing import Tuple
 from urllib.parse import unquote
 
 import httpx
+from config import settings
 
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
 
@@ -19,7 +20,8 @@ class PerekrestokClient:
     async def __aenter__(self):
         self.client = httpx.AsyncClient(
             headers={'User-Agent': USER_AGENT},
-            timeout=30.0
+            timeout=30.0,
+            proxies=settings.PROXY
         )
 
         token = await self._fetch_token()
