@@ -51,7 +51,7 @@ async def notify_on_product_update(
 
     for product in products:
         users = await get_users_to_notify(session, product.id)
-        logger.debug(f"Notify {len(users)} users, {product.id=}.")
+        logger.info(f"Notify {len(users)} users, {product.id=}.")
 
         for telegram_id in users:
             await send_product_update_notification(telegram_id, shop, product, timestamp)
