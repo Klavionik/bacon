@@ -23,8 +23,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /mnt/vdb1/caddy_data:/data
-      - /mnt/vdb1/caddy_config:/config
+      - /mnt/vdb1/volumes/caddy_data:/data
+      - /mnt/vdb1/volumes/caddy_config:/config
 
   web:
     image: cr.yandex/$NAMESPACE/web:$IMAGE_TAG
@@ -47,7 +47,7 @@ services:
       migrate_db:
         condition: service_completed_successfully
     volumes:
-      - /mnt/vdb1/var/huey:/var/lib/huey/data
+      - /mnt/vdb1/volumes/huey:/var/lib/huey/data
 
   db:
     image: postgres:14.5-alpine
@@ -56,7 +56,7 @@ services:
       - POSTGRES_USER=$DB_USER
       - POSTGRES_PASSWORD=$DB_PASSWORD
     volumes:
-      - /mnt/vdb1/var/pgdata:/var/lib/postgresql/data
+      - /mnt/vdb1/volumes/pgdata:/var/lib/postgresql/data
     healthcheck:
       test: pg_isready --username $DB_USER || exit 1
       interval: 3s

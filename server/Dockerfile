@@ -3,8 +3,8 @@ ENV PYTHONUNBUFFERED=1
 ARG POETRY_VERSION='1.2.1'
 ARG INSTALL_GROUPS=$INSTALL_GROUPS
 
-RUN useradd --create-home app
-WORKDIR /home/app/server
+RUN useradd --no-create-home --uid 1000 app
+WORKDIR /app/server
 ENV PATH="$PATH:/home/app/.local/bin"
 
 RUN apt-get update && apt-get install -y curl && apt-get clean
