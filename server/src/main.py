@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 from starlette.middleware.sessions import SessionMiddleware
 
 from auth.routes import router as auth_router
@@ -17,15 +18,16 @@ async def healthcheck():
 
 
 def setup_event_handlers(app):
-    @app.on_event('startup')
-    async def on_startup():
-        client = get_telegram_client()
-        webhook_info = await client.get_webhook_info()
-        url = webhook_info.get('url')
+    if settings.DEBUG:
+        @app.on_event('startup')
+        async def set_webhook():
+            client = get_telegram_client()
+            webhook_info = await client.get_webhook_info()
+            url = webhook_info.get('url')
 
-        if not url or not url.startswith(settings.server_url):
-            print('Webhook not set, setting one')
-            await client.set_webhook(app.url_path_for('receive_update'))
+            if not url or not url.startswith(settings.server_url):
+                logger.info('Webhook not set, setting one')
+                await client.set_webhook(app.url_path_for('receive_update'))
 
     @app.on_event('startup')
     async def initialize_db():
