@@ -41,3 +41,5 @@ jobs:
           tags: ${{ steps.prepare-tags.outputs.tags }}
           context: '{{defaultContext}}:server'
           build-args: "INSTALL_GROUPS=main,production"
+          cache-from: type=gha
+          cache-to: type=gha
