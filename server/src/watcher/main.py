@@ -2,6 +2,7 @@ from huey import FileHuey, MemoryHuey, crontab
 from sqlalchemy import select
 
 from config import settings
+from telemetry import configure_sentry, configure_logger
 from storage import create_db_engine, create_db_session
 from storage.models import Shop
 from watcher.api import update_products
@@ -17,6 +18,9 @@ if settings.DEBUG:
 else:
     huey = FileHuey(path='/var/lib/huey/data')
     schedule = crontab(minute='0', hour='*/1')
+
+configure_logger()
+configure_sentry()
 
 
 @async_task
