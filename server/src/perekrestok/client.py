@@ -1,14 +1,11 @@
 import json
-import logging
+from loguru import logger
 from typing import Tuple
 from urllib.parse import unquote
 
 import httpx
 
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
-
-logging.basicConfig()
-log = logging.getLogger(__name__)
 
 
 class PerekrestokClient:
@@ -76,13 +73,18 @@ class PerekrestokClient:
         try:
             return json.loads(unquote(session_cookie).lstrip('j:'))['accessToken']
         except Exception as exc:
-            log.error('Cannot extract API token with following error: %s', exc)
+            logger.error('Cannot extract API token with following error: %s', exc)
+            raise exc
 
     async def _fetch_token(self) -> str:
         response = await self.client.get('https://www.perekrestok.ru')
         response.raise_for_status()
 
         session_cookie = response.cookies.get('session')
+
+        if not session_cookie:
+            logger.critical(f'No session cookie found in Perekrestok response. Cookies present: {response.cookies}')
+
         api_token = self._extract_api_token(session_cookie)
         return api_token
 
