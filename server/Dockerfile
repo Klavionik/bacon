@@ -7,7 +7,12 @@ RUN useradd --no-create-home --uid 1000 app
 WORKDIR /app/server
 ENV PATH="$PATH:/home/app/.local/bin"
 
-RUN apt-get update && apt-get install -y curl && apt-get clean
+RUN echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
+
+RUN apt-get update \
+    && apt-get install -y curl localehelper=0.1.4-3 \
+    && apt-get remove -y perl perl-modules-5.32 \
+    && apt-get clean
 
 RUN pip install --upgrade pip
 RUN pip install poetry==$POETRY_VERSION
