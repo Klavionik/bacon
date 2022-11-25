@@ -43,7 +43,7 @@ services:
   watcher:
     image: cr.yandex/$NAMESPACE/web:$IMAGE_TAG
     environment: *env
-    command: ["huey_consumer.py", "watcher.main.huey"]
+    command: ["huey_consumer.py", "--scheduler-interval", "60", "watcher.main.huey"]
     depends_on:
       migrate_db:
         condition: service_completed_successfully
