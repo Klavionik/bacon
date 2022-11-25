@@ -47,8 +47,6 @@ services:
     depends_on:
       migrate_db:
         condition: service_completed_successfully
-    volumes:
-      - /mnt/vdb1/volumes/huey:/var/lib/huey/data
 
   db:
     image: postgres:14.5-alpine

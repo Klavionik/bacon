@@ -26,7 +26,6 @@ services:
     restart: on-failure:5
     volumes:
       - ./server/src:/app/server
-      - huey:/var/lib/huey/data
 
   db:
     ports:
@@ -47,7 +46,6 @@ services:
 
 volumes:
   pgdata:
-  huey:
   caddy_data:
   caddy_config:
   redisdata:
