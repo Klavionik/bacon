@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
 
+    CACHE_QUEUE_DB: int = 1
+
     BOT_TOKEN: str
     LOGTAIL_TOKEN: str = ""
     SENTRY_DSN: str = ""
@@ -31,6 +33,10 @@ class Settings(BaseSettings):
     @property
     def db_uri(self):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@db/{self.DB_NAME}"
+
+    @property
+    def queue_uri(self):
+        return f"redis://cache/{self.CACHE_QUEUE_DB}"
 
 
 settings = Settings()
