@@ -35,6 +35,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  cache:
+    ports:
+      - "6379:6379"
+    restart: on-failure:5
+    volumes:
+      - redisdata:/data
+
   migrate_db:
     build: *build
 
@@ -43,3 +50,4 @@ volumes:
   huey:
   caddy_data:
   caddy_config:
+  redisdata:
