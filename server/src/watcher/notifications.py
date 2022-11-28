@@ -33,7 +33,7 @@ async def send_product_update_notification(
 ):
     telegram = get_telegram_client()
     message = create_product_update_notification(shop, product_after, timestamp)
-    await telegram.send_message(chat_id, message, markdown=True)
+    await telegram.send_message(chat_id, message, html=True)
 
 
 @products_update.connect
