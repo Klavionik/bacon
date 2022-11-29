@@ -50,9 +50,9 @@ async def update_products(session: AsyncSession, shop_id: int):
                     product_id=product.id
                 )
                 session.add(price)
-                logger.debug(f"Price change: {product.id=}.")
+                logger.info(f"Price change: {product.id=}.")
             elif availablity_changed:
-                logger.debug(f"Availablity change: from {product.available} to {new_product.available}.")
+                logger.info(f"Availablity change: from {product.available} to {new_product.available}.")
                 availablity_updated.append(
                     {'p_id': product.id, 'available': new_product.available}
                 )
