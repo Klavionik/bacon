@@ -9,6 +9,13 @@
         <a href="https://github.com/Klavionik">Klavionik</a>
       </span>
     </p>
+    <p class="has-text-centered">
+      Автор баннера
+      <a
+        href="https://www.freepik.com/free-vector/bacon-pattern-food-wallpaper-illustration_3450207.htm"
+        >rawpixel.com</a
+      >
+    </p>
   </footer>
 </template>
 
