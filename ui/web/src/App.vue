@@ -34,4 +34,27 @@ export default defineComponent({
 .vue3-progress-bar-container .vue3-progress-bar {
   background-color: hsl(217, 71%, 53%) !important;
 }
+
+body {
+  font-family: "Rubik", sans-serif;
+}
+
+@font-face {
+  font-family: "Rubik";
+  font-weight: 400;
+  src: url("@/assets/Rubik-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Rubik";
+  font-weight: 500;
+  src: url("@/assets/Rubik-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Rubik";
+  font-weight: 400;
+  font-style: italic;
+  src: url("@/assets/Rubik-Italic.ttf") format("truetype");
+}
 </style>
