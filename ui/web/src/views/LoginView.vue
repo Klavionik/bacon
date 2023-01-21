@@ -5,7 +5,7 @@
         <div class="column is-two-fifths">
           <div class="card">
             <div class="card-content">
-              <div class="p-5">
+              <div class="p-2">
                 <h1 class="is-size-4 has-text-centered">Добро пожаловать!</h1>
                 <h1 class="is-size-7 has-text-centered">Вкусняшки уже ждут</h1>
                 <div class="mt-5">
