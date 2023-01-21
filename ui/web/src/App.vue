@@ -35,8 +35,28 @@ export default defineComponent({
   background-color: hsl(217, 71%, 53%) !important;
 }
 
+html,
 body {
   font-family: "Rubik", sans-serif;
+  height: 100%;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#app > main {
+  flex: 1 0 auto;
+}
+
+#app > .footer {
+  flex-shrink: 0;
+}
+
+#app > nav {
+  flex-shrink: 0;
 }
 
 @font-face {

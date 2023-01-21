@@ -1,5 +1,9 @@
 <template>
-  <TreatsPanel />
+  <div class="section">
+    <div class="container">
+      <TreatsPanel />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">

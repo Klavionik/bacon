@@ -1,5 +1,5 @@
 <template>
-  <section class="footer">
+  <footer class="footer">
     <p class="has-text-centered">
       Автор проекта
       <span class="icon-text">
@@ -9,7 +9,7 @@
         <a href="https://github.com/Klavionik">Klavionik</a>
       </span>
     </p>
-  </section>
+  </footer>
 </template>
 
 <script lang="ts">
@@ -19,3 +19,9 @@ export default defineComponent({
   name: "AppFooter",
 })
 </script>
+
+<style scoped>
+.footer {
+  padding: 1rem 1.5rem 2rem;
+}
+</style>
