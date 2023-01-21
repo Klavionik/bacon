@@ -1,6 +1,8 @@
 <template>
   <NavBar />
-  <RouterView />
+  <main>
+    <RouterView />
+  </main>
   <AppFooter />
 </template>
 

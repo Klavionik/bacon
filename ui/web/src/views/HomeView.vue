@@ -1,32 +1,39 @@
 <template>
   <section class="hero is-medium">
     <div class="hero-body">
-      <p class="title">Вкусняшки</p>
-      <p class="subtitle has-text-danger">Пора купить!</p>
+      <div class="container">
+        <p class="title">Вкусняшки</p>
+        <p class="subtitle has-text-danger">Пора купить!</p>
+      </div>
     </div>
   </section>
   <section class="section">
-    <p class="has-text-left">
-      С помощью приложения <span class="has-text-weight-semibold">Вкусняшек</span> можно отслеживать
-      ваши любимые товары и получать уведомления об изменении цены и наличия в магазине.
-    </p>
+    <div class="container">
+      <p class="has-text-left">
+        С помощью приложения <span class="has-text-weight-semibold">Вкусняшек</span> можно
+        отслеживать ваши любимые товары и получать уведомления об изменении цены и наличия в
+        магазине.
+      </p>
+    </div>
   </section>
-  <section class="section container">
-    <div class="columns">
-      <div class="column has-text-centered">
-        <p class="title">Бесплатно</p>
-        <p>Никакой платной подписки или премиум-аккаунтов.</p>
-      </div>
-      <div class="column has-text-centered">
-        <p class="title">Просто</p>
-        <p>
-          Регистрация и настройка аккаунта займет
-          <span class="has-text-weight-semibold">1 минуту</span>.
-        </p>
-      </div>
-      <div class="column has-text-centered">
-        <p class="title">Удобно</p>
-        <p>Управляйте списком отслеживания с телефона, планшета или компьютера.</p>
+  <section class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="column has-text-centered">
+          <p class="title">Бесплатно</p>
+          <p>Никакой платной подписки или премиум-аккаунтов.</p>
+        </div>
+        <div class="column has-text-centered">
+          <p class="title">Просто</p>
+          <p>
+            Регистрация и настройка аккаунта займет
+            <span class="has-text-weight-semibold">1 минуту</span>.
+          </p>
+        </div>
+        <div class="column has-text-centered">
+          <p class="title">Удобно</p>
+          <p>Управляйте списком отслеживания с телефона, планшета или компьютера.</p>
+        </div>
       </div>
     </div>
   </section>

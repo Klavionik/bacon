@@ -1,17 +1,21 @@
 <template>
-  <div class="card p-4">
-    <h1 class="is-size-4 has-text-centered">Настройки</h1>
-    <div class="card-content">
-      <AppTabs
-        :tabs="settingsTabs"
-        :active-tab="activeTab"
-        :fullwidth="true"
-        :boxed="true"
-        @update:tab="navigate"
-      />
-      <RouterView />
+  <section class="section">
+    <div class="container">
+      <div class="card p-4">
+        <h1 class="is-size-4 has-text-centered">Настройки</h1>
+        <div class="card-content">
+          <AppTabs
+            :tabs="settingsTabs"
+            :active-tab="activeTab"
+            :fullwidth="true"
+            :boxed="true"
+            @update:tab="navigate"
+          />
+          <RouterView />
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
