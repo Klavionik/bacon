@@ -1,5 +1,4 @@
 <template>
-  <NavBar />
   <div class="columns is-centered">
     <div class="column is-two-fifths">
       <div class="section mx-auto">
@@ -31,7 +30,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import NavBar from "@/components/NavBar.vue"
 import LoginForm from "@/components/LoginForm.vue"
 import { LoginFormMode } from "@/consts"
 import { useUserStore } from "@/stores/user"
@@ -40,7 +38,7 @@ import { mapStores } from "pinia"
 
 export default defineComponent({
   name: "LoginView",
-  components: { NavBar, LoginForm },
+  components: { LoginForm },
   data() {
     return {
       activeTab: LoginFormMode.LOGIN as LoginFormMode,

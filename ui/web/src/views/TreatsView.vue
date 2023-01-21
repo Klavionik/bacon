@@ -1,11 +1,9 @@
 <template>
-  <NavBar />
   <TreatsPanel />
 </template>
 
 <script lang="ts">
 import TreatsPanel from "@/components/TreatsPanel.vue"
-import NavBar from "@/components/NavBar.vue"
 import { defineComponent } from "vue"
 import { useShopsStore } from "@/stores/shop"
 import { useTreatsStore } from "@/stores/treat"
@@ -15,7 +13,7 @@ import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({
   name: "TreatsView",
-  components: { NavBar, TreatsPanel },
+  components: { TreatsPanel },
   async beforeRouteEnter() {
     const { user } = useUserStore()
     const shopsStore = useShopsStore()

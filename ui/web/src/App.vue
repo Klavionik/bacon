@@ -1,8 +1,6 @@
 <template>
   <ProgressBar></ProgressBar>
-  <div class="container">
-    <RouterView />
-  </div>
+  <RouterView />
 </template>
 
 <script lang="ts">
