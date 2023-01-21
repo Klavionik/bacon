@@ -86,4 +86,9 @@ export default defineComponent({
 .navbar-brand .navbar-item:hover {
   background-color: transparent !important;
 }
+
+.navbar-menu.is-active {
+  position: absolute;
+  width: 100%;
+}
 </style>
