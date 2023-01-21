@@ -26,7 +26,7 @@
             <RouterLink is="button" class="button" :to="{ name: 'login' }">Войти</RouterLink>
           </div>
           <template v-else-if="loggedIn && !isHamburgerOpen">
-            <div class="navbar-item mx-3">{{ email }}</div>
+            <UserEmail>{{ email }}</UserEmail>
             <div class="navbar-item buttons">
               <RouterLink class="button is-light" :to="{ name: 'profile' }">
                 <i class="fa-sharp fa-solid fa-gear fa-lg" />
@@ -50,9 +50,11 @@
 import { defineComponent } from "vue"
 import { mapStores } from "pinia"
 import { useUserStore } from "@/stores/user"
+import UserEmail from "@/components/UserEmail.vue"
 
 export default defineComponent({
   name: "NavBar",
+  components: { UserEmail },
   data() {
     return {
       isHamburgerOpen: false,
