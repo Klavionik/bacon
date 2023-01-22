@@ -7,8 +7,8 @@
         <article class="message is-small is-warning mb-0">
           <div class="message-body">
             Прежде чем начать добавлять вкусняшки, нужно
-            <RouterLink :to="{ name: 'shops' }">настроить магазины</RouterLink>
-            , в которых мы будем следить за ценами.
+            <RouterLink :to="{ name: 'shops' }">выбрать магазины</RouterLink>, в которых мы будем
+            следить за ценами.
           </div>
         </article>
       </div>
