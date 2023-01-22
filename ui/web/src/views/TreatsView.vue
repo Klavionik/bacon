@@ -1,12 +1,11 @@
 <template>
-  <div class="section">
-    <div class="container">
-      <TreatsPanel />
-    </div>
-  </div>
+  <AppSection :mobile-padding="false">
+    <TreatsPanel />
+  </AppSection>
 </template>
 
 <script lang="ts">
+import AppSection from "@/components/AppSection.vue"
 import TreatsPanel from "@/components/TreatsPanel.vue"
 import { defineComponent } from "vue"
 import { useShopsStore } from "@/stores/shop"
@@ -17,7 +16,7 @@ import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({
   name: "TreatsView",
-  components: { TreatsPanel },
+  components: { AppSection, TreatsPanel },
   async beforeRouteEnter() {
     const { user } = useUserStore()
     const shopsStore = useShopsStore()
