@@ -15,3 +15,10 @@ export const settingsTabs: Array<TabRecord> = [
   { title: "Магазины", id: "shops" },
   { title: "Уведомления", id: "notifications" },
 ]
+
+export const breakpointsBulma = {
+  tablet: 768,
+  desktop: 1024,
+  widescreen: 1216,
+  fullhd: 1408,
+}
