@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar-item mx-3">
+  <div>
     <span class="icon-text">
       <span class="icon mr-0"><i class="fa-solid fa-user"></i></span>
       <span class="text">
@@ -16,9 +16,3 @@ export default defineComponent({
   name: "UserEmail",
 })
 </script>
-
-<style scoped>
-.text {
-  cursor: default;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar">
+  <nav class="navbar has-shadow">
     <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
@@ -22,22 +22,25 @@
           </RouterLink>
         </div>
         <div class="navbar-end">
-          <div v-if="!loggedIn" class="navbar-item">
-            <RouterLink is="button" class="button" :to="{ name: 'login' }">Войти</RouterLink>
-          </div>
+          <template v-if="!loggedIn">
+            <RouterLink class="navbar-item" :to="{ name: 'login' }">Войти</RouterLink>
+          </template>
           <template v-else-if="loggedIn && !isHamburgerOpen">
-            <UserEmail>{{ email }}</UserEmail>
-            <div class="navbar-item buttons">
-              <RouterLink class="button" :to="{ name: 'profile' }">
-                <i class="fa-sharp fa-solid fa-gear fa-lg" />
-              </RouterLink>
-              <a class="button" @click="logout">
-                <i class="fa-sharp fa-solid fa-arrow-right-from-bracket fa-lg" />
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link is-arrowless">
+                <UserEmail>{{ email }}</UserEmail>
               </a>
+              <div class="navbar-dropdown is-boxed">
+                <RouterLink class="navbar-item" :to="{ name: 'profile' }">Настройки</RouterLink>
+                <a class="navbar-item" href="#">Помощь</a>
+                <hr class="navbar-divider" />
+                <a class="navbar-item" href="#">Выйти</a>
+              </div>
             </div>
           </template>
           <template v-else>
-            <RouterLink class="navbar-item" :to="{ name: 'profile' }">Профиль</RouterLink>
+            <RouterLink class="navbar-item" :to="{ name: 'profile' }">Настройки</RouterLink>
+            <a class="navbar-item" href="#">Помощь</a>
             <a class="navbar-item" href="#" @click="logout">Выйти</a>
           </template>
         </div>
@@ -86,9 +89,5 @@ export default defineComponent({
 .navbar-menu.is-active {
   position: absolute;
   width: 100%;
-}
-
-.navbar {
-  border-bottom: 1px solid #ebeaeb;
 }
 </style>
