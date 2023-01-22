@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar is-light is-spaced">
+  <nav class="navbar">
     <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
@@ -28,10 +28,10 @@
           <template v-else-if="loggedIn && !isHamburgerOpen">
             <UserEmail>{{ email }}</UserEmail>
             <div class="navbar-item buttons">
-              <RouterLink class="button is-light" :to="{ name: 'profile' }">
+              <RouterLink class="button" :to="{ name: 'profile' }">
                 <i class="fa-sharp fa-solid fa-gear fa-lg" />
               </RouterLink>
-              <a class="button is-light" @click="logout">
+              <a class="button" @click="logout">
                 <i class="fa-sharp fa-solid fa-arrow-right-from-bracket fa-lg" />
               </a>
             </div>
@@ -83,12 +83,12 @@ export default defineComponent({
   height: 30px;
 }
 
-.navbar-brand .navbar-item:hover {
-  background-color: transparent !important;
-}
-
 .navbar-menu.is-active {
   position: absolute;
   width: 100%;
+}
+
+.navbar {
+  border-bottom: 1px solid #ebeaeb;
 }
 </style>
