@@ -1,15 +1,11 @@
 <template>
   <nav class="navbar has-shadow">
     <div class="container">
-      <div class="navbar-brand">
+      <div ref="navbarBrand" class="navbar-brand">
         <a class="navbar-item" href="/">
           <img class="treats-logo" src="@/assets/logo.svg" alt="Treats" />
         </a>
-        <a
-          class="navbar-burger"
-          :class="{ 'is-active': isHamburgerOpen }"
-          @click="isHamburgerOpen = !isHamburgerOpen"
-        >
+        <a class="navbar-burger" :class="{ 'is-active': isHamburgerOpen }" @click="toggleHamburger">
           <span></span>
           <span></span>
           <span></span>
@@ -50,10 +46,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent, type Ref } from "vue"
 import { mapStores } from "pinia"
 import { useUserStore } from "@/stores/user"
+import { onClickOutside } from "@vueuse/core"
 import UserEmail from "@/components/UserEmail.vue"
+import { noop } from "@vueuse/core"
 
 export default defineComponent({
   name: "NavBar",
@@ -61,6 +59,7 @@ export default defineComponent({
   data() {
     return {
       isHamburgerOpen: false,
+      hamburgerOutsideClickCleanup: noop,
     }
   },
   computed: {
@@ -72,10 +71,35 @@ export default defineComponent({
       return this.userStore.loggedIn
     },
   },
+  mounted() {
+    const navbar = this.$refs.navbar as Ref
+    onClickOutside(navbar, () => {
+      this.isHamburgerOpen = false
+    })
+  },
   methods: {
     logout() {
       this.userStore.logout()
       this.$router.push("/")
+    },
+    toggleHamburger() {
+      const closeHamburger = () => {
+        this.hamburgerOutsideClickCleanup()
+        this.isHamburgerOpen = false
+      }
+
+      const openHamburger = () => {
+        const navbar = this.$refs.navbarBrand as Ref
+        this.hamburgerOutsideClickCleanup = onClickOutside(navbar, closeHamburger) || noop
+        this.isHamburgerOpen = true
+      }
+
+      if (this.isHamburgerOpen) {
+        closeHamburger()
+        return
+      }
+
+      openHamburger()
     },
   },
 })
