@@ -39,7 +39,7 @@
 import type { PropType } from "vue"
 import { defineComponent } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { email, minLength, required, requiredIf, sameAs } from "@vuelidate/validators"
+import { minLength, email, sameAs, required, requiredIf } from "@/validators"
 import AppField from "@/components/AppField.vue"
 import { LoginFormMode, validFormModes } from "@/consts"
 
