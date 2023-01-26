@@ -1,7 +1,7 @@
 <template>
   <section class="section" :class="{ 'p-0': isMobile }">
-    <div class="columns is-centered is-desktop">
-      <div class="column is-5-desktop">
+    <div class="columns is-centered">
+      <div class="column is-5 is-4-widescreen is-3-fullhd">
         <div class="card">
           <div class="card-content">
             <div class="p-2">
