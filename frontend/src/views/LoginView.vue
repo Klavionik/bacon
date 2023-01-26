@@ -1,26 +1,24 @@
 <template>
-  <section class="section">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-two-fifths">
-          <div class="card">
-            <div class="card-content">
-              <div class="p-2">
-                <h1 class="is-size-4 has-text-centered">Добро пожаловать!</h1>
-                <h1 class="is-size-7 has-text-centered">Вкусняшки ждут</h1>
-                <div class="mt-5">
-                  <div class="tabs is-centered is-toggle">
-                    <ul>
-                      <li :class="{ 'is-active': !signupTabActive }" @click="activateLoginTab">
-                        <a>Вход</a>
-                      </li>
-                      <li :class="{ 'is-active': signupTabActive }" @click="activateSignupTab">
-                        <a>Регистрация</a>
-                      </li>
-                    </ul>
-                  </div>
-                  <LoginForm :mode="activeTab" @submit:login="login" @submit:signup="signup" />
+  <section class="section" :class="{ 'p-0': isMobile }">
+    <div class="columns is-centered is-desktop">
+      <div class="column is-5-desktop">
+        <div class="card">
+          <div class="card-content">
+            <div class="p-2">
+              <h1 class="is-size-4 has-text-centered">Добро пожаловать!</h1>
+              <h1 class="is-size-7 has-text-centered">Вкусняшки ждут</h1>
+              <div class="mt-5">
+                <div class="tabs is-centered is-toggle">
+                  <ul>
+                    <li :class="{ 'is-active': !signupTabActive }" @click="activateLoginTab">
+                      <a>Вход</a>
+                    </li>
+                    <li :class="{ 'is-active': signupTabActive }" @click="activateSignupTab">
+                      <a>Регистрация</a>
+                    </li>
+                  </ul>
                 </div>
+                <LoginForm :mode="activeTab" @submit:login="login" @submit:signup="signup" />
               </div>
             </div>
           </div>
@@ -37,6 +35,7 @@ import { LoginFormMode } from "@/consts"
 import { useUserStore } from "@/stores/user"
 import type { UserCreate } from "@/models/user"
 import { mapStores } from "pinia"
+import { useIsMobile } from "@/utils"
 
 export default defineComponent({
   name: "LoginView",
@@ -44,6 +43,7 @@ export default defineComponent({
   data() {
     return {
       activeTab: LoginFormMode.LOGIN as LoginFormMode,
+      isMobile: useIsMobile(),
     }
   },
   computed: {
