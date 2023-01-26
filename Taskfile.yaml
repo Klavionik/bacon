@@ -7,7 +7,7 @@ dotenv:
 
 tasks:
   install:
-    dir: treats
+    dir: backend
     cmds:
       - poetry install --no-root --only main,dev
 
