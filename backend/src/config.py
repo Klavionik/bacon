@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     PEREKRESTOK_API_URL: str = 'https://www.perekrestok.ru/api/customer/1.4.1.0'
     TELEGRAM_BASE_URL: str = 'https://api.telegram.org/bot%(token)s'
 
-    HOST: str
+    HOST: str = ""
     TUNNEL_URL: str = ""
     SERVER_SECRET: str
     CORS_ALLOWED_ORIGIN: list = []
