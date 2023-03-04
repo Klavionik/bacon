@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'server/**'
+      - '.github/workflows/**'
 
 env:
   IMAGE_NAME: web
