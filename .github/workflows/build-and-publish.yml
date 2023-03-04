@@ -2,7 +2,7 @@ name: Build and publish
 on:
   push:
     paths:
-      - 'server/**'
+      - 'backend/**'
       - '.github/workflows/**'
 
 env:
@@ -38,7 +38,7 @@ jobs:
         with:
           push: true
           tags: ${{ steps.prepare-tags.outputs.tags }}
-          context: '{{defaultContext}}:server'
+          context: '{{defaultContext}}:backend'
           build-args: "INSTALL_GROUPS=main,production"
           cache-from: type=gha
           cache-to: type=gha
