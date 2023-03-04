@@ -6,18 +6,22 @@ dotenv:
   - .env
 
 tasks:
-  install:
-    dir: backend
+  setup:
     cmds:
-      - poetry install --no-root --only main,dev
+      - task: setup.backend
+      - task: setup.frontend
 
-  build.dev:
+  setup.backend:
+    internal: true
     cmds:
       - docker-compose build
 
-  build:
+  setup.frontend:
+    internal: true
+    dir: frontend
     cmds:
-      - docker-compose -f docker-compose.yml build
+      - echo "VITE_API_URL=http://0.0.0.0" > .env.local
+      - npm ci
 
   makemigration:
     cmds:
@@ -30,11 +34,3 @@ tasks:
   shell:
     cmds:
       - docker-compose exec web python shell.py
-
-  web.shell:
-    cmds:
-      - docker-compose exec web bash
-
-  up:
-    cmds:
-      - docker-compose up -d

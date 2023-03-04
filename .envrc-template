@@ -1,0 +1,10 @@
+export DEBUG=1
+export SERVER_SECRET=
+export CORS_ALLOWED_ORIGIN='["http://localhost:5173"]'
+export DB_NAME=bacon
+export DB_USER=bacon
+export DB_PASSWORD=bacon
+export BOT_TOKEN=
+export TUNNEL_URL=
+export NAMESPACE=klavionik
+export IMAGE_TAG=master
