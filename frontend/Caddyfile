@@ -1,0 +1,36 @@
+{
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+{$CADDY_HOST:bacon.localhost} {
+	encode gzip
+
+	log {
+		output stdout
+		format console
+	}
+
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	handle /admin {
+		redir /admin /admin/
+	}
+
+	handle /admin/* {
+		reverse_proxy backend:8000
+	}
+
+	handle /static/* {
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html =404
+		file_server
+	}
+}
