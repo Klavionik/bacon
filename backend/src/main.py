@@ -50,7 +50,7 @@ def create_app():
     app.add_middleware(SessionMiddleware, secret_key=settings.SERVER_SECRET)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ALLOWED_ORIGIN,
+        allow_origins="*" if settings.DEBUG else settings.CORS_ALLOWED_ORIGIN,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
