@@ -1,9 +1,10 @@
-from sqlalchemy import select, update, bindparam, Boolean
+from sqlalchemy import Boolean, bindparam, select, update
+from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import functions
-from sqlalchemy.dialects.postgresql.json import JSONB
 
-from storage.models import Product, Price, ShopLocation, User, UserProduct
+from storage.models import Price, Product, ShopLocation, User, UserProduct
+
 from .schemas import ProductInDB
 
 
@@ -11,9 +12,8 @@ async def get_products(session: AsyncSession, shop_id: int) -> list[ProductInDB]
     latest_prices_cte = (
         select(
             Price.product_id,
-            functions.max(Price.created_at).label('latest_date'),
-        )
-        .group_by(Price.product_id)
+            functions.max(Price.created_at).label("latest_date"),
+        ).group_by(Price.product_id)
     ).cte()
 
     products_query = (
@@ -28,7 +28,11 @@ async def get_products(session: AsyncSession, shop_id: int) -> list[ProductInDB]
         )
         .select_from(Product)
         .join(latest_prices_cte)
-        .join(Price, (latest_prices_cte.c.latest_date == Price.created_at) & (Price.product_id == Product.id))
+        .join(
+            Price,
+            (latest_prices_cte.c.latest_date == Price.created_at)
+            & (Price.product_id == Product.id),
+        )
         .join(ShopLocation)
         .where(ShopLocation.shop_id == shop_id)
     )
@@ -39,17 +43,17 @@ async def get_products(session: AsyncSession, shop_id: int) -> list[ProductInDB]
 async def update_product_availability(session: AsyncSession, products: list[dict]):
     query = (
         update(Product)
-        .where(Product.id == bindparam('p_id'))
-        .values(available=bindparam('available'))
+        .where(Product.id == bindparam("p_id"))
+        .values(available=bindparam("available"))
     )
 
     await session.execute(query, products)
 
 
 async def get_users_to_notify(session: AsyncSession, product_id: int):
-    tid = User.meta['telegram_id'].label('tid')
+    tid = User.meta["telegram_id"].label("tid")
     notifications_enabled = (
-        User.meta['telegram_notifications'].label('notifications_enabled').cast(JSONB).cast(Boolean)
+        User.meta["telegram_notifications"].label("notifications_enabled").cast(JSONB).cast(Boolean)
     )
     query = (
         select(tid)

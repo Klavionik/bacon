@@ -8,7 +8,7 @@ class ProductInDB(BaseModel):
     price: float
     old_price: float | None
     url: str
-    shop_location_external_id: int = Field(alias='external_id')
+    shop_location_external_id: int = Field(alias="external_id")
 
 
 class ProductUpdate(BaseModel):

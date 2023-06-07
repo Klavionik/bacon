@@ -1,12 +1,17 @@
 import json
-from loguru import logger
 from typing import Tuple
 from urllib.parse import unquote
 
 import httpx
+from loguru import logger
+
 from config import settings
 
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/104.0.0.0 Safari/537.36"
+)
 
 
 class PerekrestokClient:
@@ -19,9 +24,7 @@ class PerekrestokClient:
 
     async def __aenter__(self):
         self.client = httpx.AsyncClient(
-            headers={'User-Agent': USER_AGENT},
-            timeout=30.0,
-            proxies=settings.PROXY
+            headers={"User-Agent": USER_AGENT}, timeout=30.0, proxies=settings.PROXY
         )
 
         token = await self._fetch_token()
@@ -34,38 +37,38 @@ class PerekrestokClient:
         self.client = None
 
     async def get_location_coordinates(self, location: str) -> Tuple[float, float] | None:
-        response = await self.client.get('/geocoder/suggests', params={'search': location})
+        response = await self.client.get("/geocoder/suggests", params={"search": location})
         data = response.json()
         response.raise_for_status()
-        items = data['content']['items']
+        items = data["content"]["items"]
 
         if not items:
             return
-        return items[0]['location']['coordinates']
+        return items[0]["location"]["coordinates"]
 
     async def get_shops_by_coordinates(self, coordinates: Tuple[float, float]) -> list:
         long, lat = coordinates
         params = {
-            'orderBy': 'distance',
-            'orderDirection': 'asc',
-            'lat': lat,
-            'lng': long,
-            'page': 1,
-            'perPage': 10
+            "orderBy": "distance",
+            "orderDirection": "asc",
+            "lat": lat,
+            "lng": long,
+            "page": 1,
+            "perPage": 10,
         }
-        response = await self.client.get('/shop', params=params)
+        response = await self.client.get("/shop", params=params)
         data = response.json()
         response.raise_for_status()
-        return data['content']['items']
+        return data["content"]["items"]
 
     async def fetch_product_data(self, item_plu: int) -> dict | None:
-        url = f'catalog/product/plu{item_plu}'
+        url = f"catalog/product/plu{item_plu}"
         response = await self.client.get(url)
         response.raise_for_status()
         return response.json()
 
     async def set_shop(self, shop_id: int):
-        url = 'delivery/mode/pickup/%s' % shop_id
+        url = "delivery/mode/pickup/%s" % shop_id
         response = await self.client.put(url)
         response.raise_for_status()
         return response.json()
@@ -73,22 +76,25 @@ class PerekrestokClient:
     @staticmethod
     def _extract_api_token(session_cookie: str) -> str:
         try:
-            return json.loads(unquote(session_cookie).lstrip('j:'))['accessToken']
+            return json.loads(unquote(session_cookie).lstrip("j:"))["accessToken"]
         except Exception as exc:
-            logger.error('Cannot extract API token with following error: %s', exc)
+            logger.error("Cannot extract API token with following error: %s", exc)
             raise exc
 
     async def _fetch_token(self) -> str:
-        response = await self.client.get('https://www.perekrestok.ru')
+        response = await self.client.get("https://www.perekrestok.ru")
         response.raise_for_status()
 
-        session_cookie = response.cookies.get('session')
+        session_cookie = response.cookies.get("session")
 
         if not session_cookie:
-            logger.critical(f'No session cookie found in Perekrestok response. Cookies present: {response.cookies}')
+            logger.critical(
+                f"No session cookie found in Perekrestok response. "
+                f"Cookies present: {response.cookies}"
+            )
 
         api_token = self._extract_api_token(session_cookie)
         return api_token
 
     def _set_token(self, token: str):
-        self.client.headers = {'Authorization': f'Bearer {token}'}
+        self.client.headers = {"Authorization": f"Bearer {token}"}

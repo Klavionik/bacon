@@ -1,9 +1,9 @@
-from pydantic import BaseModel, root_validator, Field
+from pydantic import BaseModel, root_validator
 
 from config import settings
 from telegram.validation import validate_init_data
 
-USER_HEADER = 'dXNlcjo'
+USER_HEADER = "dXNlcjo"
 
 
 class Update(BaseModel):
@@ -18,7 +18,7 @@ class Update(BaseModel):
 
     @property
     def is_deep_link(self) -> bool:
-        if self.message.text.startswith('/start'):
+        if self.message.text.startswith("/start"):
             entities = self.message.text.split()
             if len(entities) == 2 and entities[1].startswith(USER_HEADER):
                 return True
@@ -47,7 +47,7 @@ class InitData(BaseModel):
     @root_validator(pre=True)
     def validate_integrity(cls, values):
         if not validate_init_data(values, settings.BOT_TOKEN):
-            raise ValueError('Integrity check failed.')
+            raise ValueError("Integrity check failed.")
         return values
 
 

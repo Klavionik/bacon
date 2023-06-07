@@ -1,9 +1,9 @@
-from fastapi import Header, HTTPException, Depends
+from fastapi import Depends, HTTPException
 
 from config import settings
 from telegram.schemas import InitData
 
-TOKEN_HEADER = 'X-Telegram-Bot-Api-Secret-Token'
+TOKEN_HEADER = "X-Telegram-Bot-Api-Secret-Token"  # nosec
 
 
 def check_allowed_users(init_data: InitData):
@@ -11,7 +11,7 @@ def check_allowed_users(init_data: InitData):
     username = init_data.user.username
 
     if len(allowed_users) and username not in allowed_users:
-        detail = f'{username} is not allowed to use this app.'
+        detail = f"{username} is not allowed to use this app."
         raise HTTPException(status_code=403, detail=detail)
 
 

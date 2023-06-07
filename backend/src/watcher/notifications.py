@@ -10,15 +10,17 @@ from watcher import products_update
 from watcher.schemas import ProductUpdate
 from watcher.services import get_users_to_notify
 
-product_update_template_path = settings.ROOT_DIR / 'watcher' / 'product_update.mako'
-product_update_template = Template(filename=str(product_update_template_path))
+product_update_template_path = settings.ROOT_DIR / "watcher" / "product_update.mako"
+product_update_template = Template(filename=str(product_update_template_path))  # nosec
 
 
-def create_product_update_notification(shop: str, product_after: ProductUpdate, timestamp: datetime) -> str:
+def create_product_update_notification(
+    shop: str, product_after: ProductUpdate, timestamp: datetime
+) -> str:
     context = dict(
         **product_after.dict(),
         shop=shop,
-        timestamp=timestamp.strftime('%x %X'),
+        timestamp=timestamp.strftime("%x %X"),
         discount=product_after.discount,
         had_discount=product_after.had_discount,
     )
@@ -38,11 +40,7 @@ async def send_product_update_notification(
 
 @products_update.connect
 async def notify_on_product_update(
-    session: AsyncSession,
-    op_id: str,
-    shop: str,
-    products: list[ProductUpdate],
-    timestamp: datetime
+    session: AsyncSession, op_id: str, shop: str, products: list[ProductUpdate], timestamp: datetime
 ):
     if not len(products):
         return

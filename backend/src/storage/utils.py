@@ -1,15 +1,25 @@
 from enum import Enum
 from typing import Callable
 
-from sqlalchemy import Column, Integer, Float, JSON, String, DateTime, func, ForeignKey, Boolean
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, AsyncSession
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    func,
+)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import sessionmaker
 
 
 class CascadeAction(str, Enum):
-    CASCADE = 'CASCADE'
-    RESTRICT = 'RESTRICT'
+    CASCADE = "CASCADE"
+    RESTRICT = "RESTRICT"
 
 
 class CharField:
@@ -30,7 +40,9 @@ class FloatField:
 class DateTimeField:
     def __new__(cls, *, nullable=False, auto_add_now=False, **kwargs):
         server_default = func.now() if auto_add_now and not nullable else None
-        return Column(DateTime(timezone=True), nullable=nullable, server_default=server_default, **kwargs)
+        return Column(
+            DateTime(timezone=True), nullable=nullable, server_default=server_default, **kwargs
+        )
 
 
 class JSONField:

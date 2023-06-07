@@ -1,7 +1,8 @@
-from functools import lru_cache
+import base64
 import hashlib
 import hmac
-import base64
+from functools import lru_cache
+
 from fastapi import Depends
 
 from auth import get_user
@@ -34,7 +35,7 @@ def sign_deep_link_payload(payload: str) -> str:
 
 
 def verify_deep_link_token(token: str) -> bool:
-    payload, signature = token.split('-')
+    payload, signature = token.split("-")
     good_signature = sign_deep_link_payload(payload)
     return hmac.compare_digest(signature, good_signature)
 
@@ -42,11 +43,11 @@ def verify_deep_link_token(token: str) -> bool:
 def make_deep_link_token(payload: str) -> str:
     payload = encode_deep_link_payload(payload)
     signature = sign_deep_link_payload(payload)
-    return f'{payload}-{signature}'
+    return f"{payload}-{signature}"
 
 
 def make_deep_link(user: User = Depends(get_user)) -> DeepLink:
-    payload = f'user:{user.id}'
+    payload = f"user:{user.id}"
     token = make_deep_link_token(payload)
     link = f"https://t.me/GetBaconBot?start={token}"
     return DeepLink(link=link)
@@ -56,8 +57,7 @@ def decode_deep_link_token(token: str) -> str:
     verified = verify_deep_link_token(token)
 
     if not verified:
-        raise ValueError('Deep link signature mismatch.')
+        raise ValueError("Deep link signature mismatch.")
 
-    payload, signature = token.split('-')
+    payload, signature = token.split("-")
     return base64.urlsafe_b64decode(payload).decode()
-

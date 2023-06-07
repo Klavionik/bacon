@@ -1,9 +1,10 @@
 from fastapi import Depends
-from fastapi_users import IntegerIDMixin, BaseUserManager, InvalidPasswordException
+from fastapi_users import BaseUserManager, IntegerIDMixin, InvalidPasswordException
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
 from config import settings
 from storage.models import User
+
 from .db import get_user_db
 from .schemas import UserCreate
 
@@ -20,7 +21,9 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         user: UserCreate | User,
     ):
         if len(password) < MIN_PASSWORD_LENGTH:
-            raise InvalidPasswordException(f"The password should have at least {MIN_PASSWORD_LENGTH} characters.")
+            raise InvalidPasswordException(
+                f"The password should have at least {MIN_PASSWORD_LENGTH} characters."
+            )
 
         if password != user.repeat_password:
             raise InvalidPasswordException("'password' field should match 'repeat_password' field.")

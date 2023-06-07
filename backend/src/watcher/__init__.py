@@ -1,3 +1,3 @@
-from .signals import products_update
+import watcher.notifications  # noqa
 
-import watcher.notifications
+from .signals import products_update  # noqa

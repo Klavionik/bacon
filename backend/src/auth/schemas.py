@@ -1,16 +1,16 @@
-from fastapi_users.schemas import BaseUserCreate, BaseUser, BaseUserUpdate
-from pydantic import BaseModel, Field
+from fastapi_users.schemas import BaseUser, BaseUserCreate, BaseUserUpdate
+from pydantic import BaseModel
 
 
 def to_lower_camel(string: str) -> str:
     camelised = []
 
-    for i, word in enumerate(string.split('_')):
+    for i, word in enumerate(string.split("_")):
         if i == 0:
             camelised.append(word)
         else:
             camelised.append(word.capitalize())
-    return ''.join(camelised)
+    return "".join(camelised)
 
 
 class UserMeta(BaseModel):
@@ -45,4 +45,3 @@ class UserUpdate(BaseUserUpdate):
     class Config:
         alias_generator = to_lower_camel
         allow_population_by_field_name = True
-

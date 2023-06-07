@@ -2,9 +2,9 @@ from huey import RedisHuey, crontab
 from sqlalchemy import select
 
 from config import settings
-from telemetry import configure_sentry, configure_logger
 from storage import create_db_engine, create_db_session
 from storage.models import Shop
+from telemetry import configure_logger, configure_sentry
 from watcher.api import update_products
 from watcher.utils import async_task
 
@@ -14,7 +14,7 @@ Session = create_db_session(engine)
 if settings.DEBUG:
     schedule = crontab()
 else:
-    schedule = crontab(minute='0', hour='*/1')
+    schedule = crontab(minute="0", hour="*/1")
 
 huey = RedisHuey(url=settings.queue_uri)
 

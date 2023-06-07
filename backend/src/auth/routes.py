@@ -1,7 +1,8 @@
-from auth.users import users
-from auth.schemas import UserCreate, UserRead, UserUpdate
-from auth.backend import auth_backend
 from fastapi.routing import APIRouter
+
+from auth.backend import auth_backend
+from auth.schemas import UserCreate, UserRead, UserUpdate
+from auth.users import users
 
 register_router = users.get_register_router(UserRead, UserCreate)
 auth_router = users.get_auth_router(auth_backend)

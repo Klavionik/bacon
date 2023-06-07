@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class UserProductInput(BaseModel):
@@ -41,7 +41,7 @@ class UserProductOutput(BaseModel):
     price: float
     old_price: float | None
     shop_id: int
-    shop_display_title: str = Field(alias='display_title')
+    shop_display_title: str = Field(alias="display_title")
 
     class Config:
         orm_mode = True

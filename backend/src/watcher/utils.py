@@ -1,8 +1,9 @@
 import asyncio
 from functools import wraps
 
+from perekrestok.parser import PerekrestokParser, ProductData
+
 from .schemas import ProductInDB
-from perekrestok.parser import ProductData, PerekrestokParser
 
 
 def is_price_changed(product: ProductInDB, new_product: ProductData) -> bool:
@@ -27,4 +28,5 @@ def async_task(func):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
         loop.run_until_complete(func(*args, **kwargs))
+
     return wrapper

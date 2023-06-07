@@ -1,4 +1,8 @@
-from fastapi_users.authentication import JWTStrategy, AuthenticationBackend, BearerTransport
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    BearerTransport,
+    JWTStrategy,
+)
 
 from config import settings
 

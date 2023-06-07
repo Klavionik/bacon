@@ -1,9 +1,9 @@
 from typing import Any
+from urllib.parse import urljoin
 
 from fastapi import FastAPI
 
 from config import settings
-from urllib.parse import urljoin
 
 
 def url_path_for(app: FastAPI, name: str, **path_params: Any) -> str:

@@ -1,14 +1,14 @@
-from sqlalchemy import select, desc, delete, literal
+from sqlalchemy import delete, desc, literal, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import functions
 
 from api import schemas
 from perekrestok.parser import PerekrestokParser, ProductData
 from storage.models import (
+    Price,
+    Product,
     Shop,
     ShopLocation,
-    Product,
-    Price,
     UserProduct,
     UserShopLocation,
 )
@@ -19,20 +19,15 @@ async def list_shops(session: AsyncSession):
 
 
 async def get_shop(session: AsyncSession, url: str) -> Shop:
-    query = (
-        select(Shop)
-        .where(literal(url).regexp_match(Shop.url_rule))
-    )
+    query = select(Shop).where(literal(url).regexp_match(Shop.url_rule))
     return (await session.scalars(query)).first()
 
 
 async def list_user_products(session: AsyncSession, user_id: int):
     latest_prices_cte = (
-        select(
-            Price.product_id,
-            functions.max(Price.created_at).label('latest_date')
+        select(Price.product_id, functions.max(Price.created_at).label("latest_date")).group_by(
+            Price.product_id
         )
-        .group_by(Price.product_id)
     ).cte()
 
     query = (
@@ -51,7 +46,11 @@ async def list_user_products(session: AsyncSession, user_id: int):
         .join(Shop)
         .join(UserProduct)
         .join(latest_prices_cte)
-        .join(Price, (latest_prices_cte.c.latest_date == Price.created_at) & (Price.product_id == Product.id))
+        .join(
+            Price,
+            (latest_prices_cte.c.latest_date == Price.created_at)
+            & (Price.product_id == Product.id),
+        )
         .where(UserProduct.user_id == user_id)
     )
     return (await session.execute(query)).mappings().all()
@@ -66,9 +65,7 @@ async def user_product_exists(session: AsyncSession, url: str, user_id: int) -> 
     subquery = (
         select(UserProduct)
         .join(Product)
-        .where(
-            Product.url.ilike(url),
-            UserProduct.user_id == user_id)
+        .where(Product.url.ilike(url), UserProduct.user_id == user_id)
     ).exists()
 
     query = select(literal(True)).where(subquery)
@@ -100,19 +97,22 @@ async def get_product_data(product_url: str, shop_location: ShopLocation) -> Pro
 
     if not product_data:
         raise RuntimeError(
-            f'Could not fetch product data for {product_url=} using parser {parser.__class__.__name__}.'
+            f"Could not fetch product data "
+            f"for {product_url=} using parser {parser.__class__.__name__}."
         )
     return product_data
 
 
-async def create_product(session: AsyncSession, product_url, shop_location: ShopLocation) -> tuple[Product, Price]:
+async def create_product(
+    session: AsyncSession, product_url, shop_location: ShopLocation
+) -> tuple[Product, Price]:
     product_data = await get_product_data(product_url, shop_location)
     product = Product(
         title=product_data.title,
         available=product_data.available,
         url=product_url,
         shop_location=shop_location,
-        meta=product_data.metadata
+        meta=product_data.metadata,
     )
     price = Price(
         price=product_data.price,
@@ -125,7 +125,9 @@ async def create_product(session: AsyncSession, product_url, shop_location: Shop
     return product, price
 
 
-async def create_user_product(session: AsyncSession, product_url: str, user_id: int) -> schemas.UserProductOutput | None:
+async def create_user_product(
+    session: AsyncSession, product_url: str, user_id: int
+) -> schemas.UserProductOutput | None:
     if await user_product_exists(session, product_url, user_id):
         return
 
@@ -163,20 +165,16 @@ async def create_user_product(session: AsyncSession, product_url: str, user_id: 
     return user_product_out
 
 
-async def get_user_shop_locations_by_user(session: AsyncSession, user_id: int) -> list[ShopLocation]:
-    query = (
-        select(ShopLocation)
-        .join(UserShopLocation)
-        .where(UserShopLocation.user_id == user_id)
-    )
+async def get_user_shop_locations_by_user(
+    session: AsyncSession, user_id: int
+) -> list[ShopLocation]:
+    query = select(ShopLocation).join(UserShopLocation).where(UserShopLocation.user_id == user_id)
 
     return (await session.scalars(query)).all()
 
 
 async def get_user_shop_location_for_shop(
-    session: AsyncSession,
-    user_id: int,
-    shop_id: int
+    session: AsyncSession, user_id: int, shop_id: int
 ) -> ShopLocation | None:
     query = (
         select(ShopLocation)
@@ -187,10 +185,11 @@ async def get_user_shop_location_for_shop(
     return (await session.scalars(query)).first()
 
 
-async def ensure_shop_location(session: AsyncSession, shop_location: schemas.ShopLocationSuggestion):
+async def ensure_shop_location(
+    session: AsyncSession, shop_location: schemas.ShopLocationSuggestion
+):
     select_query = select(ShopLocation.id).filter_by(
-        external_id=shop_location.external_id,
-        shop_id=shop_location.shop_id
+        external_id=shop_location.external_id, shop_id=shop_location.shop_id
     )
 
     result = (await session.scalars(select_query)).first()
@@ -205,18 +204,14 @@ async def ensure_shop_location(session: AsyncSession, shop_location: schemas.Sho
 
 
 async def save_user_shop_locations(
-    session: AsyncSession,
-    user_id: int,
-    locations: list[schemas.ShopLocationSuggestion]
+    session: AsyncSession, user_id: int, locations: list[schemas.ShopLocationSuggestion]
 ):
     await drop_user_shop_locations(session, user_id)
 
     for location in locations:
         location_id = await ensure_shop_location(session, location)
         user_shop_location = UserShopLocation(
-            user_id=user_id,
-            shop_location_id=location_id,
-            shop_id=location.shop_id
+            user_id=user_id, shop_location_id=location_id, shop_id=location.shop_id
         )
         session.add(user_shop_location)
 

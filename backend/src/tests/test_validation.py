@@ -12,16 +12,16 @@ def init_data():
             "first_name": "Ivan",
             "last_name": "Ivanov",
             "username": "IIvanov",
-            "language_code": "ru"
+            "language_code": "ru",
         },
         "auth_date": "1657916614",
-        "hash": "979d8a3a3580f96cbe0f5c7db6d3798fb76278a47c05bec58826a5cac97bc8c2"
+        "hash": "979d8a3a3580f96cbe0f5c7db6d3798fb76278a47c05bec58826a5cac97bc8c2",
     }
 
 
 @pytest.fixture
 def bot_token():
-    return 'bottoken'
+    return "bottoken"
 
 
 def test_verification_raw(bot_token, init_data):

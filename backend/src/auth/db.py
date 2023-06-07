@@ -10,7 +10,7 @@ class UserDatabase(SQLAlchemyUserDatabase):
     async def create(self, create_dict):
         # Remove repeat_password after validation,
         # before saving the user to the database.
-        create_dict.pop('repeat_password')
+        create_dict.pop("repeat_password")
         return await super().create(create_dict)
 
 
