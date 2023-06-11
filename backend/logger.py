@@ -1,12 +1,11 @@
 import sys
 
 import loguru
-from django.conf import settings
 
 logger_configured = False
 
 
-def configure_logger():
+def configure_logger(enable_backtrace: bool = False, enable_disagnose: bool = False):
     global logger_configured
 
     if logger_configured:
@@ -17,7 +16,7 @@ def configure_logger():
         sys.stderr,
         level="INFO",
         format="<g>[{time:DD.MM.YYYY HH:mm:ss}]</> <lvl>{level: <8}</> | <lvl>{message}</>",
-        backtrace=settings.DEBUG,
-        diagnose=settings.DEBUG,
+        backtrace=enable_backtrace,
+        diagnose=enable_disagnose,
     )
     logger_configured = True
