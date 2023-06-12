@@ -4,6 +4,29 @@ from django.db import models
 User = get_user_model()
 
 
+class ReverseRegex(models.Lookup):
+    """
+    Reverse regex search compatible with PostgreSQL query syntax.
+
+    The same as:
+
+    SELECT *
+    FROM table
+    WHERE 'value' ~ table.pattern;
+    """
+
+    lookup_name = "reverse_regex"
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return "%s ~ %s" % (rhs, lhs), params
+
+
+models.CharField.register_class_lookup(ReverseRegex)
+
+
 class Retailer(models.Model):
     title = models.CharField(max_length=64, unique=True)
     display_title = models.CharField(max_length=64)
