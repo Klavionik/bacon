@@ -5,9 +5,9 @@ User = get_user_model()
 
 
 class Retailer(models.Model):
-    title = models.CharField(max_length=64)
+    title = models.CharField(max_length=64, unique=True)
     display_title = models.CharField(max_length=64)
-    product_url_pattern = models.CharField(max_length=128)
+    product_url_pattern = models.CharField(max_length=128, unique=True)
 
 
 class Store(models.Model):
@@ -22,7 +22,7 @@ class Store(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=256)
-    url = models.URLField()
+    url = models.URLField(unique=True)
     available = models.BooleanField(default=True)
     meta = models.JSONField(default=dict, blank=True)
     store = models.ForeignKey(Store, related_name="products", on_delete=models.RESTRICT)
