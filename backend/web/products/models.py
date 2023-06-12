@@ -7,6 +7,7 @@ User = get_user_model()
 class Retailer(models.Model):
     title = models.CharField(max_length=64)
     display_title = models.CharField(max_length=64)
+    product_url_pattern = models.CharField(max_length=128)
 
 
 class Store(models.Model):
