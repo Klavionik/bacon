@@ -3,7 +3,6 @@ from typing import Any, Iterable
 from loguru import logger
 
 from .client import PerekrestokClient
-from .config import Config
 from .models import ProductData
 
 USER_AGENT = (
@@ -14,9 +13,10 @@ USER_AGENT = (
 
 
 class PerekrestokScraper:
-    def __init__(self, config: Config):
-        self.config = config
-        self.client = PerekrestokClient(config.API_BASE_URL, config.PROXIES)
+    def __init__(self, api_base_url: str, proxy: str | None = None):
+        self.api_base_url = api_base_url
+        self.proxy = proxy
+        self.client = PerekrestokClient(self.api_base_url, self.proxy)
 
     def fetch_all(self, urls: list[str], store_id: int) -> Iterable[ProductData]:
         with self.client:

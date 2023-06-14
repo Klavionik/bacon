@@ -13,7 +13,7 @@ USER_AGENT = (
 
 
 class PerekrestokClient:
-    def __init__(self, base_url: str, proxies: dict[str]):
+    def __init__(self, base_url: str, proxies: str | None):
         self.base_url = base_url
         self.token = None
         self.proxies = proxies

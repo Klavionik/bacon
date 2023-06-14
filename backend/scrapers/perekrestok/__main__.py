@@ -2,12 +2,13 @@ import argparse
 
 from loguru import logger
 
-from .config import config
 from .scraper import PerekrestokScraper
 
+DEFAULT_API_BASE_URL = "https://www.perekrestok.ru/api/customer/1.4.1.0"
 
-def main(url: str, store_id: int):
-    scraper = PerekrestokScraper(config)
+
+def main(url: str, store_id: int, api_base_url: str, proxy: str | None):
+    scraper = PerekrestokScraper(api_base_url, proxy)
     fetched = scraper.fetch(url, store_id)
     logger.info(fetched)
 
@@ -16,6 +17,8 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--url", type=str)
     argparser.add_argument("--store_id", type=int)
+    argparser.add_argument("--api", type=str, default=DEFAULT_API_BASE_URL)
+    argparser.add_argument("--proxy", type=str, default=None)
     args = argparser.parse_args()
 
-    main(args.url, args.store_id)
+    main(args.url, args.store_id, args.api, args.proxy)
