@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.module_loading import import_string
 
-from web.products.models import Retailer
 from web.scraping.utils import list_scrapers
 
 
@@ -37,7 +36,6 @@ class TOMLField(models.TextField):
 class Scraper(models.Model):
     entrypoint = models.CharField(max_length=256, choices=get_scrapers_choices())
     config = TOMLField(blank=True)
-    retailer = models.OneToOneField(Retailer, on_delete=models.CASCADE)
 
     @property
     def instance(self):

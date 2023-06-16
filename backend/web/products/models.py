@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from web.products.managers import RetailerManager
+from web.scraping.models import Scraper
 
 User = get_user_model()
 
@@ -33,6 +34,7 @@ class Retailer(models.Model):
     title = models.CharField(max_length=64, unique=True)
     display_title = models.CharField(max_length=64)
     product_url_pattern = models.CharField(max_length=128, unique=True)
+    scraper = models.OneToOneField(Scraper, on_delete=models.PROTECT)
 
     objects = RetailerManager()
 
