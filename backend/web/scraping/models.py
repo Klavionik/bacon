@@ -14,6 +14,9 @@ class Scraper(models.Model):
     entrypoint = models.CharField(max_length=256, choices=get_scrapers_choices())
     config = models.JSONField(blank=True, default=dict)
 
+    def __str__(self):
+        return self.entrypoint
+
     @property
     def instance(self):
         class_ = import_string(self.entrypoint)

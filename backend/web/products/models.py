@@ -38,6 +38,9 @@ class Retailer(models.Model):
 
     objects = RetailerManager()
 
+    def __str__(self):
+        return self.display_title
+
 
 class Store(models.Model):
     title = models.CharField(max_length=128)
@@ -48,6 +51,9 @@ class Store(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint("retailer", "external_id", name="uniq_retailer")]
 
+    def __str__(self):
+        return self.title
+
 
 class Product(models.Model):
     title = models.CharField(max_length=256)
@@ -56,11 +62,17 @@ class Product(models.Model):
     meta = models.JSONField(default=dict, blank=True)
     store = models.ForeignKey(Store, related_name="products", on_delete=models.RESTRICT)
 
+    def __str__(self):
+        return self.title
+
 
 class Price(models.Model):
     value = models.FloatField()
     product = models.ForeignKey(Product, related_name="prices", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.value)
 
 
 class UserProduct(models.Model):
