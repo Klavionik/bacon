@@ -66,7 +66,7 @@ class Product(models.Model):
     url = models.URLField(unique=True)
     in_stock = models.BooleanField(null=True)
     meta = models.JSONField(default=dict, blank=True)
-    store = models.ForeignKey(Store, related_name="products", on_delete=models.RESTRICT)
+    store = models.ForeignKey(Store, null=True, related_name="products", on_delete=models.RESTRICT)
     processing_status = models.CharField(
         max_length=32,
         default=ProcessingStatus.PENDING,
