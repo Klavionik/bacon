@@ -2,8 +2,9 @@ from typing import Any, Iterable
 
 from loguru import logger
 
+from ..base import BaseScraper
+from ..models import ProductData
 from .client import PerekrestokClient
-from .models import ProductData
 
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) "
@@ -12,13 +13,13 @@ USER_AGENT = (
 )
 
 
-class PerekrestokScraper:
+class PerekrestokScraper(BaseScraper):
     def __init__(self, api_base_url: str, proxy: str | None = None):
         self.api_base_url = api_base_url
         self.proxy = proxy
         self.client = PerekrestokClient(self.api_base_url, self.proxy)
 
-    def fetch_all(self, urls: list[str], store_id: int) -> Iterable[ProductData]:
+    def fetch_all(self, urls: list[str], store_id: str) -> Iterable[ProductData]:
         with self.client:
             self.client.set_store(store_id)
 
@@ -37,7 +38,7 @@ class PerekrestokScraper:
 
                 yield product
 
-    def fetch(self, url: str, store_id: int) -> ProductData:
+    def fetch(self, url: str, store_id: str) -> ProductData:
         with self.client:
             self.client.set_store(store_id)
             plu = self._extract_plu_from_url(url)

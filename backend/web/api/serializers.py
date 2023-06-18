@@ -63,11 +63,7 @@ class UserProductCreate(serializers.ModelSerializer):
     def create(self, validated_data):
         user = validated_data["user"]
         product_url = validated_data["product"]["url"]
-
-        retailer = Retailer.objects.get_by_product_url(product_url)
-        store = retailer.get_user_store(user)
-        product, _ = Product.objects.get_or_create(url=product_url, store=store)
-        return UserProduct.objects.create(user=user, product=product)
+        return UserProduct.objects.from_product_url(user, product_url)
 
 
 class UserProductList(serializers.ModelSerializer):

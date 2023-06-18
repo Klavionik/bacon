@@ -64,7 +64,7 @@ class PerekrestokClient:
         response.raise_for_status()
         return response.json()
 
-    def set_store(self, store_id: int):
+    def set_store(self, store_id: str):
         url = "delivery/mode/pickup/%s" % store_id
         response = self._client.put(url)
         response.raise_for_status()

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.module_loading import import_string
 
+from scrapers.base import BaseScraper
 from web.scraping.utils import list_scrapers
 
 
@@ -18,6 +19,6 @@ class Scraper(models.Model):
         return self.entrypoint
 
     @property
-    def instance(self):
+    def instance(self) -> BaseScraper:
         class_ = import_string(self.entrypoint)
         return class_(**self.config)

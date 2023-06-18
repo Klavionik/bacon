@@ -2,9 +2,11 @@ import functools
 import importlib
 import inspect
 
+from scrapers.base import BaseScraper
 
-def is_scraper(obj: object):
-    return inspect.isclass(obj) and obj.__name__.lower().endswith("scraper")
+
+def is_scraper(obj: type):
+    return inspect.isclass(obj) and issubclass(obj, BaseScraper) and not inspect.isabstract(obj)
 
 
 @functools.cache

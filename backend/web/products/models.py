@@ -1,10 +1,41 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import OuterRef, Subquery, functions
+from loguru import logger
 
-from web.products.managers import ProductManager, RetailerManager
 from web.scraping.models import Scraper
 
 User = get_user_model()
+
+
+class RetailerManager(models.Manager):
+    def get_by_product_url(self, url: str):
+        return self.get(product_url_pattern__reverse_regex=url)
+
+
+class ProductManager(models.Manager):
+    def with_latest_price(self):
+        subquery_qs = (
+            Price.objects.filter(product=OuterRef("id"))
+            .only("current", "old")
+            .order_by("-created_at")
+            .values(
+                price=functions.JSONObject(
+                    current="current",
+                    old="old",
+                )
+            )
+        )[:1]
+        latest_price_subquery = Subquery(product=OuterRef("pk"), queryset=subquery_qs)
+        return self.annotate(latest_price=latest_price_subquery)
+
+
+class UserProductManager(models.Manager):
+    def from_product_url(self, user: User, url: str):
+        retailer = Retailer.objects.get_by_product_url(url)
+        userstore = retailer.get_user_store(user)
+        product, _ = Product.objects.get_or_create(url=url, store=userstore.store)
+        return self.create(user=user, product=product)
 
 
 class ReverseRegex(models.Lookup):
@@ -42,7 +73,7 @@ class Retailer(models.Model):
         return self.display_title
 
     def get_user_store(self, user: User):
-        return user.stores.filter(retailer=self)
+        return user.stores.filter(store__retailer=self).first()
 
 
 class Store(models.Model):
@@ -61,7 +92,6 @@ class Store(models.Model):
 class Product(models.Model):
     class ProcessingStatus(models.TextChoices):
         PENDING = "pending"
-        PROCESSING = "processing"
         DONE = "done"
         ERROR = "error"
 
@@ -69,7 +99,7 @@ class Product(models.Model):
     url = models.URLField(unique=True)
     in_stock = models.BooleanField(null=True)
     meta = models.JSONField(default=dict, blank=True)
-    store = models.ForeignKey(Store, null=True, related_name="products", on_delete=models.RESTRICT)
+    store = models.ForeignKey(Store, related_name="products", on_delete=models.RESTRICT)
     processing_status = models.CharField(
         max_length=32,
         default=ProcessingStatus.PENDING,
@@ -79,7 +109,52 @@ class Product(models.Model):
     objects = ProductManager()
 
     def __str__(self):
-        return self.title
+        return self.url
+
+    def update(self):
+        logger.info(f"Updating product {self.url}.")
+        scraper = self.store.retailer.scraper.instance
+
+        try:
+            data = scraper.fetch(self.url, self.store.external_id)
+        except Exception as exc:
+            self.processing_status = self.ProcessingStatus.ERROR
+            self.save(update_fields=["processing_status"])
+            logger.error(f"Error while updating product {self.url}. Reason: {exc}.")
+            return
+
+        self.title = data.title
+        self.meta = data.metadata
+
+        if self.in_stock != data.available:
+            logger.info(
+                f"Availability changed for product {self.url}: {self.in_stock} -> {data.available}."
+            )
+            self.in_stock = data.available
+
+        try:
+            latest_price = self.prices.latest("-created_at")
+            if latest_price.current != data.price:
+                logger.info(
+                    f"Price changed for product {self.url}: {latest_price.current} -> {data.price}."
+                )
+                self.add_price(data.price, data.old_price)
+        except Price.DoesNotExist:
+            logger.info(f"Price added for product {self.url}.")
+            self.add_price(data.price, data.old_price)
+
+        self.save(update_fields=["title", "in_stock", "meta"])
+        logger.info(f"Product {self.url} update complete.")
+
+    def finish_processing(self):
+        if self.processing_status != self.ProcessingStatus.PENDING:
+            return
+
+        self.processing_status = self.ProcessingStatus.DONE
+        self.save(update_fields=["processing_status"])
+
+    def add_price(self, current: float, old: float | None):
+        Price.objects.create(current=current, old=old, product=self)
 
 
 class Price(models.Model):
@@ -95,6 +170,8 @@ class Price(models.Model):
 class UserProduct(models.Model):
     user = models.ForeignKey(User, related_name="products", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, related_name="users", on_delete=models.CASCADE)
+
+    objects = UserProductManager()
 
     class Meta:
         constraints = [models.UniqueConstraint("user", "product", name="uniq_user_product")]
