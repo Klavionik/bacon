@@ -18,8 +18,23 @@ class ProductPrice(serializers.ModelSerializer):
         fields = ["current", "old"]
 
 
+class RetailerDetail(serializers.ModelSerializer):
+    class Meta:
+        model = products_models.Retailer
+        fields = ["display_title", "id"]
+
+
+class StoreDetail(serializers.ModelSerializer):
+    retailer = RetailerDetail()
+
+    class Meta:
+        model = products_models.Store
+        fields = ["retailer"]
+
+
 class ProductDetail(serializers.ModelSerializer):
     price = ProductPrice(source="latest_price")
+    store = StoreDetail()
 
     class Meta:
         model = products_models.Product
