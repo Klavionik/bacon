@@ -67,12 +67,13 @@ class Product(models.Model):
 
 
 class Price(models.Model):
-    value = models.FloatField()
+    current = models.FloatField()
+    old = models.FloatField(null=True)
     product = models.ForeignKey(Product, related_name="prices", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.value)
+        return str(self.current)
 
 
 class UserProduct(models.Model):
