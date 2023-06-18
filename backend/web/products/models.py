@@ -56,11 +56,22 @@ class Store(models.Model):
 
 
 class Product(models.Model):
-    title = models.CharField(max_length=256)
+    class ProcessingStatus(models.TextChoices):
+        PENDING = "pending"
+        PROCESSING = "processing"
+        DONE = "done"
+        ERROR = "error"
+
+    title = models.CharField(max_length=256, blank=True)
     url = models.URLField(unique=True)
-    available = models.BooleanField(default=True)
+    in_stock = models.BooleanField(null=True)
     meta = models.JSONField(default=dict, blank=True)
     store = models.ForeignKey(Store, related_name="products", on_delete=models.RESTRICT)
+    processing_status = models.CharField(
+        max_length=32,
+        default=ProcessingStatus.PENDING,
+        choices=ProcessingStatus.choices,
+    )
 
     objects = ProductManager()
 
