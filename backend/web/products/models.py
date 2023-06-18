@@ -41,6 +41,9 @@ class Retailer(models.Model):
     def __str__(self):
         return self.display_title
 
+    def get_user_store(self, user: User):
+        return user.stores.filter(retailer=self)
+
 
 class Store(models.Model):
     title = models.CharField(max_length=128)
