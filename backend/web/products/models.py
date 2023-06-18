@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from web.products.managers import RetailerManager
+from web.products.managers import ProductManager, RetailerManager
 from web.scraping.models import Scraper
 
 User = get_user_model()
@@ -61,6 +61,8 @@ class Product(models.Model):
     available = models.BooleanField(default=True)
     meta = models.JSONField(default=dict, blank=True)
     store = models.ForeignKey(Store, related_name="products", on_delete=models.RESTRICT)
+
+    objects = ProductManager()
 
     def __str__(self):
         return self.title

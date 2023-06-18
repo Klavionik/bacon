@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "web.products",
     "web.scraping",
+    "web.api",
 ]
 
 MIDDLEWARE = [
@@ -124,3 +126,5 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SCRAPERS_DIR = "scrapers"
+
+REST_FRAMEWORK = {"DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning"}
