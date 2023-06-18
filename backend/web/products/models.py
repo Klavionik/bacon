@@ -68,7 +68,7 @@ class Product(models.Model):
 
 class Price(models.Model):
     current = models.FloatField()
-    old = models.FloatField(null=True)
+    old = models.FloatField(null=True, blank=True)
     product = models.ForeignKey(Product, related_name="prices", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
