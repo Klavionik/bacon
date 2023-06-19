@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 from web.products.models import Price, Product, Retailer, Store, UserProduct
 
@@ -11,6 +11,17 @@ def validate_retailer_exists_for_url(url: str):
         Retailer.objects.get_by_product_url(url)
     except Retailer.DoesNotExist:
         raise serializers.ValidationError("No retailer for given URL.")
+
+
+def validate_unique_product_user(product_url: str, user: User):
+    if UserProduct.objects.filter(product__url=product_url, user=user).exists():
+        raise Conflict("Fields product, user must make a unique set.")
+
+
+class Conflict(serializers.ValidationError):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = "Impossible action."
+    default_code = "conflict"
 
 
 class ProductCreate(serializers.Serializer):
@@ -63,6 +74,9 @@ class UserProductCreate(serializers.ModelSerializer):
     def create(self, validated_data):
         user = validated_data["user"]
         product_url = validated_data["product"]["url"]
+
+        # Validate here to return a 409 in case of error, not 400.
+        validate_unique_product_user(product_url, user)
         return UserProduct.objects.from_product_url(user, product_url)
 
 
