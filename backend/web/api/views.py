@@ -1,4 +1,5 @@
 from django.db.models import Prefetch
+from rest_framework import permissions
 from rest_framework.generics import DestroyAPIView, ListCreateAPIView
 
 from web.api import serializers
@@ -7,6 +8,7 @@ from web.products import models as products_models
 
 class UserProductListCreate(ListCreateAPIView):
     queryset = products_models.UserProduct.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == "POST":
