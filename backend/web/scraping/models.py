@@ -21,7 +21,7 @@ class Scraper(models.Model):
     enabled = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.entrypoint
+        return self.entrypoint.split(".")[-1]
 
     @property
     def _instance(self) -> BaseScraper:
