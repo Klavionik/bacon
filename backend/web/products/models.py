@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import OuterRef, Subquery, functions
 from loguru import logger
 
-from web.scraping.models import Scraper
+from web.scraping.models import Scraper, ScraperDisabled
 
 User = get_user_model()
 
@@ -33,8 +33,8 @@ class ProductManager(models.Manager):
 class UserProductManager(models.Manager):
     def from_product_url(self, user: User, url: str):
         retailer = Retailer.objects.get_by_product_url(url)
-        userstore = retailer.get_user_store(user)
-        product, _ = Product.objects.get_or_create(url=url, store=userstore.store)
+        store = retailer.get_user_store(user)
+        product, _ = Product.objects.get_or_create(url=url, store=store)
         return self.create(user=user, product=product)
 
 
@@ -73,7 +73,7 @@ class Retailer(models.Model):
         return self.display_title
 
     def get_user_store(self, user: User):
-        return user.stores.filter(store__retailer=self).first()
+        return user.stores.filter(retailer=self).first()
 
 
 class Store(models.Model):
@@ -113,10 +113,13 @@ class Product(models.Model):
 
     def update(self):
         logger.info(f"Updating product {self.url}.")
-        scraper = self.store.retailer.scraper.instance
+        scraper = self.store.retailer.scraper
 
         try:
             data = scraper.fetch(self.url, self.store.external_id)
+        except ScraperDisabled:
+            logger.info(f"Abort fetching {self.url}: scraper {scraper} is disabled.")
+            return
         except Exception as exc:
             self.processing_status = self.ProcessingStatus.ERROR
             self.save(update_fields=["processing_status"])
