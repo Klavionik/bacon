@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "djoser",
     "web.products",
     "web.scraping",
     "web.api",
+    "web.users",
 ]
 
 MIDDLEWARE = [
@@ -127,4 +129,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SCRAPERS_DIR = "scrapers"
 
-REST_FRAMEWORK = {"DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning"}
+REST_FRAMEWORK = {
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
+}
+
+AUTH_USER_MODEL = "users.User"
+
+DJOSER = {
+    "USER_CREATE_PASSWORD_RETYPE": True,
+}
+
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ["JWT"],
+}

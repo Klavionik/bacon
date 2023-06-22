@@ -168,8 +168,8 @@ class Price(models.Model):
 
 
 class UserProduct(models.Model):
-    user = models.ForeignKey(User, related_name="products", on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name="users", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     objects = UserProductManager()
 
@@ -178,8 +178,8 @@ class UserProduct(models.Model):
 
 
 class UserStore(models.Model):
-    user = models.ForeignKey(User, related_name="stores", on_delete=models.CASCADE)
-    store = models.ForeignKey(Store, related_name="+", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [models.UniqueConstraint("user", "store", name="uniq_user_store")]
