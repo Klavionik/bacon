@@ -326,6 +326,22 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-constance"
+version = "2.9.1"
+description = "Django live settings with pluggable backends, including Redis."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "django-constance-2.9.1.tar.gz", hash = "sha256:4c6a96a5f2cbce1bc3fa41aa20566b6ee26fbd896c9f91f996518a3a0904f6c8"},
+    {file = "django_constance-2.9.1-py3-none-any.whl", hash = "sha256:bf0b392efa18a1f3f464eddb7eb36ac5c02598354a5e31d0d4ce4fc8b535694b"},
+]
+
+[package.extras]
+database = ["django-picklefield"]
+redis = ["redis"]
+
+[[package]]
 name = "django-environ"
 version = "0.10.0"
 description = "A package that allows you to utilize 12factor inspired environment variables to configure your Django application."
@@ -341,6 +357,24 @@ files = [
 develop = ["coverage[toml] (>=5.0a4)", "furo (>=2021.8.17b43,<2021.9.0)", "pytest (>=4.6.11)", "sphinx (>=3.5.0)", "sphinx-notfound-page"]
 docs = ["furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-page"]
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
+
+[[package]]
+name = "django-picklefield"
+version = "3.1"
+description = "Pickled object field for Django"
+category = "main"
+optional = false
+python-versions = ">=3"
+files = [
+    {file = "django-picklefield-3.1.tar.gz", hash = "sha256:c786cbeda78d6def2b43bff4840d19787809c8909f7ad683961703060398d356"},
+    {file = "django_picklefield-3.1-py3-none-any.whl", hash = "sha256:d77c504df7311e8ec14e8b779f10ca6fec74de6c7f8e2c136e1ef60cf955125d"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[package.extras]
+tests = ["tox"]
 
 [[package]]
 name = "django-rest-framework"
@@ -1144,4 +1178,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ffffbcd8fd041015ad395b21b6a89b39baddbd01bd9188732a76be8474edd305"
+content-hash = "5c3ce28f2451f2cebd9a77866d8fe9247ceca89a39e281060e0ba13fd425fae6"

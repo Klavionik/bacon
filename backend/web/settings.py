@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "djoser",
+    "constance",
+    "constance.backends.database",
     "web.products",
     "web.scraping",
     "web.api",
@@ -129,17 +131,41 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SCRAPERS_DIR = "scrapers"
 
+AUTH_USER_MODEL = "users.User"
+
+# django-rest-framework settings.
 REST_FRAMEWORK = {
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
 }
 
-AUTH_USER_MODEL = "users.User"
 
+# djoser settings.
 DJOSER = {
     "USER_CREATE_PASSWORD_RETYPE": True,
 }
 
+# djangorestframwork-simplejwt settings.
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ["JWT"],
+}
+
+
+# django-constance settings.
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+
+CONSTANCE_ADDITIONAL_FIELDS = {
+    "url_field": ["django.forms.URLField", {"widget": "django.forms.widgets.Textarea"}]
+}
+
+CONSTANCE_CONFIG = {
+    "PEREKRESTOK_API_URL": (
+        "https://www.perekrestok.ru/api/customer/1.4.1.0",
+        "Perekrestok API base URL.",
+        "url_field",
+    ),
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    "Scrapers": ["PEREKRESTOK_API_URL"],
 }
