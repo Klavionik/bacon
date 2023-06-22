@@ -66,6 +66,7 @@ class ProductDetail(serializers.ModelSerializer):
 
 class UserProductCreate(serializers.ModelSerializer):
     product = ProductCreate()
+    user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field="username")
 
     class Meta:
         model = UserProduct
