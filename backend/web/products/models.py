@@ -30,7 +30,17 @@ class ProductManager(models.Manager):
         return self.annotate(latest_price=latest_price_subquery)
 
 
+class UserProductQuerySet(models.QuerySet):
+    def filter_by_user(self, user: User):
+        if user.is_staff:
+            return self
+        return self.filter(user=user)
+
+
 class UserProductManager(models.Manager):
+    def get_queryset(self):
+        return UserProductQuerySet(self.model, using=self._db)
+
     def from_product_url(self, user: User, url: str):
         retailer = Retailer.objects.get_by_product_url(url)
         store = retailer.get_user_store(user)

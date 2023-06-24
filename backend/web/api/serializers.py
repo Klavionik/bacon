@@ -83,10 +83,11 @@ class UserProductCreate(serializers.ModelSerializer):
 
 class UserProductList(serializers.ModelSerializer):
     product = ProductDetail()
+    user = serializers.SlugRelatedField(slug_field="username", read_only=True)
 
     class Meta:
         model = UserProduct
-        exclude = ["user"]
+        fields = ["product", "user"]
 
 
 class UserProductDestroy(serializers.ModelSerializer):
