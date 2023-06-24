@@ -121,7 +121,7 @@ class Product(models.Model):
     def __str__(self):
         return self.url
 
-    def update(self):
+    def update(self) -> bool:
         logger.info(f"Updating product {self.url}.")
         scraper = self.store.retailer.scraper
 
@@ -129,12 +129,12 @@ class Product(models.Model):
             data = scraper.fetch(self.url, self.store.external_id)
         except ScraperDisabled:
             logger.info(f"Abort fetching {self.url}: scraper {scraper} is disabled.")
-            return
+            return False
         except Exception as exc:
             self.processing_status = self.ProcessingStatus.ERROR
             self.save(update_fields=["processing_status"])
             logger.error(f"Error while updating product {self.url}. Reason: {exc}.")
-            return
+            return False
 
         self.title = data.title
         self.meta = data.metadata
@@ -158,6 +158,7 @@ class Product(models.Model):
 
         self.save(update_fields=["title", "in_stock", "meta"])
         logger.info(f"Product {self.url} update complete.")
+        return True
 
     def finish_processing(self):
         if self.processing_status != self.ProcessingStatus.PENDING:
