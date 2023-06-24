@@ -1,14 +1,14 @@
 from django.db.models import Prefetch
-from rest_framework import permissions
+from rest_framework import permissions as drf_permissions
 from rest_framework.generics import DestroyAPIView, ListCreateAPIView
 
-from web.api import filters, serializers
+from web.api import filters, serializers, permissions
 from web.products import models as products_models
 
 
 class UserProductListCreate(ListCreateAPIView):
     queryset = products_models.UserProduct.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [drf_permissions.IsAuthenticated]
     filterset_class = filters.UserProductFilter
 
     def get_serializer_class(self):
@@ -35,3 +35,4 @@ class UserProductListCreate(ListCreateAPIView):
 class UserProductDestroy(DestroyAPIView):
     queryset = products_models.UserProduct.objects.all()
     serializer_class = serializers.UserProductDestroy
+    permission_classes = [drf_permissions.IsAuthenticated, permissions.CanDeleteUserProduct]
