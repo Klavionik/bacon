@@ -88,6 +88,16 @@ class Retailer(models.Model):
     def get_user_store(self, user: User):
         return user.stores.filter(retailer=self).first()
 
+    def search_stores(self, search_term: str):
+        client = self.scraper._instance.client
+
+        with client:
+            coordinates = client.get_location_coordinates(search_term)
+
+            if not coordinates:
+                return []
+            return client.get_stores_by_coordinates(coordinates)
+
 
 class Store(models.Model):
     title = models.CharField(max_length=128)

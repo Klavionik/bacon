@@ -1,5 +1,5 @@
 from django.db.models import Prefetch
-from rest_framework import permissions
+from rest_framework import exceptions, permissions
 from rest_framework.generics import (
     DestroyAPIView,
     GenericAPIView,
@@ -56,18 +56,9 @@ class RetailerStoreSearch(GenericAPIView):
         retailer = self.get_object()
         search_term = self.request.query_params.get("term")
 
-        if not search_term:
-            return Response(data=[])
+        if search_term is None:
+            raise exceptions.ValidationError("Missing required query param 'term'.")
 
-        client = retailer.scraper._instance.client
-
-        with client:
-            coordinates = client.get_location_coordinates(search_term)
-
-            if not coordinates:
-                return Response(data=[])
-
-            stores = client.get_stores_by_coordinates(coordinates)
-
+        stores = retailer.search_stores(search_term)
         serializer = serializers.StoreSuggestion(stores, many=True)
         return Response(data=serializer.data)
