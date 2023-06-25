@@ -132,3 +132,9 @@ class UserStoreListCreate(serializers.ModelSerializer):
 
         validate_unique_store_user(store, user)
         return UserStore.objects.create(user=user, store=store)
+
+
+class StoreSuggestion(serializers.Serializer):
+    title = serializers.CharField()
+    address = serializers.CharField()
+    external_id = serializers.IntegerField(source="id")

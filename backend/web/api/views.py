@@ -1,6 +1,12 @@
 from django.db.models import Prefetch
 from rest_framework import permissions
-from rest_framework.generics import DestroyAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.generics import (
+    DestroyAPIView,
+    GenericAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+)
+from rest_framework.response import Response
 
 from web.api import serializers
 from web.products import models as products_models
@@ -41,3 +47,27 @@ class UserStoreListCreate(ListCreateAPIView):
 
     def get_queryset(self):
         return products_models.UserStore.objects.filter_by_user(self.request.user)
+
+
+class RetailerStoreSearch(GenericAPIView):
+    queryset = products_models.Retailer.objects.select_related("scraper")
+
+    def get(self, request, *args, **kwargs):
+        retailer = self.get_object()
+        search_term = self.request.query_params.get("term")
+
+        if not search_term:
+            return Response(data=[])
+
+        client = retailer.scraper._instance.client
+
+        with client:
+            coordinates = client.get_location_coordinates(search_term)
+
+            if not coordinates:
+                return Response(data=[])
+
+            stores = client.get_stores_by_coordinates(coordinates)
+
+        serializer = serializers.StoreSuggestion(stores, many=True)
+        return Response(data=serializer.data)
