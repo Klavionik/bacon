@@ -48,6 +48,12 @@ class RetailerDetail(serializers.ModelSerializer):
         fields = ["display_title", "id"]
 
 
+class RetailerList(serializers.ModelSerializer):
+    class Meta:
+        model = Retailer
+        exclude = ["scraper"]
+
+
 class StoreDetail(serializers.ModelSerializer):
     retailer = RetailerDetail()
 

@@ -1,6 +1,6 @@
 from django.db.models import Prefetch
 from rest_framework import permissions
-from rest_framework.generics import DestroyAPIView, ListCreateAPIView
+from rest_framework.generics import DestroyAPIView, ListAPIView, ListCreateAPIView
 
 from web.api import serializers
 from web.products import models as products_models
@@ -27,3 +27,9 @@ class UserProductDestroy(DestroyAPIView):
 
     def get_queryset(self):
         return products_models.UserProduct.objects.filter_by_user(self.request.user)
+
+
+class RetailerList(ListAPIView):
+    queryset = products_models.Retailer.objects.all()
+    serializer_class = serializers.RetailerList
+    permission_classes = [permissions.IsAuthenticated]
