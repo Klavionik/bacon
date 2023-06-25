@@ -24,11 +24,6 @@ def validate_unique_store_user(store: Store, user: User):
         raise Conflict("Fields store, user must make a unique set.")
 
 
-def validate_unique_store_retailer(external_id: str, retailer: Retailer):
-    if Store.objects.filter(external_id=external_id, retailer=retailer).exists():
-        raise Conflict("Store with this external id already exists for retailer.")
-
-
 class Conflict(serializers.ValidationError):
     status_code = status.HTTP_409_CONFLICT
     default_detail = "Impossible action."
@@ -130,6 +125,7 @@ class UserStoreListCreate(serializers.ModelSerializer):
                 defaults=validated_data["store"],
             )
 
+        # Validate here to return a 409 in case of error, not 400.
         validate_unique_store_user(store, user)
         return UserStore.objects.create(user=user, store=store)
 
