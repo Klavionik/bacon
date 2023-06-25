@@ -24,24 +24,22 @@ class Conflict(serializers.ValidationError):
     default_code = "conflict"
 
 
+class ProductPrice(serializers.ModelSerializer):
+    class Meta:
+        model = Price
+        fields = ["current", "old"]
+
+
 class ProductCreate(serializers.ModelSerializer):
     url = serializers.URLField()
 
     class Meta:
         model = Product
-        fields = "__all__"
-        read_only_fields = ["title", "in_stock", ""]
-        exclude = ["store"]
+        fields = ["url"]
 
     def validate_url(self, value: str):
         validate_retailer_exists_for_url(value)
         return value
-
-
-class ProductPrice(serializers.ModelSerializer):
-    class Meta:
-        model = Price
-        fields = ["current", "old"]
 
 
 class RetailerDetail(serializers.ModelSerializer):
@@ -64,7 +62,7 @@ class ProductDetail(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = "__all__"
+        exclude = ["meta"]
 
 
 class UserProductCreate(serializers.ModelSerializer):
@@ -72,7 +70,7 @@ class UserProductCreate(serializers.ModelSerializer):
 
     class Meta:
         model = UserProduct
-        fields = ["product"]
+        fields = ["product", "id"]
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -85,13 +83,7 @@ class UserProductCreate(serializers.ModelSerializer):
 
 class UserProductList(serializers.ModelSerializer):
     product = ProductDetail()
-    user = serializers.SlugRelatedField(slug_field="username", read_only=True)
 
     class Meta:
         model = UserProduct
-        fields = ["product", "user"]
-
-
-class UserProductDestroy(serializers.ModelSerializer):
-    class Meta:
-        fields = ["id"]
+        fields = ["product", "id"]
