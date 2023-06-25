@@ -46,6 +46,11 @@ class UserProductManager(models.Manager):
         return self.create(user=user, product=product)
 
 
+class UserStoreQuerySet(models.QuerySet):
+    def filter_by_user(self, user: User):
+        return self.filter(user=user)
+
+
 class ReverseRegex(models.Lookup):
     """
     Reverse regex search compatible with PostgreSQL query syntax.
@@ -192,6 +197,8 @@ class UserProduct(models.Model):
 class UserStore(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
+
+    objects = UserStoreQuerySet.as_manager()
 
     class Meta:
         constraints = [models.UniqueConstraint("user", "store", name="uniq_user_store")]

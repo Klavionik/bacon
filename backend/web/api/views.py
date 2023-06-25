@@ -33,3 +33,11 @@ class RetailerList(ListAPIView):
     queryset = products_models.Retailer.objects.all()
     serializer_class = serializers.RetailerList
     permission_classes = [permissions.IsAuthenticated]
+
+
+class UserStoreListCreate(ListCreateAPIView):
+    serializer_class = serializers.UserStoreListCreate
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return products_models.UserStore.objects.filter_by_user(self.request.user)
