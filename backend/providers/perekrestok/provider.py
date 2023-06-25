@@ -1,8 +1,9 @@
+from functools import singledispatchmethod
 from typing import Any, Iterable
 
 from loguru import logger
 
-from ..base import BaseScraper
+from ..base import BaseProvider
 from ..models import ProductData
 from .client import PerekrestokClient
 
@@ -13,42 +14,42 @@ USER_AGENT = (
 )
 
 
-class PerekrestokScraper(BaseScraper):
+class PerekrestokProvider(BaseProvider):
     def __init__(self, api_base_url: str, proxy: str | None = None):
         self.api_base_url = api_base_url
         self.proxy = proxy
         self.client = PerekrestokClient(self.api_base_url, self.proxy)
 
-    def fetch_all(self, urls: list[str], store_id: str) -> Iterable[ProductData]:
+    @singledispatchmethod
+    def fetch_product(self, urls: str, store_id: str) -> ProductData:
+        with self.client:
+            self.client.set_store(store_id)
+            return self._fetch_product(urls)
+
+    @fetch_product.register
+    def _(self, urls: list, store_id: str) -> Iterable[ProductData]:
         with self.client:
             self.client.set_store(store_id)
 
             for url in urls:
-                plu = self._extract_plu_from_url(url)
-                data = self.client.fetch_product_data(plu)
+                yield self._fetch_product(url)
 
-                if not data:
-                    continue
-
-                try:
-                    product = self._parse_product_data(data)
-                except Exception as exc:
-                    logger.warning(f"Cannot parse {url=} with following exception: %s.", exc)
-                    continue
-
-                yield product
-
-    def fetch(self, url: str, store_id: str) -> ProductData:
+    def fetch_stores(self, address: str):
         with self.client:
-            self.client.set_store(store_id)
-            plu = self._extract_plu_from_url(url)
-            data = self.client.fetch_product_data(plu)
+            coordinates = self.client.get_location_coordinates(address)
 
-            try:
-                product = self._parse_product_data(data)
-                return product
-            except Exception as exc:
-                logger.warning(f"Cannot parse {url=} with following exception: %s.", exc)
+            if not coordinates:
+                return []
+            return self.client.get_stores_by_coordinates(coordinates)
+
+    def _fetch_product(self, url: str) -> ProductData:
+        plu = self._extract_plu_from_url(url)
+        data = self.client.fetch_product_data(plu)
+
+        try:
+            return self._parse_product_data(data)
+        except Exception as exc:
+            logger.warning(f"Cannot parse {url=} with following exception: %s.", exc)
 
     @staticmethod
     def _parse_product_data(data: dict[str, Any]) -> ProductData:
