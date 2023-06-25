@@ -24,11 +24,14 @@ class Conflict(serializers.ValidationError):
     default_code = "conflict"
 
 
-class ProductCreate(serializers.Serializer):
+class ProductCreate(serializers.ModelSerializer):
     url = serializers.URLField()
 
     class Meta:
-        fields = ["url"]
+        model = Product
+        fields = "__all__"
+        read_only_fields = ["title", "in_stock", ""]
+        exclude = ["store"]
 
     def validate_url(self, value: str):
         validate_retailer_exists_for_url(value)
@@ -66,14 +69,13 @@ class ProductDetail(serializers.ModelSerializer):
 
 class UserProductCreate(serializers.ModelSerializer):
     product = ProductCreate()
-    user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field="username")
 
     class Meta:
         model = UserProduct
-        fields = ["product", "user"]
+        fields = ["product"]
 
     def create(self, validated_data):
-        user = validated_data["user"]
+        user = self.context["request"].user
         product_url = validated_data["product"]["url"]
 
         # Validate here to return a 409 in case of error, not 400.

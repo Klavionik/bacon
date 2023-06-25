@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "djoser",
     "constance",
     "constance.backends.database",
-    "django_filters",
     "web.products",
     "web.scraping",
     "web.api",
@@ -138,7 +137,6 @@ AUTH_USER_MODEL = "users.User"
 REST_FRAMEWORK = {
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
-    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 

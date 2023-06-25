@@ -32,8 +32,6 @@ class ProductManager(models.Manager):
 
 class UserProductQuerySet(models.QuerySet):
     def filter_by_user(self, user: User):
-        if user.is_staff:
-            return self
         return self.filter(user=user)
 
 
