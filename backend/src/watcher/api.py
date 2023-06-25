@@ -29,7 +29,7 @@ async def update_products(session: AsyncSession, shop_id: int):
     logger.info(f"Try to update {len(products)} products.")
 
     for product in products:
-        new_product = await parser.fetch(product.url, product.shop_location_external_id)
+        new_product = await parser.fetch_products(product.url, product.shop_location_external_id)
         price_changed = is_price_changed(product, new_product)
         availablity_changed = is_availablity_changed(product, new_product)
 

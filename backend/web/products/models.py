@@ -88,15 +88,11 @@ class Retailer(models.Model):
     def get_user_store(self, user: User):
         return user.stores.filter(retailer=self).first()
 
+    def fetch_products(self, urls: str | list[str], store_id: str):
+        return self.scraper.fetch_products(urls, store_id)
+
     def search_stores(self, search_term: str):
-        client = self.scraper._instance.client
-
-        with client:
-            coordinates = client.get_location_coordinates(search_term)
-
-            if not coordinates:
-                return []
-            return client.get_stores_by_coordinates(coordinates)
+        return self.scraper.fetch_stores(search_term)
 
 
 class Store(models.Model):
@@ -110,6 +106,9 @@ class Store(models.Model):
 
     def __str__(self):
         return self.title
+
+    def fetch_products(self, urls: str | list[str]):
+        return self.retailer.fetch_products(urls, self.external_id)
 
 
 class Product(models.Model):
@@ -136,12 +135,11 @@ class Product(models.Model):
 
     def update(self) -> bool:
         logger.info(f"Updating product {self.url}.")
-        scraper = self.store.retailer.scraper
 
         try:
-            data = scraper.fetch(self.url, self.store.external_id)
+            data = self.store.fetch_products(self.url)
         except ScraperDisabled:
-            logger.info(f"Abort fetching {self.url}: scraper {scraper} is disabled.")
+            logger.info(f"Abort fetching {self.url}: retailer {self.store.retailer} is disabled.")
             return False
         except Exception as exc:
             self.processing_status = self.ProcessingStatus.ERROR

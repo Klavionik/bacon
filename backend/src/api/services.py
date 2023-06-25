@@ -93,7 +93,7 @@ async def get_latest_price(session: AsyncSession, product_id: int, shop_location
 
 async def get_product_data(product_url: str, shop_location: ShopLocation) -> ProductData:
     parser = PerekrestokParser()
-    product_data = await parser.fetch(product_url, shop_location.external_id)
+    product_data = await parser.fetch_products(product_url, shop_location.external_id)
 
     if not product_data:
         raise RuntimeError(

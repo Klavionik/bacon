@@ -21,12 +21,12 @@ class PerekrestokProvider(BaseProvider):
         self.client = PerekrestokClient(self.api_base_url, self.proxy)
 
     @singledispatchmethod
-    def fetch_product(self, urls: str, store_id: str) -> ProductData:
+    def fetch_products(self, urls: str, store_id: str) -> ProductData:
         with self.client:
             self.client.set_store(store_id)
             return self._fetch_product(urls)
 
-    @fetch_product.register
+    @fetch_products.register
     def _(self, urls: list, store_id: str) -> Iterable[ProductData]:
         with self.client:
             self.client.set_store(store_id)

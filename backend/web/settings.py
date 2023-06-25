@@ -129,7 +129,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-SCRAPERS_DIR = "scrapers"
+PROVIDERS_MODULE = "web.scraping.providers"
 
 AUTH_USER_MODEL = "users.User"
 

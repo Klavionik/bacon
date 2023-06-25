@@ -6,7 +6,7 @@ from perekrestok.parser import PerekrestokParser
 
 async def main(url: str, shop_location_external_id: int):
     parser = PerekrestokParser()
-    fetched = await parser.fetch(url, shop_location_external_id)
+    fetched = await parser.fetch_products(url, shop_location_external_id)
     print(fetched)
 
 
