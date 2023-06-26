@@ -19,7 +19,7 @@ x-build-backend:
   &build-backend
   context: backend
   args:
-    INSTALL_GROUPS: "main,dev"
+    INSTALL_GROUPS: "main"
 
 services:
   frontend:
@@ -37,27 +37,27 @@ services:
   backend:
     build: *build-backend
     environment: *env
-    command: ["uvicorn", "--reload", "--host", "0.0.0.0", "--port", "8099", "--factory", "main:create_app"]
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8099"]
     depends_on:
       migrate_db:
         condition: service_completed_successfully
     volumes:
-      - ./backend/src:/app/backend
+      - ./backend:/app/backend
     healthcheck:
       test: curl localhost:8099/health || exit 1
       interval: 3s
       timeout: 2s
       retries: 3
 
-  watcher:
-    build: *build-backend
-    environment: *env
-    command: ["huey_consumer.py", "--scheduler-interval", "60", "watcher.main.huey"]
-    volumes:
-      - ./backend/src:/app/backend
-    depends_on:
-      migrate_db:
-        condition: service_completed_successfully
+#  watcher:
+#    build: *build-backend
+#    environment: *env
+#    command: ["huey_consumer.py", "--scheduler-interval", "60", "watcher.main.huey"]
+#    volumes:
+#      - ./backend/src:/app/backend
+#    depends_on:
+#      migrate_db:
+#        condition: service_completed_successfully
 
   db:
     image: postgres:14.5-alpine
@@ -84,7 +84,9 @@ services:
   migrate_db:
     build: *build-backend
     environment: *env
-    command: ["alembic", "-c", "storage/alembic.ini", "upgrade", "head"]
+    command: ["python", "manage.py", "migrate"]
+    volumes:
+      - ./backend:/app/backend
     depends_on:
       db:
         condition: service_healthy
