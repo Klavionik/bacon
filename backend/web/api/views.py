@@ -37,7 +37,7 @@ class UserProductDestroy(DestroyAPIView):
 
 class RetailerList(ListAPIView):
     queryset = products_models.Retailer.objects.all()
-    serializer_class = serializers.RetailerList
+    serializer_class = serializers.RetailerDetail
     permission_classes = [permissions.IsAuthenticated]
 
 

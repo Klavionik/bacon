@@ -14,6 +14,14 @@ def validate_retailer_exists_for_url(url: str):
         raise serializers.ValidationError("No retailer for given URL.")
 
 
+def validate_userstore_exists_for_retailer(url: str, user: User):
+    retailer = Retailer.objects.get_by_product_url(url)
+    store = retailer.get_user_store(user)
+
+    if store is None:
+        raise serializers.ValidationError(f"User has no store for retailer {retailer.title}.")
+
+
 def validate_unique_product_user(product_url: str, user: User):
     if UserProduct.objects.filter(product__url=product_url, user=user).exists():
         raise Conflict("Fields product, user must make a unique set.")
@@ -36,25 +44,7 @@ class ProductPrice(serializers.ModelSerializer):
         fields = ["current", "old"]
 
 
-class ProductCreate(serializers.ModelSerializer):
-    url = serializers.URLField()
-
-    class Meta:
-        model = Product
-        fields = ["url"]
-
-    def validate_url(self, value: str):
-        validate_retailer_exists_for_url(value)
-        return value
-
-
 class RetailerDetail(serializers.ModelSerializer):
-    class Meta:
-        model = Retailer
-        fields = ["display_title", "id"]
-
-
-class RetailerList(serializers.ModelSerializer):
     class Meta:
         model = Retailer
         exclude = ["scraper"]
@@ -65,7 +55,31 @@ class StoreDetail(serializers.ModelSerializer):
 
     class Meta:
         model = Store
-        fields = ["retailer"]
+        fields = "__all__"
+
+
+class ProductCreate(serializers.ModelSerializer):
+    url = serializers.URLField()
+    price = serializers.SerializerMethodField()
+    store = StoreDetail(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+        read_only_fields = ["title", "in_stock", "store", "processing_status", "price", "meta"]
+
+    def validate_url(self, value: str):
+        validate_retailer_exists_for_url(value)
+        validate_userstore_exists_for_retailer(value, self.context["request"].user)
+        return value
+
+    def get_price(self, product: Product):
+        try:
+            price = product.prices.latest("-created_at")
+        except Price.DoesNotExist:
+            return None
+
+        return ProductPrice(instance=price).data
 
 
 class ProductDetail(serializers.ModelSerializer):
