@@ -9,7 +9,4 @@ def fetch_product_data(sender, instance: Product, created: bool, **_kwargs):
     if not created:
         return
 
-    success = instance.update()
-
-    if success:
-        instance.finish_processing()
+    instance.update()

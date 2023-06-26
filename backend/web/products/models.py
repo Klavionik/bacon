@@ -169,6 +169,8 @@ class Product(models.Model):
 
         self.save(update_fields=["title", "in_stock", "meta"])
         logger.info(f"Product {self.url} update complete.")
+
+        self.finish_processing()
         return True
 
     def finish_processing(self):
