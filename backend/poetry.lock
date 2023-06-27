@@ -418,6 +418,21 @@ files = [
 ]
 
 [[package]]
+name = "django-username-email"
+version = "2.5.4"
+description = "Custom Django User model that makes email the USERNAME_FIELD."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-username-email-2.5.4.tar.gz", hash = "sha256:42e8fa9c834341b47fb71d078b83b9862a64c3c801d9ed37dae958d63bb85240"},
+    {file = "django_username_email-2.5.4-py3-none-any.whl", hash = "sha256:186fc5ff8fb06e6beb6805163f95ccd0ece1f21bf1dc18aabb332eb6cd087652"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+
+[[package]]
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
@@ -1092,4 +1107,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cc804e6b25246d4682d4bb8f6c0e796032c6caa9549ed31183ad0763c32bd1bc"
+content-hash = "2db6e10ec00d361f1bfbaf74b38edd7fb9c3e01d4877e73047c59a64429d8fca"

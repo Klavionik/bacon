@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "constance",
     "constance.backends.database",
     "corsheaders",
+    "cuser",
     "web.products",
     "web.scraping",
     "web.api",

@@ -7,9 +7,9 @@ import os
 
 def add_default_superuser(apps, schema_editor):
     user_model = apps.get_model(settings.AUTH_USER_MODEL)
-    username = os.environ.get("DEFAULT_SUPERUSER_USERNAME", "superuser")
+    email = os.environ.get("DEFAULT_SUPERUSER_EMAIL", "superuser@example.com")
     password = os.environ.get("DEFAULT_SUPERUSER_PASSWORD", "superuser")
-    user_model.objects.create_superuser(username=username, password=password)
+    user_model.objects.create_superuser(email=email, password=password)
 
 
 class Migration(migrations.Migration):
