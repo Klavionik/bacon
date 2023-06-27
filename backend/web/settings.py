@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "djoser",
     "constance",
     "constance.backends.database",
+    "corsheaders",
     "web.products",
     "web.scraping",
     "web.api",
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -170,3 +172,7 @@ CONSTANCE_CONFIG = {
 CONSTANCE_CONFIG_FIELDSETS = {
     "Scrapers": ["PEREKRESTOK_API_URL"],
 }
+
+# django-cors-headers settings.
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
+CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
