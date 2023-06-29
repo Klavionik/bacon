@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import type { UserCreate, UserLogin, UserRead } from "@/models/user"
+import type { UserCreate, UserCreateServer, UserLogin, UserRead } from "@/models/user"
 import { services, client } from "@/http/"
 import storage from "@/storage"
 import { BadRequest, Unauthorized } from "@/http/errors"
@@ -27,7 +27,7 @@ export const useUserStore = defineStore("user", {
     },
     async signup(user: UserCreate) {
       try {
-        await services.signup(user)
+        await services.signup(this.adaptToServer(user))
         await this.login(user)
       } catch (e) {
         if (!(e instanceof BadRequest)) throw e
@@ -75,6 +75,13 @@ export const useUserStore = defineStore("user", {
         storage.removeItem("accessToken")
         client.removeToken()
         return false
+      }
+    },
+    adaptToServer(user: UserCreate): UserCreateServer {
+      return {
+        email: user.email,
+        password: user.password,
+        re_password: user.repeatPassword,
       }
     },
   },

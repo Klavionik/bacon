@@ -1,4 +1,4 @@
-import type { UserCreate, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
+import type { UserCreateServer, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
 import type { HTTPService } from "@/http/services/types"
 import type { HTTPClient } from "@/http/types"
 import { clientServiceProxy } from "@/http/utils"
@@ -11,8 +11,8 @@ export class AuthService implements HTTPService {
     this.client = clientServiceProxy(client, this)
   }
 
-  async signup(user: UserCreate): Promise<UserRead> {
-    const response = await this.client.post("register", { json: user })
+  async signup(user: UserCreateServer): Promise<UserRead> {
+    const response = await this.client.post("users/", { json: user })
     return response.json()
   }
 
