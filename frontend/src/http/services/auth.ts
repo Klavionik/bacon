@@ -18,19 +18,19 @@ export class AuthService implements HTTPService {
 
   async login(user: UserLogin): Promise<UserToken> {
     const formData = new FormData()
-    formData.append("username", user.email)
+    formData.append("email", user.email)
     formData.append("password", user.password)
-    const response = await this.client.post("login", { body: formData })
+    const response = await this.client.post("jwt/create/", { body: formData })
     return response.json()
   }
 
   async getMe(): Promise<UserRead> {
-    const response = await this.client.get("me")
+    const response = await this.client.get("users/me/")
     return response.json()
   }
 
   async updateMe(user: UserUpdate): Promise<UserRead> {
-    const response = await this.client.patch("me", { json: user })
+    const response = await this.client.patch("users/me/", { json: user })
     return response.json()
   }
 }

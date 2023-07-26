@@ -19,11 +19,11 @@ export const useUserStore = defineStore("user", {
   },
   actions: {
     async onLogin(data: any) {
-      this.loggedIn = true
-      const accessToken = data["access_token"]
+      const accessToken = data["access"]
       client.setToken(accessToken)
       storage.setItem("accessToken", accessToken)
       this.user = await services.getMe()
+      this.loggedIn = true
     },
     async signup(user: UserCreate) {
       try {
