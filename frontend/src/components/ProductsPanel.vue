@@ -105,7 +105,7 @@ export default defineComponent({
       let error = false
 
       try {
-        await this.create(this.user.id, this.newProductURL)
+        await this.create(this.newProductURL)
       } catch (e) {
         error = true
         throw e

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia/dist/pinia"
 import { services } from "@/http"
-import type { Product } from "@/models/product"
+import type { Product, ProductCreate } from "@/models/product"
 
 export const useProductsStore = defineStore("product", {
   state: () => {
@@ -9,23 +9,31 @@ export const useProductsStore = defineStore("product", {
     }
   },
   actions: {
-    adaptFromServer(item: any): Product {
+    adaptToServer(url: string): ProductCreate {
       return {
-        id: item["id"],
-        title: item["title"],
-        available: item["available"],
-        price: item["price"],
-        oldPrice: item["old_price"],
-        url: item["url"],
-        shopTitle: item["shop_display_title"],
-        shopId: item["shop_id"],
+        product: {
+          url,
+        },
       }
     },
-    async fetchProducts(userId: number) {
-      this.products = (await services.listProducts(userId)).map(this.adaptFromServer)
+    adaptFromServer(item: any): Product {
+      const { product } = item
+      return {
+        id: product["id"],
+        title: product["title"],
+        available: product["in_stock"],
+        price: product["price"]["current"],
+        oldPrice: product["price"]["old"],
+        url: product["url"],
+        shopTitle: product["store"]["retailer"]["display_title"],
+        shopId: product["store"]["retailer"]["id"],
+      }
     },
-    async create(userId: number, url: string) {
-      let product = await services.createProduct(userId, url)
+    async fetchProducts() {
+      this.products = (await services.listProducts()).map(this.adaptFromServer)
+    },
+    async create(url: string) {
+      let product = await services.createProduct(this.adaptToServer(url))
       product = this.adaptFromServer(product)
       this.products.push(product)
     },

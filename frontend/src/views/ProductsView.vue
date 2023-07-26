@@ -18,13 +18,12 @@ export default defineComponent({
   name: "ProductsView",
   components: { AppSection, ProductsPanel },
   async beforeRouteEnter() {
-    const { user } = useUserStore()
     const shopsStore = useShopsStore()
     const productsStore = useProductsStore()
     const shopLocationsStore = useShopLocationsStore()
     const promise = Promise.all([
       shopsStore.fetchShops(),
-      productsStore.fetchProducts(user.id),
+      productsStore.fetchProducts(),
       shopLocationsStore.fetchUserShopLocations(),
     ])
     await useProgress().attach(promise)

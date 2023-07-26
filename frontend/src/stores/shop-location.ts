@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import type { ShopLocation } from "@/models/shop"
+import type { ShopLocation, StoreSearchSuggestion } from "@/models/shop"
 import { services } from "@/http"
 import { useUserStore } from "@/stores/user"
 
@@ -17,18 +17,20 @@ export const useShopLocationsStore = defineStore("shopLocation", {
   actions: {
     adaptFromServer(location: any): ShopLocation {
       return {
-        title: location["title"],
-        address: location["address"],
-        externalId: location["external_id"],
-        shopId: location["shop_id"],
+        title: location["store"]["title"],
+        address: location["store"]["address"],
+        externalId: location["store"]["external_id"],
+        shopId: location["store"]["retailer"],
       }
     },
-    adaptToServer(location: ShopLocation) {
+    adaptToServer(retailerId: number, location: StoreSearchSuggestion) {
       return {
-        title: location.title,
-        address: location.address,
-        external_id: location.externalId,
-        shop_id: location.shopId,
+        store: {
+          title: location.title,
+          address: location.address,
+          external_id: location.externalId,
+          retailer: retailerId,
+        },
       }
     },
     async fetchShopLocationSuggestions(
@@ -39,17 +41,12 @@ export const useShopLocationsStore = defineStore("shopLocation", {
       return locations.map(this.adaptFromServer)
     },
     async fetchUserShopLocations() {
-      const { user } = useUserStore()
-      const locations = await services.getUserShopLocations(user.id)
+      const locations = await services.getUserShopLocations()
       this.userShopLocations = locations.map(this.adaptFromServer)
     },
-    async saveUserShopLocations(updatedLocations: Array<ShopLocation>) {
-      const { user } = useUserStore()
-      const locations = await services.saveUserShopLocations(
-        user.id,
-        updatedLocations.map(this.adaptToServer)
-      )
-      this.userShopLocations = locations.map(this.adaptFromServer)
+    async saveUserShopLocation(retailerId: number, updatedLocation: ShopLocation) {
+      await services.saveUserShopLocation(this.adaptToServer(retailerId, updatedLocation))
+      await this.fetchUserShopLocations()
     },
     isShopLocationConfigured(shopId: number) {
       return this.userShopLocations.some((location) => location.shopId === shopId)

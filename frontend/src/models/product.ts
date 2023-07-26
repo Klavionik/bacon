@@ -8,3 +8,9 @@ export type Product = {
   shopTitle: string
   shopId: number
 }
+
+export type ProductCreate = {
+  product: {
+    url: string
+  }
+}

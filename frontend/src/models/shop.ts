@@ -11,3 +11,9 @@ export type ShopLocation = {
   externalId: number
   shopId: number
 }
+
+export type StoreSearchSuggestion = {
+  title: string
+  address: string
+  externalId: number
+}

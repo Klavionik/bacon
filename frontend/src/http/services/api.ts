@@ -5,26 +5,25 @@ import { clientServiceProxy } from "@/http/utils"
 
 export class APIService implements HTTPService {
   client
-  prefix = "api/"
+  prefix = "api/v1/"
 
   constructor(client: HTTPClient) {
     this.client = clientServiceProxy(client, this)
   }
 
   async listShops(): Promise<Array<any>> {
-    const response = await this.client.get("shops")
+    const response = await this.client.get("retailers/")
     return response.json()
   }
 
-  async listProducts(userId: number): Promise<Array<any>> {
-    const options = { searchParams: { user_id: userId } }
-    const response = await this.client.get("user_products", options)
+  async listProducts(): Promise<Array<any>> {
+    const response = await this.client.get("userproducts/")
     return response.json()
   }
 
-  async createProduct(userId: number, url: string): Promise<any> {
-    const options = { json: { url }, searchParams: { user_id: userId } }
-    const response = await this.client.post("user_products", options)
+  async createProduct(product: any): Promise<any> {
+    const options = { json: product }
+    const response = await this.client.post("userproducts/", options)
     return response.json()
   }
 
@@ -33,19 +32,19 @@ export class APIService implements HTTPService {
   }
 
   async searchShopLocations(shopId: number, address: string): Promise<Array<any>> {
-    const options = { searchParams: { address } }
-    const response = await this.client.get(`shops/${shopId}/locations/search`, options)
+    const options = { searchParams: { term: address } }
+    const response = await this.client.get(`retailers/${shopId}/stores/search/`, options)
     return response.json()
   }
 
-  async getUserShopLocations(userId: number): Promise<Array<ShopLocation>> {
-    const response = await this.client.get(`user/${userId}/shop-locations`)
+  async getUserShopLocations(): Promise<Array<ShopLocation>> {
+    const response = await this.client.get(`userstores/`)
     return response.json()
   }
 
-  async saveUserShopLocations(userId: number, locations: Array<any>): Promise<Array<any>> {
-    const options = { json: locations }
-    const response = await this.client.put(`user/${userId}/shop-locations`, options)
+  async saveUserShopLocation(location: any): Promise<any> {
+    const options = { json: location }
+    const response = await this.client.post(`userstores/`, options)
     return response.json()
   }
 }

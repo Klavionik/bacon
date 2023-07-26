@@ -128,17 +128,19 @@ export default defineComponent({
       return `${shopLocation.address} (${shopLocation.title})`
     },
     async saveShopLocations() {
-      const locations = Array.from(this.choosenShopLocations.values()).filter(
-        (value) => value !== null
-      ) as Array<ShopLocation>
+      const locations = Array.from(this.choosenShopLocations.entries()).filter(
+        ([, storeSuggestion]) => storeSuggestion !== null
+      )
 
       this.saving = true
 
       try {
-        await this.shopLocationStore.saveUserShopLocations(locations)
+        for (const [retailerId, storeSuggestion] of locations) {
+          await this.shopLocationStore.saveUserShopLocation(retailerId, storeSuggestion)
+        }
+        this.showSavedNotification()
       } finally {
         this.saving = false
-        this.showSavedNotification()
       }
     },
     async _fetchOptions(shopId: number, search: string, loading: Function) {
