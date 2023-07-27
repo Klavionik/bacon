@@ -187,4 +187,13 @@ CONSTANCE_CONFIG_FIELDSETS = {
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
 CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
 
+# Celery settings.
+CELERY_BROKER_URL = env.cache(default="redis://0.0.0.0:6379/0")["LOCATION"]
+CELERY_BEAT_SCHEDULE = {
+    "update_products": {
+        "task": "web.products.tasks.update_products",
+        "schedule": timedelta(minutes=1),
+    },
+}
+
 SERVER_URL = env.str("SERVER_URL", default="")
