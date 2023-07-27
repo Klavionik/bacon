@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "web.scraping",
     "web.api",
     "web.users",
+    "web.notifications",
 ]
 
 MIDDLEWARE = [
@@ -168,12 +169,22 @@ CONSTANCE_CONFIG = {
         "Perekrestok API base URL.",
         "url_field",
     ),
+    "ENABLE_TELEGRAM_NOTIFICATIONS": (True, "Enable Telegram notifications."),
+    "TELEGRAM_API_URL": ("https://api.telegram.org/bot", "Telegram Bot API URL"),
+    "TELEGRAM_TOKEN": ("", "Telegram bot token"),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     "Scrapers": ["PEREKRESTOK_API_URL"],
+    "Notifications": [
+        "ENABLE_TELEGRAM_NOTIFICATIONS",
+        "TELEGRAM_API_URL",
+        "TELEGRAM_TOKEN",
+    ],
 }
 
 # django-cors-headers settings.
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
 CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
+
+SERVER_URL = env.str("SERVER_URL", default="")

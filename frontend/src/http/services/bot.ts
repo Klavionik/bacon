@@ -5,14 +5,23 @@ import { clientServiceProxy } from "@/http/utils"
 
 export class BotService implements HTTPService {
   client
-  prefix = "bot/"
+  prefix = "api/notifications/v1/telegram/"
 
   constructor(client: HTTPClient) {
     this.client = clientServiceProxy(client, this)
   }
 
+  async checkSubscription() {
+    const response = await this.client.get("subscription/")
+    return response.status !== 204
+  }
+
+  async deleteSubscription() {
+    return await this.client.delete("subscription/")
+  }
+
   async getDeepLink(): Promise<DeepLink> {
-    const response = await this.client.get("deep_link")
+    const response = await this.client.get("deep_link/")
     return response.json()
   }
 }
