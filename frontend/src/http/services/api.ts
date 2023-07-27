@@ -28,7 +28,7 @@ export class APIService implements HTTPService {
   }
 
   deleteProduct(id: number): Promise<any> {
-    return this.client.delete(`user_products/${id}`)
+    return this.client.delete(`userproducts/${id}/`)
   }
 
   async searchShopLocations(shopId: number, address: string): Promise<Array<any>> {
@@ -46,5 +46,9 @@ export class APIService implements HTTPService {
     const options = { json: location }
     const response = await this.client.post(`userstores/`, options)
     return response.json()
+  }
+
+  async deleteUserShopLocation(shopLocationId: number): Promise<any> {
+    return await this.client.delete(`userstores/${shopLocationId}/`)
   }
 }

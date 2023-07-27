@@ -49,6 +49,13 @@ class UserStoreListCreate(ListCreateAPIView):
         return products_models.UserStore.objects.filter_by_user(self.request.user)
 
 
+class UserStoreDestroy(DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return products_models.UserStore.objects.filter_by_user(self.request.user)
+
+
 class RetailerStoreSearch(GenericAPIView):
     queryset = products_models.Retailer.objects.select_related("scraper")
 

@@ -6,10 +6,11 @@ export type Shop = {
 }
 
 export type ShopLocation = {
+  id: number
   title: string
   address: string
   externalId: number
-  shopId: number
+  shopId?: number
 }
 
 export type StoreSearchSuggestion = {

@@ -5,6 +5,7 @@ from web.api.views import (
     RetailerStoreSearch,
     UserProductDestroy,
     UserProductListCreate,
+    UserStoreDestroy,
     UserStoreListCreate,
 )
 
@@ -14,4 +15,5 @@ urlpatterns = [
     path("retailers/", RetailerList.as_view()),
     path("retailers/<int:pk>/stores/search/", RetailerStoreSearch.as_view()),
     path("userstores/", UserStoreListCreate.as_view()),
+    path("userstores/<int:pk>/", UserStoreDestroy.as_view()),
 ]
