@@ -5,7 +5,7 @@
         <input
           :value="url"
           class="input"
-          :disabled="noShopLocationsConfigured"
+          :disabled="shopLocationStore.noShopLocationsConfigured"
           type="text"
           placeholder="Добавить"
           @input="emitURL"
@@ -52,13 +52,11 @@ export default defineComponent({
     ...mapStores(useShopsStore, useShopLocationsStore),
     isValidURL() {
       const shop = this.shopStore.getShopByProductURL(this.url)
+      console.log(shop)
 
       if (!shop) return false
 
       return this.shopLocationStore.isShopLocationConfigured(shop.id)
-    },
-    noShopLocationsConfigured() {
-      return this.shopLocationStore.noShopLocationsConfigured
     },
   },
   methods: {

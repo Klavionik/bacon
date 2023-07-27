@@ -2,7 +2,7 @@
   <div class="panel">
     <ProductSearch v-model:search="search" />
     <ProductTabs :active-tab="activeTab" @switch="activeTab = $event" />
-    <template v-if="noShopsConfigured">
+    <template v-if="noShopLocationsConfigured">
       <div class="panel-block is-justify-content-center">
         <article class="message is-small is-warning mb-0">
           <div class="message-body">
@@ -68,15 +68,12 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ["user"]),
     ...mapState(useProductsStore, ["products"]),
-    ...mapState(useShopLocationsStore, ["userShopLocations"]),
+    ...mapState(useShopLocationsStore, ["userShopLocations", "noShopLocationsConfigured"]),
     filteredProducts(): Array<Product> {
       return this.products.filter(this.filterBySearch).filter(this.filterByTab)
     },
     emptyText(): string {
       return this.products.length ? notFound : empty
-    },
-    noShopsConfigured(): boolean {
-      return !this.userShopLocations.length
     },
   },
   methods: {
