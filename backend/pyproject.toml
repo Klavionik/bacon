@@ -34,7 +34,7 @@ line-length = 100
 profile = "black"
 
 [tool.bandit]
-exclude_dirs = ["tests"]
+exclude_dirs = ["tests", ".venv"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

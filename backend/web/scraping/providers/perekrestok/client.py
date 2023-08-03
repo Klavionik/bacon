@@ -19,7 +19,7 @@ class PerekrestokClient:
         self.proxies = proxies
         self._client: httpx.Client | None = None
 
-    def __enter__(self):
+    def __enter__(self) -> "PerekrestokClient":
         self._client = httpx.Client(
             headers={"User-Agent": USER_AGENT}, timeout=30.0, proxies=self.proxies
         )
@@ -64,11 +64,10 @@ class PerekrestokClient:
         response.raise_for_status()
         return response.json()
 
-    def set_store(self, store_id: str):
+    def set_store(self, store_id: str) -> None:
         url = "delivery/mode/pickup/%s" % store_id
         response = self._client.put(url)
         response.raise_for_status()
-        return response.json()
 
     @staticmethod
     def _extract_api_token(session_cookie: str) -> str:
@@ -93,5 +92,5 @@ class PerekrestokClient:
         api_token = self._extract_api_token(session_cookie)
         return api_token
 
-    def _set_token(self, token: str):
+    def _set_token(self, token: str) -> None:
         self._client.headers = {"Authorization": f"Bearer {token}"}

@@ -9,7 +9,7 @@ DEFAULT_API_BASE_URL = "https://www.perekrestok.ru/api/customer/1.4.1.0"
 
 def main(url: str, store_id: str, api_base_url: str, proxy: str | None):
     provider = PerekrestokProvider(api_base_url, proxy)
-    fetched = provider.fetch_product(url, store_id)
+    fetched = provider.fetch_products(url, store_id)
     logger.info(fetched)
 
 

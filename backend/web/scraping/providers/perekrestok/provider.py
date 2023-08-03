@@ -4,7 +4,7 @@ from typing import Any, Iterable
 from loguru import logger
 
 from ..base import BaseProvider
-from ..models import ProductData
+from ..models import ProductData, Store
 from .client import PerekrestokClient
 
 USER_AGENT = (
@@ -34,7 +34,7 @@ class PerekrestokProvider(BaseProvider):
             for url in urls:
                 yield self._fetch_product(url)
 
-    def fetch_stores(self, address: str):
+    def fetch_stores(self, address: str) -> list[Store]:
         with self.client:
             coordinates = self.client.get_location_coordinates(address)
 
