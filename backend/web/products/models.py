@@ -1,11 +1,40 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import models, transaction
 from django.db.models import OuterRef, Subquery, functions
 from loguru import logger
 
 from web.scraping.models import Scraper, ScraperDisabled
+from web.scraping.providers.models import ProductData
 
 User = get_user_model()
+
+
+class ProductFetchError(Exception):
+    pass
+
+
+@dataclass
+class ProductUpdate:
+    product_id: int
+
+    availability_before: bool
+    price_before: float
+    old_price_before: float | None
+
+    availability_after: bool | None = None
+    price_after: float | None = None
+    old_price_after: float | None = None
+
+    @property
+    def is_availability_changed(self):
+        return self.availability_after != self.availability_before
+
+    @property
+    def price_changed(self):
+        return self.price_after != self.price_before
 
 
 class RetailerManager(models.Manager):
@@ -133,19 +162,44 @@ class Product(models.Model):
     def __str__(self):
         return self.url
 
-    def update(self) -> bool:
-        logger.info(f"Updating product {self.url}.")
+    @transaction.atomic
+    def ingest(self) -> None:
+        if self.processing_status != self.ProcessingStatus.PENDING:
+            return
+
+        logger.info(f"Ingest {self.url}.")
 
         try:
-            data = self.store.fetch_products(self.url)
-        except ScraperDisabled:
-            logger.info(f"Abort fetching {self.url}: retailer {self.store.retailer} is disabled.")
-            return False
-        except Exception as exc:
+            data = self._fetch_product_data()
+        except ProductFetchError:
             self.processing_status = self.ProcessingStatus.ERROR
             self.save(update_fields=["processing_status"])
-            logger.error(f"Error while updating product {self.url}. Reason: {exc}.")
-            return False
+            return
+
+        self.title = data.title
+        self.meta = data.metadata
+        self.in_stock = data.available
+        self.add_price(data.price, data.old_price)
+
+        self.processing_status = self.ProcessingStatus.DONE
+        self.save(update_fields=["title", "in_stock", "meta", "processing_status"])
+
+        logger.info(f"Ingest finished for {self.url}.")
+
+    @transaction.atomic
+    def update(self) -> ProductUpdate | None:
+        if self.processing_status != self.ProcessingStatus.DONE:
+            return
+
+        price = self.get_latest_price()
+        update = ProductUpdate(
+            product_id=self.id,
+            availability_before=self.in_stock,
+            price_before=price.current,
+            old_price_before=price.old,
+        )
+
+        data = self._fetch_product_data()
 
         self.title = data.title
         self.meta = data.metadata
@@ -154,34 +208,37 @@ class Product(models.Model):
             logger.info(
                 f"Availability changed for product {self.url}: {self.in_stock} -> {data.available}."
             )
-            self.in_stock = data.available
+            self.in_stock = update.availability_after = data.available
 
-        try:
-            latest_price = self.prices.latest("-created_at")
-            if latest_price.current != data.price:
-                logger.info(
-                    f"Price changed for product {self.url}: {latest_price.current} -> {data.price}."
-                )
-                self.add_price(data.price, data.old_price)
-        except Price.DoesNotExist:
-            logger.info(f"Price added for product {self.url}.")
+        if price.current != data.price:
+            logger.info(f"Price changed for product {self.url}: {price.current} -> {data.price}.")
             self.add_price(data.price, data.old_price)
+            update.price_after = data.price
+            update.old_price_after = data.old_price
 
         self.save(update_fields=["title", "in_stock", "meta"])
-        logger.info(f"Product {self.url} update complete.")
+        logger.info(f"Update complete for product {self.url}.")
 
-        self.finish_processing()
-        return True
+        return update
 
-    def finish_processing(self):
-        if self.processing_status != self.ProcessingStatus.PENDING:
-            return
-
-        self.processing_status = self.ProcessingStatus.DONE
-        self.save(update_fields=["processing_status"])
-
-    def add_price(self, current: float, old: float | None):
+    def add_price(self, current: float, old: float | None) -> None:
         Price.objects.create(current=current, old=old, product=self)
+
+    def get_latest_price(self) -> Optional["Price"]:
+        try:
+            return self.prices.latest("-created_at")
+        except Price.DoesNotExist:
+            pass
+
+    def _fetch_product_data(self) -> ProductData | None:
+        try:
+            return self.store.fetch_products(self.url)
+        except ScraperDisabled:
+            logger.info(f"Abort fetching {self.url}: retailer {self.store.retailer} is disabled.")
+            return
+        except Exception as exc:
+            logger.error(f"Error while fetching product {self.url}. Reason: {exc}.")
+            raise ProductFetchError
 
 
 class Price(models.Model):

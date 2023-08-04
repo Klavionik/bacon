@@ -5,8 +5,8 @@ from web.products.models import Product
 
 
 @receiver(post_save, sender=Product)
-def fetch_product_data(sender, instance: Product, created: bool, **_kwargs):
+def ingest_product(sender, instance: Product, created: bool, **_kwargs):
     if not created:
         return
 
-    instance.update()
+    instance.ingest()
