@@ -19,7 +19,7 @@ export const useProductsStore = defineStore("product", {
     adaptFromServer(item: any): Product {
       const { product } = item
       return {
-        id: product["id"],
+        id: item["id"],
         title: product["title"],
         available: product["in_stock"],
         price: product["price"]["current"],
