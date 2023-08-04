@@ -191,7 +191,7 @@ CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
 CELERY_BROKER_URL = env.cache(default="redis://0.0.0.0:6379/0")["LOCATION"]
 CELERY_BEAT_SCHEDULE = {
     "update_products": {
-        "task": "web.products.tasks.update_products",
+        "task": "web.products.tasks.refresh_products",
         "schedule": timedelta(minutes=1),
     },
 }

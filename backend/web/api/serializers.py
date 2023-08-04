@@ -75,7 +75,7 @@ class ProductCreate(serializers.ModelSerializer):
 
     def get_price(self, product: Product):
         try:
-            price = product.prices.latest("-created_at")
+            price = product.prices.latest("created_at")
         except Price.DoesNotExist:
             return None
 

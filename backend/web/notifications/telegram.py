@@ -82,7 +82,7 @@ class Client:
 
 
 @cache
-def get_client():
+def get_client() -> Client:
     return Client(
         base_url=config.TELEGRAM_API_URL,
         token=config.TELEGRAM_TOKEN,

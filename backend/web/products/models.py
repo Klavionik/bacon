@@ -19,6 +19,7 @@ class ProductFetchError(Exception):
 @dataclass
 class ProductUpdate:
     product_id: int
+    product_title: str
 
     availability_before: bool
     price_before: float
@@ -29,12 +30,21 @@ class ProductUpdate:
     old_price_after: float | None = None
 
     @property
-    def is_availability_changed(self):
+    def availability_changed(self):
         return self.availability_after != self.availability_before
 
     @property
     def price_changed(self):
         return self.price_after != self.price_before
+
+    @property
+    def product_changed(self):
+        return self.availability_changed or self.price_changed
+
+
+class RetailerQuerySet(models.QuerySet):
+    def scrapable(self):
+        return self.filter(scraper__enabled=True)
 
 
 class RetailerManager(models.Manager):
@@ -109,7 +119,7 @@ class Retailer(models.Model):
     product_url_pattern = models.CharField(max_length=128, unique=True)
     scraper = models.OneToOneField(Scraper, on_delete=models.PROTECT)
 
-    objects = RetailerManager()
+    objects = RetailerManager.from_queryset(RetailerQuerySet)()
 
     def __str__(self):
         return self.display_title
@@ -122,6 +132,19 @@ class Retailer(models.Model):
 
     def search_stores(self, search_term: str):
         return self.scraper.fetch_stores(search_term)
+
+    def update_products(self) -> list[ProductUpdate]:
+        product_updates = []
+
+        for store in self.stores.all():
+            for product in store.products.iterator(chunk_size=2000):
+                product: Product
+                product_update = product.update()
+
+                if product_update:
+                    product_updates.append(product_update)
+
+        return product_updates
 
 
 class Store(models.Model):
@@ -164,10 +187,11 @@ class Product(models.Model):
 
     @transaction.atomic
     def ingest(self) -> None:
-        if self.processing_status != self.ProcessingStatus.PENDING:
-            return
+        logger.info(f"Try to ingest product {self.url}.")
 
-        logger.info(f"Ingest {self.url}.")
+        if self.processing_status != self.ProcessingStatus.PENDING:
+            logger.warning("Product was already ingested.")
+            return
 
         try:
             data = self._fetch_product_data()
@@ -184,40 +208,46 @@ class Product(models.Model):
         self.processing_status = self.ProcessingStatus.DONE
         self.save(update_fields=["title", "in_stock", "meta", "processing_status"])
 
-        logger.info(f"Ingest finished for {self.url}.")
+        logger.info("Ingest finished.")
 
     @transaction.atomic
     def update(self) -> ProductUpdate | None:
+        logger.info(f"Try to update product {self.url}.")
+
         if self.processing_status != self.ProcessingStatus.DONE:
+            logger.warning("Won't update, ingest is not done yet.")
             return
 
         price = self.get_latest_price()
         update = ProductUpdate(
             product_id=self.id,
+            product_title=self.title,
             availability_before=self.in_stock,
             price_before=price.current,
             old_price_before=price.old,
         )
-
-        data = self._fetch_product_data()
+        try:
+            data = self._fetch_product_data()
+        except ProductFetchError:
+            logger.warning("Cannot update product.")
+            return
 
         self.title = data.title
         self.meta = data.metadata
 
         if self.in_stock != data.available:
-            logger.info(
-                f"Availability changed for product {self.url}: {self.in_stock} -> {data.available}."
-            )
-            self.in_stock = update.availability_after = data.available
+            logger.info(f"Availability changed: {self.in_stock} -> {data.available}.")
 
         if price.current != data.price:
-            logger.info(f"Price changed for product {self.url}: {price.current} -> {data.price}.")
+            logger.info(f"Price changed: {price.current} -> {data.price}.")
             self.add_price(data.price, data.old_price)
-            update.price_after = data.price
-            update.old_price_after = data.old_price
 
         self.save(update_fields=["title", "in_stock", "meta"])
-        logger.info(f"Update complete for product {self.url}.")
+        logger.info("Update complete.")
+
+        update.availability_after = data.available
+        update.price_after = data.price
+        update.old_price_after = data.old_price
 
         return update
 
@@ -226,7 +256,7 @@ class Product(models.Model):
 
     def get_latest_price(self) -> Optional["Price"]:
         try:
-            return self.prices.latest("-created_at")
+            return self.prices.latest("created_at")
         except Price.DoesNotExist:
             pass
 
