@@ -52,10 +52,8 @@ export default defineComponent({
     ...mapStores(useShopsStore, useShopLocationsStore),
     isValidURL() {
       const shop = this.shopStore.getShopByProductURL(this.url)
-      console.log(shop)
 
       if (!shop) return false
-
       return this.shopLocationStore.isShopLocationConfigured(shop.id)
     },
   },
