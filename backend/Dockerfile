@@ -3,7 +3,7 @@ ENV PYTHONUNBUFFERED=1
 ARG POETRY_VERSION='1.4.2'
 ARG INSTALL_GROUPS=$INSTALL_GROUPS
 
-RUN useradd --no-create-home --uid 1000 app
+RUN useradd --create-home --uid 1000 app
 WORKDIR /app/backend
 ENV PATH="$PATH:/home/app/.local/bin"
 

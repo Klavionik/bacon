@@ -3,17 +3,13 @@ version: "2.4"
 x-env:
   &env
   - DEBUG
-  - HOST
-  - TUNNEL_URL
-  - CORS_ALLOWED_ORIGIN
+  - SERVER_URL
   - SERVER_SECRET
-  - PROXY
+  - CORS_ALLOWED_ORIGIN
   - BOT_TOKEN
   - SENTRY_DSN
-  - LOGTAIL_TOKEN
-  - DB_NAME
-  - DB_USER
-  - DB_PASSWORD
+  - DATABASE_URL
+  - CACHE_URL
 
 x-build-backend:
   &build-backend
@@ -49,15 +45,15 @@ services:
       timeout: 2s
       retries: 3
 
-#  watcher:
-#    build: *build-backend
-#    environment: *env
-#    command: ["huey_consumer.py", "--scheduler-interval", "60", "watcher.main.huey"]
-#    volumes:
-#      - ./backend/src:/app/backend
-#    depends_on:
-#      migrate_db:
-#        condition: service_completed_successfully
+  worker:
+    build: *build-backend
+    environment: *env
+    command: ["celery", "--app", "web", "worker", "--concurrency", "1", "--beat", "--schedule", "/home/app/celery-schedule", "--loglevel", "INFO"]
+    volumes:
+      - ./backend:/app/backend
+    depends_on:
+      migrate_db:
+        condition: service_completed_successfully
 
   db:
     image: postgres:14.5-alpine
