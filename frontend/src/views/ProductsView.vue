@@ -11,7 +11,6 @@ import { defineComponent } from "vue"
 import { useShopsStore } from "@/stores/shop"
 import { useProductsStore } from "@/stores/treat"
 import { useShopLocationsStore } from "@/stores/shop-location"
-import { useUserStore } from "@/stores/user"
 import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({
