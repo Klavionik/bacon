@@ -1,8 +1,13 @@
 export DEBUG=1
+export HOST=http://bacon.localhost
+export SERVER_URL=
 export SERVER_SECRET=
-export CORS_ALLOWED_ORIGIN='["http://localhost:5173"]'
+export CORS_ALLOWED_ORIGIN='[]'
+export BOT_TOKEN=
 export DB_NAME=postgres
 export DB_USER=postgres
 export DB_PASSWORD=postgres
-export BOT_TOKEN=
-export TUNNEL_URL=
+export DATABASE_URL=psql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+export CACHE_URL=redis://cache:6379/0
+
+export POETRY_VIRTUALENVS_IN_PROJECT=true
