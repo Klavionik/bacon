@@ -3,60 +3,66 @@ version: "2.4"
 x-env:
   &env
   - DEBUG
-  - HOST
-  - TUNNEL_URL
-  - CORS_ALLOWED_ORIGIN
+  - SERVER_URL
   - SERVER_SECRET
-  - PROXY
+  - CORS_ALLOWED_ORIGIN
   - BOT_TOKEN
   - SENTRY_DSN
-  - LOGTAIL_TOKEN
-  - DB_NAME
-  - DB_USER
-  - DB_PASSWORD
+  - DATABASE_URL
+  - CACHE_URL
+
+x-build-backend:
+  &build-backend
+  context: backend
+  args:
+    INSTALL_GROUPS: "main"
 
 services:
-  proxy:
-    image: caddy:2-alpine
-    command: ["caddy", "reverse-proxy", "--from", $HOST, "--to", "web:8099", "--change-host-header"]
+  frontend:
+    build:
+      context: frontend
     depends_on:
-      - web
+      - backend
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /mnt/vdb1/volumes/caddy_data:/data
-      - /mnt/vdb1/volumes/caddy_config:/config
+      - ./frontend/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
 
-  web:
-    image: ghcr.io/$NAMESPACE/web:$IMAGE_TAG
+  backend:
+    build: *build-backend
     environment: *env
-    command: ["gunicorn", "--bind", "0.0.0.0:8099", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "main:create_app()"]
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8099"]
     depends_on:
       migrate_db:
         condition: service_completed_successfully
+    volumes:
+      - ./backend:/app/backend
     healthcheck:
       test: curl localhost:8099/health || exit 1
-      interval: 30s
-      timeout: 10s
+      interval: 3s
+      timeout: 2s
       retries: 3
 
-  watcher:
-    image: ghcr.io/$NAMESPACE/web:$IMAGE_TAG
+  worker:
+    build: *build-backend
     environment: *env
-    command: ["huey_consumer.py", "--scheduler-interval", "60", "watcher.main.huey"]
+    command: ["celery", "--app", "web", "worker", "--concurrency", "1", "--beat", "--schedule", "/home/app/celery-schedule", "--loglevel", "INFO"]
+    volumes:
+      - ./backend:/app/backend
     depends_on:
       migrate_db:
         condition: service_completed_successfully
 
   db:
     image: postgres:14.5-alpine
+    ports:
+      - "5432:5432"
     environment:
-      - POSTGRES_DB=$DB_NAME
-      - POSTGRES_USER=$DB_USER
       - POSTGRES_PASSWORD=$DB_PASSWORD
     volumes:
-      - /mnt/vdb1/volumes/pgdata:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: pg_isready --username $DB_USER || exit 1
       interval: 3s
@@ -66,13 +72,23 @@ services:
   cache:
     image: redis:7-alpine
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "6379:6379"
     volumes:
-      - /mnt/vdb1/volumes/redisdata:/data
+      - redis_data:/data
 
   migrate_db:
-    image: ghcr.io/$NAMESPACE/web:$IMAGE_TAG
+    build: *build-backend
     environment: *env
-    command: ["alembic", "-c", "storage/alembic.ini", "upgrade", "head"]
+    command: ["python", "manage.py", "migrate"]
+    volumes:
+      - ./backend:/app/backend
     depends_on:
       db:
         condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pg_data:
+  redis_data:

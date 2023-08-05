@@ -1,0 +1,10 @@
+{% load notifications %}
+
+🏪<b>{{ retailer }}</b>
+{% for update in updates %}
+🍪<b>{{ update.product_title }}</b>
+<b>Цена раньше: </b>{% if update.old_price_before %}{{ update.price_before|currency }} <s>({{ update.old_price_before|currency }})</s>{% else %}{{ update.price_before|currency }}{% endif %}
+<b>Цена сейчас: </b>{% if update.old_price_after %}{{ update.price_after|currency }} <s>({{ update.old_price_after|currency }})</s>{% else %}{{ update.price_after|currency }}{% endif %}
+<b>{% if update.availability_after %}В наличии{% else %}Нет в наличии{% endif %}</b>
+{% endfor %}
+<i>Обновлено: {{ finished_at|date:"SHORT_DATETIME_FORMAT" }} UTC</i>

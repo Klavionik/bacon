@@ -28,7 +28,7 @@ export const useShopsStore = defineStore("shop", {
         id: shop["id"],
         title: shop["title"],
         displayTitle: shop["display_title"],
-        urlRule: shop["url_rule"],
+        urlRule: shop["product_url_pattern"],
       }
     },
   },

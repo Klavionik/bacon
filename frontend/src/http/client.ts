@@ -42,7 +42,7 @@ export class Client implements HTTPClient {
 
   setToken(token: string) {
     this.client = this.client.extend({
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `JWT ${token}` },
     })
   }
 

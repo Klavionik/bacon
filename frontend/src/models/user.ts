@@ -9,6 +9,12 @@ export type UserCreate = {
   repeatPassword: string
 }
 
+export type UserCreateServer = {
+  email: string
+  password: string
+  re_password: string
+}
+
 export type UserRead = {
   id: number
   email: string

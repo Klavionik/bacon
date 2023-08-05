@@ -34,15 +34,15 @@ export default defineComponent({
   data() {
     return {
       botDeepLink: "",
+      telegramEnabled: false,
     }
   },
   computed: {
     ...mapWritableState(useUserStore, ["user"]),
-    telegramEnabled(): boolean {
-      return Boolean(this.user.meta.telegramNotifications)
-    },
   },
   async mounted() {
+    this.telegramEnabled = await services.checkSubscription()
+
     if (!this.telegramEnabled) {
       const data = await services.getDeepLink()
       this.botDeepLink = data.link
@@ -50,8 +50,8 @@ export default defineComponent({
   },
   methods: {
     async disableTelegram() {
-      const payload = { meta: { telegramNotifications: false } }
-      this.user = await services.updateMe(payload)
+      await services.deleteSubscription()
+      this.telegramEnabled = await services.checkSubscription()
     },
   },
 })

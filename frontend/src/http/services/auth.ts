@@ -1,4 +1,4 @@
-import type { UserCreate, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
+import type { UserCreateServer, UserLogin, UserRead, UserToken, UserUpdate } from "@/models/user"
 import type { HTTPService } from "@/http/services/types"
 import type { HTTPClient } from "@/http/types"
 import { clientServiceProxy } from "@/http/utils"
@@ -11,26 +11,26 @@ export class AuthService implements HTTPService {
     this.client = clientServiceProxy(client, this)
   }
 
-  async signup(user: UserCreate): Promise<UserRead> {
-    const response = await this.client.post("register", { json: user })
+  async signup(user: UserCreateServer): Promise<UserRead> {
+    const response = await this.client.post("users/", { json: user })
     return response.json()
   }
 
   async login(user: UserLogin): Promise<UserToken> {
     const formData = new FormData()
-    formData.append("username", user.email)
+    formData.append("email", user.email)
     formData.append("password", user.password)
-    const response = await this.client.post("login", { body: formData })
+    const response = await this.client.post("jwt/create/", { body: formData })
     return response.json()
   }
 
   async getMe(): Promise<UserRead> {
-    const response = await this.client.get("me")
+    const response = await this.client.get("users/me/")
     return response.json()
   }
 
   async updateMe(user: UserUpdate): Promise<UserRead> {
-    const response = await this.client.patch("me", { json: user })
+    const response = await this.client.patch("users/me/", { json: user })
     return response.json()
   }
 }
