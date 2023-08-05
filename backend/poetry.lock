@@ -557,20 +557,6 @@ Django = ">=3.2"
 tests = ["tox"]
 
 [[package]]
-name = "django-rest-framework"
-version = "0.1.0"
-description = "alias."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-rest-framework-0.1.0.tar.gz", hash = "sha256:47a8f496fa69e3b6bd79f68dd7a1527d907d6b77f009e9db7cf9bb21cc565e4a"},
-]
-
-[package.dependencies]
-djangorestframework = "*"
-
-[[package]]
 name = "django-templated-mail"
 version = "1.1.1"
 description = "Send emails using Django template system."
@@ -1344,4 +1330,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b7334cf726252272c95d08288a475c3bfe2eaa113bb083b5565060f1ae0777e5"
+content-hash = "fd5997755d5a4c7e8be4a0b2bab46b88fcf0a47350370f9b7d8a536d778ed861"
