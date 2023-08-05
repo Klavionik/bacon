@@ -12,6 +12,10 @@ USER_AGENT = (
 )
 
 
+class PerekrestokAPIDenial(Exception):
+    pass
+
+
 class PerekrestokClient:
     def __init__(self, base_url: str, proxies: str | None):
         self.base_url = base_url
@@ -74,7 +78,7 @@ class PerekrestokClient:
         try:
             return json.loads(unquote(session_cookie).lstrip("j:"))["accessToken"]
         except Exception as exc:
-            logger.error("Cannot extract API token with following error: %s", exc)
+            logger.error(f"Cannot extract API token with following error: {exc}.")
             raise exc
 
     def _fetch_token(self) -> str:
@@ -86,8 +90,9 @@ class PerekrestokClient:
         if not session_cookie:
             logger.critical(
                 f"No session cookie found in Perekrestok response. "
-                f"Cookies present: {response.cookies}"
+                f"Cookies present: {response.cookies}."
             )
+            raise PerekrestokAPIDenial
 
         api_token = self._extract_api_token(session_cookie)
         return api_token
