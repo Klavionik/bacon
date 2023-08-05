@@ -188,11 +188,11 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.
 CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
 
 # Celery settings.
-CELERY_BROKER_URL = env.cache(default="redis://0.0.0.0:6379/0")["LOCATION"]
+CELERY_BROKER_URL = env.cache(default="redis://cache:6379/0")["LOCATION"]
 CELERY_BEAT_SCHEDULE = {
     "update_products": {
         "task": "web.products.tasks.refresh_products",
-        "schedule": timedelta(minutes=1),
+        "schedule": timedelta(hours=1),
     },
 }
 
