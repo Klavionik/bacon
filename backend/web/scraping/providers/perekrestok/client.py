@@ -79,7 +79,7 @@ class PerekrestokClient:
             return json.loads(unquote(session_cookie).lstrip("j:"))["accessToken"]
         except Exception as exc:
             logger.error(f"Cannot extract API token with following error: {exc}.")
-            raise exc
+            raise
 
     def _fetch_token(self) -> str:
         response = self._client.get("https://www.perekrestok.ru")
@@ -92,7 +92,7 @@ class PerekrestokClient:
                 f"No session cookie found in Perekrestok response. "
                 f"Cookies present: {response.cookies}."
             )
-            raise PerekrestokAPIDenial
+            raise PerekrestokAPIDenial("Perekrestok provided no session cookie.")
 
         api_token = self._extract_api_token(session_cookie)
         return api_token
