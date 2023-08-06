@@ -23,4 +23,5 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --no-root --only $INSTALL_GROUPS
 
 COPY . .
+RUN python manage.py collectstatic --noinput
 USER app

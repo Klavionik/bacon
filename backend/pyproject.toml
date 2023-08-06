@@ -23,6 +23,7 @@ django-username-email = "^2.5.4"
 dacite = "^1.8.1"
 celery = {extras = ["redis"], version = "^5.3.1"}
 djangorestframework = "^3.14.0"
+whitenoise = {extras = ["brotli"], version = "^6.5.0"}
 
 [tool.poetry.group.production.dependencies]
 gunicorn = "^20.1.0"

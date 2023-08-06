@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -137,6 +138,12 @@ PROVIDERS_MODULE = "web.scraping.providers"
 
 AUTH_USER_MODEL = "users.User"
 
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
+
+# Static settings.
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # django-rest-framework settings.
 REST_FRAMEWORK = {
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
@@ -184,7 +191,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
 }
 
 # django-cors-headers settings.
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
 CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
 
 # Celery settings.
