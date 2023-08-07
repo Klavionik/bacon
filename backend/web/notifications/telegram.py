@@ -7,7 +7,6 @@ from urllib.parse import urljoin
 
 import dacite
 import httpx
-from constance import config
 from django.conf import settings
 from django.urls import reverse
 from loguru import logger
@@ -56,16 +55,14 @@ class TelegramAPIError(Exception):
 class Client:
     TELEGRAM_API_URL = "https://api.telegram.org/bot"
 
-    def __init__(self, token: str, server_url: str, server_secret: str):
+    def __init__(self, token: str):
         self.api_url = self.TELEGRAM_API_URL + token
-        self.server_url = server_url
-        self.server_secret = server_secret
 
     def get_webhook_info(self) -> dict:
         return self.request("GET", "getWebhookInfo")
 
-    def set_webhook(self, webhook_route: str) -> dict:
-        data = {"url": urljoin(self.server_url, webhook_route), "secret_token": self.server_secret}
+    def set_webhook(self, webhook_url: str, secret_token: str) -> dict:
+        data = {"url": webhook_url, "secret_token": secret_token}
         return self.request("POST", "setWebhook", data)
 
     def send_message(self, chat_id: int, text: str, *, html: bool = False) -> dict:
@@ -89,23 +86,17 @@ class Client:
 
 @cache
 def get_client() -> Client:
-    return Client(
-        base_url=config.TELEGRAM_API_URL,
-        token=settings.TELEGRAM_TOKEN,
-        server_url=settings.SERVER_URL,
-        server_secret=settings.SECRET_KEY,
-    )
+    return Client(token=settings.TELEGRAM_AUTH_TOKEN)
 
 
 def initialize_webhook(client: Client):
-    webhook_info = client.get_webhook_info()
-    url = webhook_info.get("url")
-    logger.info(f"Current webhook {url=}")
+    webhook_url = client.get_webhook_info().get("url")
 
-    if not url or not url.startswith(settings.SERVER_URL):
-        cb_url = reverse("telegram_update", kwargs=dict(version="v1"))
-        logger.info(f"Webhook not set, set this one: {cb_url}")
-        client.set_webhook(cb_url)
+    if not webhook_url or not webhook_url.startswith(settings.SERVER_URL):
+        webhook_route = reverse("telegram_update", kwargs=dict(version="v1"))
+        webhook_url = urljoin(settings.SERVER_URL, webhook_route)
+        logger.info(f"Set webhook URL {webhook_url}.")
+        client.set_webhook(webhook_url, settings.TELEGRAM_SECRET)
 
 
 def encode_deep_link_payload(payload: str) -> str:

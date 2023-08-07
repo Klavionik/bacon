@@ -142,7 +142,8 @@ AUTH_USER_MODEL = "users.User"
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
 
-TELEGRAM_TOKEN = env.str("TELEGRAM_TOKEN", default="")
+TELEGRAM_AUTH_TOKEN = env.str("TELEGRAM_AUTH_TOKEN", default="")
+TELEGRAM_SECRET = env.str("TELEGRAM_SECRET", default="")
 
 # Static settings.
 STATIC_ROOT = BASE_DIR / "staticfiles"
