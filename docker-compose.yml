@@ -10,12 +10,6 @@ x-env:
   - DATABASE_URL
   - CACHE_URL
 
-x-build-backend:
-  &build-backend
-  context: backend
-  args:
-    INSTALL_GROUPS: "main"
-
 services:
   frontend:
     build:
@@ -30,7 +24,8 @@ services:
       - caddy_data:/data
 
   backend:
-    build: *build-backend
+    build:
+      context: backend
     environment: *env
     command: ["python", "manage.py", "runserver", "0.0.0.0:8099"]
     depends_on:
@@ -45,7 +40,8 @@ services:
       retries: 3
 
   worker:
-    build: *build-backend
+    build:
+      context: backend
     environment: *env
     command: ["celery", "--app", "web", "worker", "--concurrency", "1", "--beat", "--loglevel", "INFO"]
     volumes:
@@ -77,7 +73,8 @@ services:
       - redis_data:/data
 
   migrate_db:
-    build: *build-backend
+    build:
+      context: backend
     environment: *env
     command: ["python", "manage.py", "migrate"]
     volumes:
