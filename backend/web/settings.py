@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "corsheaders",
     "cuser",
+    "django_celery_beat",
     "web.products",
     "web.scraping",
     "web.api",
@@ -196,12 +197,7 @@ CORS_ALLOW_ALL_ORIGINS = env.bool("DEBUG", default=True)
 
 # Celery settings.
 CELERY_BROKER_URL = env.cache(default="redis://cache:6379/0")["LOCATION"]
-CELERY_BEAT_SCHEDULE = {
-    "update_products": {
-        "task": "web.products.tasks.refresh_products",
-        "schedule": timedelta(hours=1),
-    },
-}
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Tunnel URL to expose webhooks in development.
 SERVER_URL = env.str("SERVER_URL", default="")

@@ -6,8 +6,8 @@ x-env:
   - SERVER_URL
   - SERVER_SECRET
   - CORS_ALLOWED_ORIGIN
-  - BOT_TOKEN
-  - SENTRY_DSN
+  - TELEGRAM_AUTH_TOKEN
+  - TELEGRAM_SECRET
   - DATABASE_URL
   - CACHE_URL
 
@@ -48,7 +48,7 @@ services:
   worker:
     build: *build-backend
     environment: *env
-    command: ["celery", "--app", "web", "worker", "--concurrency", "1", "--beat", "--schedule", "/home/app/celery-schedule", "--loglevel", "INFO"]
+    command: ["celery", "--app", "web", "worker", "--concurrency", "1", "--beat", "--loglevel", "INFO"]
     volumes:
       - ./backend:/app/backend
     depends_on:
