@@ -5,6 +5,7 @@ from datetime import datetime
 
 from celery import shared_task
 from django.template.loader import render_to_string
+from django.utils import translation
 from django.utils.timezone import now
 from loguru import logger
 
@@ -50,7 +51,7 @@ def send_product_update_notifications(
     product_updates = [ProductUpdate(**product) for product in changed_products]
     users = User.objects.notifiable().with_products_ids()
 
-    with override_locale("ru_RU.utf8"):
+    with override_locale("ru_RU.utf8"), translation.override("ru_RU"):
         for user in users:
             updates = [
                 update for update in product_updates if update.product_id in set(user.products_ids)
