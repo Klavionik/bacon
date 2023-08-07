@@ -14,9 +14,10 @@ from web.users.models import User
 
 @contextlib.contextmanager
 def override_locale(locale_name: str, category: int = locale.LC_ALL):
+    current_locale = locale.getlocale()
     locale.setlocale(category, locale_name)
     yield
-    locale.resetlocale(category)
+    locale.setlocale(category, current_locale)
 
 
 @shared_task

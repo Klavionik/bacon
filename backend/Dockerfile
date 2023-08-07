@@ -8,6 +8,7 @@ WORKDIR /app/backend
 ENV PATH="$PATH:/home/app/.local/bin"
 
 RUN echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 
 RUN apt-get update \
     && apt-get install -y curl localehelper=0.1.4-3 libpq-dev \
