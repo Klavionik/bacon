@@ -134,11 +134,15 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Project settings.
+
 PROVIDERS_MODULE = "web.scraping.providers"
 
 AUTH_USER_MODEL = "users.User"
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
+
+TELEGRAM_TOKEN = env.str("TELEGRAM_TOKEN", default="")
 
 # Static settings.
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -177,16 +181,12 @@ CONSTANCE_CONFIG = {
         "url_field",
     ),
     "ENABLE_TELEGRAM_NOTIFICATIONS": (True, "Enable Telegram notifications."),
-    "TELEGRAM_API_URL": ("https://api.telegram.org/bot", "Telegram Bot API URL"),
-    "TELEGRAM_TOKEN": ("", "Telegram bot token"),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     "Scrapers": ["PEREKRESTOK_API_URL"],
     "Notifications": [
         "ENABLE_TELEGRAM_NOTIFICATIONS",
-        "TELEGRAM_API_URL",
-        "TELEGRAM_TOKEN",
     ],
 }
 
@@ -204,7 +204,6 @@ CELERY_BEAT_SCHEDULE = {
 
 # Tunnel URL to expose webhooks in development.
 SERVER_URL = env.str("SERVER_URL", default="")
-
 
 # Sentry settings.
 SENTRY_DSN = env.str("SENTRY_DSN", default="")

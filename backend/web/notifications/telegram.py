@@ -49,9 +49,15 @@ class Update:
         return dacite.from_dict(data_class=cls, data=payload)
 
 
+class TelegramAPIError(Exception):
+    pass
+
+
 class Client:
-    def __init__(self, base_url: str, token: str, server_url: str, server_secret: str):
-        self.api_url = base_url.rstrip("/") + token
+    TELEGRAM_API_URL = "https://api.telegram.org/bot"
+
+    def __init__(self, token: str, server_url: str, server_secret: str):
+        self.api_url = self.TELEGRAM_API_URL + token
         self.server_url = server_url
         self.server_secret = server_secret
 
@@ -77,7 +83,7 @@ class Client:
         data_is_ok = data.get("ok")
 
         if not data_is_ok:
-            raise RuntimeError(f"Request to {response.request.url} returned an error: {data}")
+            raise TelegramAPIError(f"Request to {response.request.url} returned an error: {data}.")
         return data.get("result")
 
 
@@ -85,7 +91,7 @@ class Client:
 def get_client() -> Client:
     return Client(
         base_url=config.TELEGRAM_API_URL,
-        token=config.TELEGRAM_TOKEN,
+        token=settings.TELEGRAM_TOKEN,
         server_url=settings.SERVER_URL,
         server_secret=settings.SECRET_KEY,
     )
