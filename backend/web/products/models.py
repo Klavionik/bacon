@@ -237,6 +237,7 @@ class Product(models.Model):
 
         if self.in_stock != data.available:
             logger.info(f"Availability changed: {self.in_stock} -> {data.available}.")
+            self.in_stock = data.available
 
         if price.current != data.price:
             logger.info(f"Price changed: {price.current} -> {data.price}.")
