@@ -1,5 +1,5 @@
 <template>
-  <div class="panel">
+  <div class="panel" :class="{ 'no-shadow': isMobile }">
     <ProductSearch v-model:search="search" />
     <ProductTabs :active-tab="activeTab" @switch="activeTab = $event" />
     <template v-if="noShopLocationsConfigured">
@@ -43,6 +43,7 @@ import { useShopLocationsStore } from "@/stores/shop-location"
 import { RouterLink } from "vue-router"
 import { useUserStore } from "@/stores/user"
 import { mapState, mapActions } from "pinia"
+import { useIsMobile } from "@/utils"
 
 const notFound = "Ни одного товара не найдено"
 const empty = "Пока не добавлено ни одного товара"
@@ -63,6 +64,7 @@ export default defineComponent({
       search: "",
       activeTab: "Все",
       newProductURL: "",
+      isMobile: useIsMobile(),
     }
   },
   computed: {

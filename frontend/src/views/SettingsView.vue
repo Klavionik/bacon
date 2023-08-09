@@ -1,6 +1,6 @@
 <template>
   <AppSection>
-    <div class="card p-4">
+    <div class="card p-4" :class="{ 'no-shadow': isMobile }">
       <h1 class="is-size-4 has-text-centered">Настройки</h1>
       <div class="card-content" :class="{ 'p-0': isMobile }">
         <AppTabs

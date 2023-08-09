@@ -59,6 +59,10 @@ body {
   flex-shrink: 0;
 }
 
+.no-shadow {
+  box-shadow: none;
+}
+
 @font-face {
   font-family: "Rubik";
   font-weight: 400;
