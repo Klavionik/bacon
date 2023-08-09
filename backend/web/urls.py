@@ -15,7 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.shortcuts import HttpResponse
 from django.urls import include, path
+
+
+def healthz(request):
+    return HttpResponse(content="OK\n", content_type="text/plain")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -23,4 +29,5 @@ urlpatterns = [
     path("api/notifications/<str:version>/", include("web.notifications.urls")),
     path("auth/", include("djoser.urls")),
     path("auth/", include("djoser.urls.jwt")),
+    path("healthz/", healthz),
 ]

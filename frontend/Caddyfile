@@ -32,6 +32,10 @@
 		reverse_proxy backend:8000
 	}
 
+	handle /healthz/ {
+		respond 200
+	}
+
 	handle {
 		root * /srv
 		try_files {path} /index.html =404
