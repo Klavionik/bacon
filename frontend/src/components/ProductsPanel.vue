@@ -1,7 +1,8 @@
 <template>
   <div class="panel" :class="{ 'no-shadow': isMobile }">
-    <ProductSearch v-model:search="search" />
+    <NewProduct v-model:url="newProductURL" :is-loading="isCreating" @submit="createProduct" />
     <ProductTabs :active-tab="activeTab" @switch="activeTab = $event" />
+    <ProductSearch v-model:search="search" />
     <template v-if="noShopLocationsConfigured">
       <div class="panel-block is-justify-content-center">
         <article class="message is-small is-warning mb-0">
@@ -27,7 +28,6 @@
         {{ emptyText }}
       </div>
     </template>
-    <NewProduct v-model:url="newProductURL" :is-loading="isCreating" @submit="createProduct" />
   </div>
 </template>
 
