@@ -1,8 +1,8 @@
 <template>
-  <AppSection :mobile-padding="false">
+  <AppSection>
     <div class="card p-4">
       <h1 class="is-size-4 has-text-centered">Настройки</h1>
-      <div class="card-content">
+      <div class="card-content" :class="{ 'p-0': isMobile }">
         <AppTabs
           :tabs="settingsTabs"
           :active-tab="activeTab"
@@ -21,6 +21,7 @@ import { defineComponent } from "vue"
 import { settingsTabs } from "@/consts"
 import AppTabs from "@/components/AppTabs.vue"
 import AppSection from "@/components/AppSection.vue"
+import { useIsMobile } from "@/utils"
 
 export default defineComponent({
   name: "SettingsView",
@@ -28,6 +29,7 @@ export default defineComponent({
   data() {
     return {
       settingsTabs,
+      isMobile: useIsMobile(),
     }
   },
   computed: {

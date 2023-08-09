@@ -7,10 +7,5 @@ export function useBreakpoints() {
 
 export function useIsMobile() {
   const breakpoints = useBreakpoints()
-  return breakpoints.smaller("tablet")
-}
-
-export function useIsTablet() {
-  const breakpoints = useBreakpoints()
-  return breakpoints.between("tablet", "desktop")
+  return breakpoints.smaller("desktop")
 }

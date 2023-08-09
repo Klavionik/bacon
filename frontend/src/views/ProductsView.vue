@@ -1,5 +1,5 @@
 <template>
-  <AppSection :mobile-padding="false">
+  <AppSection>
     <ProductsPanel />
   </AppSection>
 </template>
