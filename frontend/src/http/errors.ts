@@ -9,4 +9,6 @@ class BadRequest extends Error {
   }
 }
 
-export { Unauthorized, BadRequest }
+class Conflict extends Error {}
+
+export { Unauthorized, BadRequest, Conflict }

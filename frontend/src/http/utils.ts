@@ -1,6 +1,6 @@
 import { useToast } from "vue-toastification"
 import { HTTPError, TimeoutError } from "ky"
-import { Unauthorized, BadRequest } from "@/http/errors"
+import { Unauthorized, BadRequest, Conflict } from "@/http/errors"
 import type { HTTPClient, RequestOptions } from "@/http/types"
 import type { HTTPService } from "@/http/services/types"
 
@@ -31,6 +31,10 @@ const handleHTTPError = async (e: HTTPError) => {
   if (e.response.status === 400) {
     const { detail } = await e.response.json()
     throw new BadRequest("Bad Request", detail)
+  }
+
+  if (e.response.status === 409) {
+    throw new Conflict("Conflict")
   }
 
   throw e

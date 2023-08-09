@@ -44,9 +44,14 @@ import { RouterLink } from "vue-router"
 import { useUserStore } from "@/stores/user"
 import { mapState, mapActions } from "pinia"
 import { useIsMobile } from "@/utils"
+import { useToast } from "vue-toastification"
+import { Conflict } from "@/http/errors"
 
 const notFound = "Ни одного товара не найдено"
 const empty = "Пока не добавлено ни одного товара"
+
+const toast = useToast()
+const CONFLICT_WARNING_TIMEOUT_MS = 3000
 
 export default defineComponent({
   name: "ProductsPanel",
@@ -101,17 +106,20 @@ export default defineComponent({
     },
     async createProduct() {
       this.isCreating = true
-      let error = false
 
       try {
         await this.create(this.newProductURL)
+        this.newProductURL = ""
       } catch (e) {
-        error = true
+        if (e instanceof Conflict) {
+          toast.warning("Этот продукт уже отслеживается.", { timeout: CONFLICT_WARNING_TIMEOUT_MS })
+          this.newProductURL = ""
+          return
+        }
+
         throw e
       } finally {
         this.isCreating = false
-
-        if (!error) this.newProductURL = ""
       }
     },
     async deleteProduct(id: number) {
