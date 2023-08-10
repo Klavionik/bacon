@@ -1,14 +1,18 @@
-class Unauthorized extends Error {}
-class BadRequest extends Error {
-  public detail: string
+class APIError extends Error {
+  public detail?: string
 
-  constructor(message: string, detail: string, options?: object) {
+  constructor(message: string, detail?: string, options?: object) {
     // @ts-ignore
     super(message, options)
     this.detail = detail
   }
 }
 
-class Conflict extends Error {}
+class Unauthorized extends APIError {}
+class BadRequest extends APIError {}
 
-export { Unauthorized, BadRequest, Conflict }
+class Conflict extends APIError {}
+
+class TokenExpired extends Error {}
+
+export { Unauthorized, BadRequest, Conflict, TokenExpired }

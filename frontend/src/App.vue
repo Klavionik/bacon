@@ -7,7 +7,7 @@
 import { RouterView } from "vue-router"
 import { defineComponent } from "vue"
 import { ProgressBar } from "@marcoschulte/vue3-progress"
-import { Unauthorized } from "@/http/errors"
+import { TokenExpired } from "@/http/errors"
 import { useToast } from "vue-toastification"
 import { useUserStore } from "@/stores/user"
 
@@ -20,7 +20,7 @@ export default defineComponent({
     return { logout, toast }
   },
   errorCaptured(err) {
-    if (err instanceof Unauthorized) {
+    if (err instanceof TokenExpired) {
       this.toast.warning("Время сессии истекло. Войдите заново.")
       this.logout()
       this.$router.push("/")

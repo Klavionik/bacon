@@ -1,6 +1,6 @@
 import { useToast } from "vue-toastification"
 import { HTTPError, TimeoutError } from "ky"
-import { Unauthorized, BadRequest, Conflict } from "@/http/errors"
+import { Unauthorized, BadRequest, Conflict, TokenExpired } from "@/http/errors"
 import type { HTTPClient, RequestOptions } from "@/http/types"
 import type { HTTPService } from "@/http/services/types"
 
@@ -25,12 +25,14 @@ const handleError = async (e: any) => {
 
 const handleHTTPError = async (e: HTTPError) => {
   if (e.response.status === 401) {
-    throw new Unauthorized("Unauthorized")
+    const { code } = await e.response.json()
+
+    if (code === "token_not_valid") throw new TokenExpired("Token expired")
+    throw new Unauthorized("Unauthorized", code)
   }
 
   if (e.response.status === 400) {
-    const { detail } = await e.response.json()
-    throw new BadRequest("Bad Request", detail)
+    throw new BadRequest("Bad Request")
   }
 
   if (e.response.status === 409) {

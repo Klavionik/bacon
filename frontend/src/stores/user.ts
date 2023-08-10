@@ -2,11 +2,8 @@ import { defineStore } from "pinia"
 import type { UserCreate, UserCreateServer, UserLogin, UserRead } from "@/models/user"
 import { services, client } from "@/http/"
 import storage from "@/storage"
-import { BadRequest, Unauthorized } from "@/http/errors"
+import { BadRequest, TokenExpired, Unauthorized } from "@/http/errors"
 import { useToast } from "vue-toastification"
-
-const BAD_CREDENTIALS = "LOGIN_BAD_CREDENTIALS"
-const DUPLICATE_USER = "REGISTER_USER_ALREADY_EXISTS"
 
 const toast = useToast()
 
@@ -30,11 +27,12 @@ export const useUserStore = defineStore("user", {
         await services.signup(this.adaptToServer(user))
         await this.login(user)
       } catch (e) {
-        if (!(e instanceof BadRequest)) throw e
-
-        if (e.detail === DUPLICATE_USER) {
+        if (e instanceof BadRequest) {
           toast.warning("Пользователь с таким email уже существует.")
+          return
         }
+
+        throw e
       }
     },
     async login(user: UserLogin) {
@@ -42,11 +40,12 @@ export const useUserStore = defineStore("user", {
         const data = await services.login(user)
         await this.onLogin(data)
       } catch (e) {
-        if (!(e instanceof BadRequest)) throw e
-
-        if (e.detail === BAD_CREDENTIALS) {
-          toast.warning("Неправильный пароль и/или email.")
+        if (e instanceof Unauthorized) {
+          toast.warning("Неправильный email и/или пароль.")
+          return
         }
+
+        throw e
       }
     },
     async loginByToken(token: string) {
@@ -70,11 +69,13 @@ export const useUserStore = defineStore("user", {
         await this.loginByToken(savedToken)
         return true
       } catch (e: any) {
-        if (!(e instanceof Unauthorized)) throw e
+        if (e instanceof TokenExpired) {
+          storage.removeItem("accessToken")
+          client.removeToken()
+          return false
+        }
 
-        storage.removeItem("accessToken")
-        client.removeToken()
-        return false
+        throw e
       }
     },
     adaptToServer(user: UserCreate): UserCreateServer {
