@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.views import APIView, Response
@@ -10,7 +11,9 @@ User = get_user_model()
 
 class GetDeepLinkAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        return Response(data={"link": telegram.make_deep_link(self.request.user)})
+        return Response(
+            data={"link": telegram.make_deep_link(settings.TELEGRAM_BOT_NAME, self.request.user)}
+        )
 
 
 class HandleTelegramUpdate(APIView):

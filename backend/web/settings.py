@@ -143,6 +143,7 @@ AUTH_USER_MODEL = "users.User"
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.localhost"])
 
+TELEGRAM_BOT_NAME = env.str("TELEGRAM_BOT_NAME", default="GetBaconTestBot")
 TELEGRAM_AUTH_TOKEN = env.str("TELEGRAM_AUTH_TOKEN", default="")
 TELEGRAM_SECRET = env.str("TELEGRAM_SECRET", default="")
 

@@ -123,10 +123,10 @@ def make_deep_link_token(payload: str) -> str:
     return f"{payload}-{signature}"
 
 
-def make_deep_link(user) -> str:
+def make_deep_link(bot_name: str, user) -> str:
     payload = f"user:{user.id}"
     token = make_deep_link_token(payload)
-    link = f"https://t.me/GetBaconBot?start={token}"
+    link = f"https://t.me/{bot_name}?start={token}"
     return link
 
 
