@@ -2,9 +2,6 @@
   <nav class="navbar has-shadow">
     <div class="container">
       <div ref="navbarBrand" class="navbar-brand">
-        <a class="navbar-item" href="/">
-          <img class="logo" src="@/assets/logo.svg" alt="Logo" />
-        </a>
         <a class="navbar-burger" :class="{ 'is-active': isHamburgerOpen }" @click="toggleHamburger">
           <span></span>
           <span></span>
@@ -13,6 +10,7 @@
       </div>
       <div class="navbar-menu" :class="{ 'is-active': isHamburgerOpen }">
         <div class="navbar-start">
+          <RouterLink class="navbar-item" :to="{ name: 'home' }"> Главная </RouterLink>
           <RouterLink v-if="loggedIn" class="navbar-item" :to="{ name: 'products' }">
             Список товаров
           </RouterLink>
@@ -106,10 +104,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.logo {
-  height: 30px;
-}
-
 .navbar-menu.is-active {
   position: absolute;
   width: 100%;

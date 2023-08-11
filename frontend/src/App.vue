@@ -63,6 +63,10 @@ body {
   box-shadow: none;
 }
 
+.router-link-exact-active {
+  color: #485fc7;
+}
+
 @font-face {
   font-family: "Rubik";
   font-weight: 400;
