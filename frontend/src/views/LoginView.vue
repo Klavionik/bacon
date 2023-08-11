@@ -2,7 +2,7 @@
   <section class="section" :class="{ 'p-0': isMobile }">
     <div class="columns is-centered">
       <div class="column is-5 is-4-widescreen is-3-fullhd">
-        <div class="card">
+        <div class="card" :class="{ 'no-shadow': isMobile }">
           <div class="card-content">
             <div class="p-2">
               <h1 class="is-size-4 has-text-centered">Добро пожаловать!</h1>
