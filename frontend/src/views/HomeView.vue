@@ -5,10 +5,10 @@
       <div class="container">
         <div class="columns">
           <div class="column is-two-fifths">
-            <p class="title has-text-white">Вкусняшки ждут</p>
+            <p class="title is-size-2 has-text-white">Это Бекон</p>
             <p class="subtitle has-text-white">
-              Отслеживайте ваши любимые товары и получайте уведомления об изменении цены и наличия в
-              магазине.
+              Вкусняшки ждут! Отслеживайте ваши любимые товары и получайте уведомления об изменении
+              цены и наличия в магазине.
             </p>
           </div>
         </div>
