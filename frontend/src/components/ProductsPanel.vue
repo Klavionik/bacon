@@ -36,7 +36,7 @@ import ProductItem from "./ProductItem.vue"
 import ProductTabs from "./ProductTabs.vue"
 import ProductSearch from "./ProductSearch.vue"
 import NewProduct from "./NewProduct.vue"
-import { useProductsStore } from "@/stores/treat"
+import { useProductStore } from "@/stores/product"
 import { defineComponent } from "vue"
 import type { Product } from "@/models/product"
 import { useStoreStore } from "@/stores/store"
@@ -74,7 +74,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useUserStore, ["user"]),
-    ...mapState(useProductsStore, ["products"]),
+    ...mapState(useProductStore, ["products"]),
     ...mapState(useStoreStore, ["userShopLocations", "noShopLocationsConfigured"]),
     filteredProducts(): Array<Product> {
       return this.products.filter(this.filterBySearch).filter(this.filterByTab)
@@ -84,7 +84,7 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions(useProductsStore, ["create", "delete"]),
+    ...mapActions(useProductStore, ["create", "delete"]),
     isDeleting(productId: number) {
       return this.deleting.includes(productId)
     },
@@ -93,7 +93,8 @@ export default defineComponent({
       return product.title.toLowerCase().includes(this.search.toLowerCase())
     },
     filterByTab(product: Product): boolean {
-      const discounted = (treat: Product) => treat.oldPrice !== null && treat.price < treat.oldPrice
+      const discounted = (product: Product) =>
+        product.oldPrice !== null && product.price < product.oldPrice
 
       switch (this.activeTab) {
         case "Все":
