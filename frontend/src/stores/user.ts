@@ -2,23 +2,32 @@ import { defineStore } from "pinia"
 import type { UserCreate, UserCreateServer, UserLogin, UserRead } from "@/models/user"
 import { services, client } from "@/http/"
 import storage from "@/storage"
-import { BadRequest, TokenExpired, Unauthorized } from "@/http/errors"
+import { BadRequest, Unauthorized } from "@/http/errors"
 import { useToast } from "vue-toastification"
+import { isJWTExpired } from "@/utils"
 
 const toast = useToast()
+
+export class TokenExpired extends Error {}
+
+export class NoAccessToken extends Error {}
 
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
       user: {} as UserRead,
       loggedIn: false,
+      accessToken: "",
     }
   },
   actions: {
-    async onLogin(data: any) {
-      const accessToken = data["access"]
-      client.setToken(accessToken)
-      storage.setItem("accessToken", accessToken)
+    isTokenExpired(): boolean {
+      return !this.accessToken || isJWTExpired(this.accessToken)
+    },
+    async onLogin(token: string) {
+      this.accessToken = token
+      client.setToken(token)
+      storage.setItem("accessToken", token)
       this.user = await services.getMe()
       this.loggedIn = true
     },
@@ -38,7 +47,7 @@ export const useUserStore = defineStore("user", {
     async login(user: UserLogin) {
       try {
         const data = await services.login(user)
-        await this.onLogin(data)
+        await this.onLogin(data["access"])
       } catch (e) {
         if (e instanceof Unauthorized) {
           toast.warning("Неправильный email и/или пароль.")
@@ -48,35 +57,26 @@ export const useUserStore = defineStore("user", {
         throw e
       }
     },
-    async loginByToken(token: string) {
-      this.user = await services.getMe()
-      this.loggedIn = true
-      client.setToken(token)
-    },
-    async logout() {
+    logout() {
       client.removeToken()
       this.user = {} as UserRead
       this.loggedIn = false
+      this.accessToken = ""
       storage.removeItem("accessToken")
     },
     async restoreSession() {
       const savedToken = storage.getItem("accessToken")
-      if (savedToken === null) return false
 
-      client.setToken(savedToken)
-
-      try {
-        await this.loginByToken(savedToken)
-        return true
-      } catch (e: any) {
-        if (e instanceof TokenExpired) {
-          storage.removeItem("accessToken")
-          client.removeToken()
-          return false
-        }
-
-        throw e
+      if (savedToken === null) {
+        throw new NoAccessToken("No access token")
       }
+
+      if (isJWTExpired(savedToken)) {
+        storage.removeItem("accessToken")
+        throw new TokenExpired("Access token has expired")
+      }
+
+      await this.onLogin(savedToken)
     },
     adaptToServer(user: UserCreate): UserCreateServer {
       return {

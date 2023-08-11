@@ -27,7 +27,7 @@ export type UserLogin = {
 }
 
 export type UserToken = {
-  access_token: string
+  access: string
 }
 
 export type UserUpdate = {

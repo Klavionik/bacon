@@ -1,4 +1,4 @@
-import { useUserStore } from "@/stores/user"
+import { useUserStore, TokenExpired, NoAccessToken } from "@/stores/user"
 import type { RouteLocationNormalized } from "vue-router"
 import { RouteName } from "@/router/enums"
 import { type ProgressFinisher, useProgress } from "@marcoschulte/vue3-progress"
@@ -7,23 +7,42 @@ import { useToast } from "vue-toastification"
 const progresses = [] as ProgressFinisher[]
 const toast = useToast()
 
-export const checkLoggedIn = (to: RouteLocationNormalized) => {
-  const { loggedIn } = useUserStore()
+export const checkTokenAlive = (to: RouteLocationNormalized) => {
+  const { loggedIn, isTokenExpired, logout } = useUserStore()
 
-  if (!loggedIn && to.name !== RouteName.LOGIN) {
-    return { name: RouteName.LOGIN }
+  if (loggedIn && isTokenExpired()) {
+    logout()
+    toast.warning("Время сессии истекло. Войдите заново.")
+    return { name: RouteName.LOGIN, query: { next: to.fullPath } }
   }
 }
 
+export const redirectToProducts = () => {
+  const { loggedIn } = useUserStore()
+
+  if (loggedIn) return { name: RouteName.PRODUCTS }
+}
+
 export const authenticate = async (to: RouteLocationNormalized) => {
-  const userStore = useUserStore()
-  if (userStore.loggedIn) return
+  const { loggedIn, restoreSession } = useUserStore()
+  if (loggedIn) return
 
-  const success = await userStore.restoreSession()
+  try {
+    await restoreSession()
+  } catch (e) {
+    if (e instanceof TokenExpired) {
+      toast.warning("Время сессии истекло. Войдите заново.")
+      return { name: RouteName.LOGIN, query: { next: to.fullPath } }
+    }
 
-  if (!success && to.meta.requiresAuth) {
-    toast.warning("Время сессии истекло. Войдите заново.")
-    return { name: RouteName.LOGIN, query: { next: to.fullPath } }
+    if (e instanceof NoAccessToken) {
+      if (to.meta.requiresAuth) {
+        return { name: RouteName.LOGIN, query: { next: to.fullPath } }
+      }
+      return
+    }
+
+    throw e
   }
 }
 

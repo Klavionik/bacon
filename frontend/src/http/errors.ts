@@ -9,6 +9,7 @@ class APIError extends Error {
 }
 
 class Unauthorized extends APIError {}
+
 class BadRequest extends APIError {}
 
 class Conflict extends APIError {}

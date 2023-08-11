@@ -1,5 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router"
-import { checkLoggedIn, authenticate, startProgress, finishProgress } from "@/router/guards"
+import {
+  redirectToProducts,
+  authenticate,
+  startProgress,
+  finishProgress,
+  checkTokenAlive,
+} from "@/router/guards"
 import { RouteName } from "@/router/enums"
 
 const router = createRouter({
@@ -17,13 +23,13 @@ const router = createRouter({
         {
           name: RouteName.LOGIN,
           path: "login",
+          beforeEnter: redirectToProducts,
           component: () => import("@/views/LoginView.vue"),
         },
         {
           name: RouteName.PRODUCTS,
           path: "products",
           component: () => import("@/views/ProductsView.vue"),
-          beforeEnter: checkLoggedIn,
           meta: {
             requiresAuth: true,
           },
@@ -31,7 +37,6 @@ const router = createRouter({
         {
           path: "settings",
           component: () => import("@/views/SettingsView.vue"),
-          beforeEnter: checkLoggedIn,
           meta: {
             requiresAuth: true,
           },
@@ -69,6 +74,7 @@ const router = createRouter({
 
 router.beforeEach(startProgress)
 router.beforeEach(authenticate)
+router.beforeEach(checkTokenAlive)
 
 router.afterEach(finishProgress)
 
