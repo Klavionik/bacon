@@ -5,7 +5,7 @@ COPY package-lock.json .
 RUN npm ci
 COPY . .
 ARG APP_VERSION
-ENV APP_VERSION=$APP_VERSION
+ENV VITE_APP_VERSION=$APP_VERSION
 RUN npm run build
 
 FROM caddy:2.6.4-alpine AS stage_caddy
