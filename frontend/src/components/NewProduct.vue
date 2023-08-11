@@ -32,7 +32,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import { mapStores } from "pinia"
-import { useShopsStore } from "@/stores/shop"
+import { useRetailerStore } from "@/stores/retailer"
 import { useShopLocationsStore } from "@/stores/shop-location"
 
 export default defineComponent({
@@ -49,12 +49,12 @@ export default defineComponent({
   },
   emits: ["submit", "update:url"],
   computed: {
-    ...mapStores(useShopsStore, useShopLocationsStore),
+    ...mapStores(useRetailerStore, useShopLocationsStore),
     isValidURL() {
-      const shop = this.shopStore.getShopByProductURL(this.url)
+      const retailer = this.retailerStore.getShopByProductURL(this.url)
 
-      if (!shop) return false
-      return this.shopLocationStore.isShopLocationConfigured(shop.id)
+      if (!retailer) return false
+      return this.shopLocationStore.isShopLocationConfigured(retailer.id)
     },
   },
   methods: {

@@ -1,6 +1,6 @@
 <template>
   <form class="is-flex is-flex-direction-column">
-    <div v-for="shop in shopStore.shops" :key="shop.id" class="field mt-3">
+    <div v-for="shop in retailerStore.shops" :key="shop.id" class="field mt-3">
       Выберите адрес вашего магазина <b>{{ shop.displayTitle }}</b
       >.
       <div class="control mt-2">
@@ -31,7 +31,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import VueSelect from "vue-select"
-import { useShopsStore } from "@/stores/shop"
+import { useRetailerStore } from "@/stores/retailer"
 import { useShopLocationsStore } from "@/stores/shop-location"
 import { settingsTabs } from "@/consts"
 import type { ShopLocation, StoreSearchSuggestion } from "@/models/shop"
@@ -46,10 +46,10 @@ export default defineComponent({
   name: "UserShops",
   components: { VueSelect },
   async beforeRouteEnter() {
-    const shopsStore = useShopsStore()
+    const retailerStore = useRetailerStore()
     const shopLocationsStore = useShopLocationsStore()
     const promise = Promise.all([
-      shopsStore.fetchShops(),
+      retailerStore.fetchShops(),
       shopLocationsStore.fetchUserShopLocations(),
     ])
     await useProgress().attach(promise)
@@ -64,7 +64,7 @@ export default defineComponent({
       unsubscribe: () => {},
     }
   },
-  computed: mapStores(useShopsStore, useShopLocationsStore),
+  computed: mapStores(useRetailerStore, useShopLocationsStore),
   async mounted() {
     this.fetchOptions = debounce(this._fetchOptions, 800)
   },

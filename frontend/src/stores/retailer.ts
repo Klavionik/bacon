@@ -2,7 +2,7 @@ import { defineStore } from "pinia"
 import type { Shop } from "@/models/shop"
 import { services } from "@/http"
 
-export const useShopsStore = defineStore("shop", {
+export const useRetailerStore = defineStore("retailer", {
   state: () => {
     return {
       shops: [] as Array<Shop>,

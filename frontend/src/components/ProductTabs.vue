@@ -14,7 +14,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import { mapState } from "pinia"
-import { useShopsStore } from "@/stores/shop"
+import { useRetailerStore } from "@/stores/retailer"
 
 export default defineComponent({
   name: "ProductTabs",
@@ -26,7 +26,7 @@ export default defineComponent({
   },
   emits: ["switch"],
   computed: {
-    ...mapState(useShopsStore, ["shops"]),
+    ...mapState(useRetailerStore, ["shops"]),
     tabs() {
       const shopTabs = this.shops.map((shop) => shop.displayTitle)
       return ["Все", "Со скидкой", ...shopTabs]
