@@ -3,18 +3,7 @@
     <NewProduct v-model:url="newProductURL" :is-loading="isCreating" @submit="createProduct" />
     <ProductTabs :active-tab="activeTab" @switch="activeTab = $event" />
     <ProductSearch v-model:search="search" />
-    <template v-if="noUserStoreConfigured">
-      <div class="panel-block is-justify-content-center">
-        <article class="message is-small is-warning mb-0">
-          <div class="message-body">
-            Прежде чем начать добавлять товары, нужно
-            <RouterLink :to="{ name: 'shops' }">выбрать магазины</RouterLink>, в которых мы будем
-            следить за ценами.
-          </div>
-        </article>
-      </div>
-    </template>
-    <template v-else-if="filteredProducts.length">
+    <template v-if="filteredProducts.length">
       <ProductItem
         v-for="product in filteredProducts"
         :key="product.id"
@@ -40,7 +29,6 @@ import { useProductStore } from "@/stores/product"
 import { defineComponent } from "vue"
 import type { Product } from "@/models/product"
 import { useStoreStore } from "@/stores/store"
-import { RouterLink } from "vue-router"
 import { useUserStore } from "@/stores/user"
 import { mapState, mapActions } from "pinia"
 import { useIsMobile } from "@/utils"
@@ -60,7 +48,6 @@ export default defineComponent({
     ProductItem,
     ProductTabs,
     ProductSearch,
-    RouterLink,
   },
   data() {
     return {
