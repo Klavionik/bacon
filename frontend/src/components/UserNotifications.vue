@@ -29,9 +29,28 @@ import { useUserStore } from "@/stores/user"
 import { mapWritableState } from "pinia"
 import { services } from "@/http"
 
+interface ComponentData {
+  telegramEnabled: boolean
+  botDeepLink: string
+}
+
 export default defineComponent({
   name: "UserNotifications",
-  data() {
+  async beforeRouteEnter(to, from, next) {
+    const telegramEnabled = await services.checkSubscription()
+    let botDeepLink = ""
+
+    if (!telegramEnabled) {
+      botDeepLink = (await services.getDeepLink()).link
+    }
+
+    next((component) => {
+      const data = component.$data as ComponentData
+      data.telegramEnabled = telegramEnabled
+      data.botDeepLink = botDeepLink
+    })
+  },
+  data(): ComponentData {
     return {
       botDeepLink: "",
       telegramEnabled: false,
@@ -40,18 +59,11 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useUserStore, ["user"]),
   },
-  async mounted() {
-    this.telegramEnabled = await services.checkSubscription()
-
-    if (!this.telegramEnabled) {
-      const data = await services.getDeepLink()
-      this.botDeepLink = data.link
-    }
-  },
   methods: {
     async disableTelegram() {
       await services.deleteSubscription()
-      this.telegramEnabled = await services.checkSubscription()
+      this.telegramEnabled = false
+      this.botDeepLink = (await services.getDeepLink()).link
     },
   },
 })
