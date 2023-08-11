@@ -38,6 +38,9 @@ import type { ShopLocation, StoreSearchSuggestion } from "@/models/shop"
 import debounce from "lodash.debounce"
 import { useProgress } from "@marcoschulte/vue3-progress"
 import { mapStores } from "pinia"
+import { useToast } from "vue-toastification"
+
+const toast = useToast()
 
 export default defineComponent({
   name: "UserShops",
@@ -75,8 +78,16 @@ export default defineComponent({
     },
     async updateShopLocation(shopId: number, shopLocation: ShopLocation | null) {
       this.saving = true
-      await this.shopLocationStore.saveUserShopLocation(shopId, shopLocation)
-      this.saving = false
+
+      try {
+        await this.shopLocationStore.saveUserShopLocation(shopId, shopLocation)
+        toast.success("Магазин обновлен.")
+      } catch (e) {
+        toast.warning("Не удалось обновить магазин.")
+        throw e
+      } finally {
+        this.saving = false
+      }
     },
     getShopLocationOptionLabel(shopLocation: ShopLocation) {
       return `${shopLocation.address} (${shopLocation.title})`
