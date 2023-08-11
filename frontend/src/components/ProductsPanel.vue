@@ -39,7 +39,7 @@ import NewProduct from "./NewProduct.vue"
 import { useProductsStore } from "@/stores/treat"
 import { defineComponent } from "vue"
 import type { Product } from "@/models/product"
-import { useShopLocationsStore } from "@/stores/shop-location"
+import { useStoreStore } from "@/stores/store"
 import { RouterLink } from "vue-router"
 import { useUserStore } from "@/stores/user"
 import { mapState, mapActions } from "pinia"
@@ -75,7 +75,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ["user"]),
     ...mapState(useProductsStore, ["products"]),
-    ...mapState(useShopLocationsStore, ["userShopLocations", "noShopLocationsConfigured"]),
+    ...mapState(useStoreStore, ["userShopLocations", "noShopLocationsConfigured"]),
     filteredProducts(): Array<Product> {
       return this.products.filter(this.filterBySearch).filter(this.filterByTab)
     },

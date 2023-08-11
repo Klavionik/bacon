@@ -10,7 +10,7 @@ import ProductsPanel from "@/components/ProductsPanel.vue"
 import { defineComponent } from "vue"
 import { useRetailerStore } from "@/stores/retailer"
 import { useProductsStore } from "@/stores/treat"
-import { useShopLocationsStore } from "@/stores/shop-location"
+import { useStoreStore } from "@/stores/store"
 import { useProgress } from "@marcoschulte/vue3-progress"
 
 export default defineComponent({
@@ -19,11 +19,11 @@ export default defineComponent({
   async beforeRouteEnter() {
     const retailerStore = useRetailerStore()
     const productsStore = useProductsStore()
-    const shopLocationsStore = useShopLocationsStore()
+    const storeStore = useStoreStore()
     const promise = Promise.all([
       retailerStore.fetchShops(),
       productsStore.fetchProducts(),
-      shopLocationsStore.fetchUserShopLocations(),
+      storeStore.fetchUserShopLocations(),
     ])
     await useProgress().attach(promise)
   },

@@ -6,7 +6,7 @@
       <div class="control mt-2">
         <VueSelect
           :disabled="saving"
-          :model-value="shopLocationStore.userShopLocations.get(shop.id)"
+          :model-value="storeStore.userShopLocations.get(shop.id)"
           :options="shopLocationOptions"
           :filterable="false"
           placeholder="Поиск"
@@ -32,7 +32,7 @@
 import { defineComponent } from "vue"
 import VueSelect from "vue-select"
 import { useRetailerStore } from "@/stores/retailer"
-import { useShopLocationsStore } from "@/stores/shop-location"
+import { useStoreStore } from "@/stores/store"
 import { settingsTabs } from "@/consts"
 import type { ShopLocation, StoreSearchSuggestion } from "@/models/shop"
 import debounce from "lodash.debounce"
@@ -47,11 +47,8 @@ export default defineComponent({
   components: { VueSelect },
   async beforeRouteEnter() {
     const retailerStore = useRetailerStore()
-    const shopLocationsStore = useShopLocationsStore()
-    const promise = Promise.all([
-      retailerStore.fetchShops(),
-      shopLocationsStore.fetchUserShopLocations(),
-    ])
+    const storeStore = useStoreStore()
+    const promise = Promise.all([retailerStore.fetchShops(), storeStore.fetchUserShopLocations()])
     await useProgress().attach(promise)
   },
   data() {
@@ -64,7 +61,7 @@ export default defineComponent({
       unsubscribe: () => {},
     }
   },
-  computed: mapStores(useRetailerStore, useShopLocationsStore),
+  computed: mapStores(useRetailerStore, useStoreStore),
   async mounted() {
     this.fetchOptions = debounce(this._fetchOptions, 800)
   },
@@ -80,7 +77,7 @@ export default defineComponent({
       this.saving = true
 
       try {
-        await this.shopLocationStore.saveUserShopLocation(shopId, shopLocation)
+        await this.storeStore.saveUserShopLocation(shopId, shopLocation)
         toast.success("Магазин обновлен.")
       } catch (e) {
         toast.warning("Не удалось обновить магазин.")
@@ -98,7 +95,7 @@ export default defineComponent({
       loading(true)
 
       try {
-        this.shopLocationOptions = await this.shopLocationStore.fetchShopLocationSuggestions(
+        this.shopLocationOptions = await this.storeStore.fetchShopLocationSuggestions(
           shopId,
           search
         )

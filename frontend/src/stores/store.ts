@@ -2,7 +2,7 @@ import { defineStore } from "pinia"
 import type { ShopLocation, StoreSearchSuggestion } from "@/models/shop"
 import { services } from "@/http"
 
-export const useShopLocationsStore = defineStore("shopLocation", {
+export const useStoreStore = defineStore("store", {
   state: () => {
     return {
       userShopLocations: new Map() as Map<number, ShopLocation | null>,

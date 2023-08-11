@@ -5,7 +5,7 @@
         <input
           :value="url"
           class="input"
-          :disabled="shopLocationStore.noShopLocationsConfigured"
+          :disabled="storeStore.noShopLocationsConfigured"
           type="text"
           placeholder="Добавить"
           @input="emitURL"
@@ -33,7 +33,7 @@
 import { defineComponent } from "vue"
 import { mapStores } from "pinia"
 import { useRetailerStore } from "@/stores/retailer"
-import { useShopLocationsStore } from "@/stores/shop-location"
+import { useStoreStore } from "@/stores/store"
 
 export default defineComponent({
   name: "NewProduct",
@@ -49,12 +49,12 @@ export default defineComponent({
   },
   emits: ["submit", "update:url"],
   computed: {
-    ...mapStores(useRetailerStore, useShopLocationsStore),
+    ...mapStores(useRetailerStore, useStoreStore),
     isValidURL() {
       const retailer = this.retailerStore.getShopByProductURL(this.url)
 
       if (!retailer) return false
-      return this.shopLocationStore.isShopLocationConfigured(retailer.id)
+      return this.storeStore.isShopLocationConfigured(retailer.id)
     },
   },
   methods: {
