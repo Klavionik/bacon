@@ -3,7 +3,7 @@
     <NewProduct v-model:url="newProductURL" :is-loading="isCreating" @submit="createProduct" />
     <ProductTabs :active-tab="activeTab" @switch="activeTab = $event" />
     <ProductSearch v-model:search="search" />
-    <template v-if="noShopLocationsConfigured">
+    <template v-if="noUserStoreConfigured">
       <div class="panel-block is-justify-content-center">
         <article class="message is-small is-warning mb-0">
           <div class="message-body">
@@ -75,7 +75,7 @@ export default defineComponent({
   computed: {
     ...mapState(useUserStore, ["user"]),
     ...mapState(useProductStore, ["products"]),
-    ...mapState(useStoreStore, ["userShopLocations", "noShopLocationsConfigured"]),
+    ...mapState(useStoreStore, ["userStores", "noUserStoreConfigured"]),
     filteredProducts(): Array<Product> {
       return this.products.filter(this.filterBySearch).filter(this.filterByTab)
     },

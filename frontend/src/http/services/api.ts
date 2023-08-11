@@ -31,24 +31,24 @@ export class APIService implements HTTPService {
     return this.client.delete(`userproducts/${id}/`)
   }
 
-  async searchShopLocations(shopId: number, address: string): Promise<Array<any>> {
+  async searchStores(shopId: number, address: string): Promise<Array<any>> {
     const options = { searchParams: { term: address } }
     const response = await this.client.get(`retailers/${shopId}/stores/search/`, options)
     return response.json()
   }
 
-  async getUserShopLocations(): Promise<Array<ShopLocation>> {
+  async getUserStores(): Promise<Array<ShopLocation>> {
     const response = await this.client.get(`userstores/`)
     return response.json()
   }
 
-  async saveUserShopLocation(location: any): Promise<any> {
-    const options = { json: location }
+  async saveUserStore(store: any): Promise<any> {
+    const options = { json: store }
     const response = await this.client.post(`userstores/`, options)
     return response.json()
   }
 
-  async deleteUserShopLocation(shopLocationId: number): Promise<any> {
-    return await this.client.delete(`userstores/${shopLocationId}/`)
+  async deleteUserStore(storeId: number): Promise<any> {
+    return await this.client.delete(`userstores/${storeId}/`)
   }
 }

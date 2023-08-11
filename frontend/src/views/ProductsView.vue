@@ -23,7 +23,7 @@ export default defineComponent({
     const promise = Promise.all([
       retailerStore.fetchShops(),
       productStore.fetchProducts(),
-      storeStore.fetchUserShopLocations(),
+      storeStore.fetchUserStores(),
     ])
     await useProgress().attach(promise)
   },

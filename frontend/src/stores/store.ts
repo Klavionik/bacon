@@ -5,23 +5,23 @@ import { services } from "@/http"
 export const useStoreStore = defineStore("store", {
   state: () => {
     return {
-      userShopLocations: new Map() as Map<number, ShopLocation | null>,
+      userStores: new Map() as Map<number, ShopLocation | null>,
     }
   },
   getters: {
-    noShopLocationsConfigured(): boolean {
-      return !this.userShopLocations.size
+    noUserStoreConfigured(): boolean {
+      return !this.userStores.size
     },
   },
   actions: {
-    adaptFromServer(location: any): [number, ShopLocation] {
+    adaptFromServer(userstore: any): [number, ShopLocation] {
       return [
-        location["store"]["retailer"],
+        userstore["store"]["retailer"],
         {
-          id: location.id,
-          title: location["store"]["title"],
-          address: location["store"]["address"],
-          externalId: location["store"]["external_id"],
+          id: userstore.id,
+          title: userstore["store"]["title"],
+          address: userstore["store"]["address"],
+          externalId: userstore["store"]["external_id"],
         },
       ]
     },
@@ -32,39 +32,39 @@ export const useStoreStore = defineStore("store", {
         externalId: suggestion["external_id"],
       }
     },
-    adaptToServer(retailerId: number, location: StoreSearchSuggestion) {
+    adaptToServer(retailerId: number, storeSuggestion: StoreSearchSuggestion) {
       return {
         store: {
-          title: location.title,
-          address: location.address,
-          external_id: location.externalId,
+          title: storeSuggestion.title,
+          address: storeSuggestion.address,
+          external_id: storeSuggestion.externalId,
           retailer: retailerId,
         },
       }
     },
-    async fetchShopLocationSuggestions(
+    async fetchStoreSuggestions(
       shopId: number,
       address: string
     ): Promise<Array<StoreSearchSuggestion>> {
-      const locations = await services.searchShopLocations(shopId, address)
-      return locations.map(this.adaptSuggestionFromServer)
+      const stores = await services.searchStores(shopId, address)
+      return stores.map(this.adaptSuggestionFromServer)
     },
-    async fetchUserShopLocations() {
-      const locations = await services.getUserShopLocations()
-      this.userShopLocations = new Map(locations.map(this.adaptFromServer))
+    async fetchUserStores() {
+      const stores = await services.getUserStores()
+      this.userStores = new Map(stores.map(this.adaptFromServer))
     },
-    async saveUserShopLocation(retailerId: number, updatedLocation: ShopLocation | null) {
-      if (updatedLocation === null) {
-        const userShopLocation = this.userShopLocations.get(retailerId)
-        await services.deleteUserShopLocation(userShopLocation!.id)
+    async saveUserStore(retailerId: number, updatedStore: ShopLocation | null) {
+      if (updatedStore === null) {
+        const userStore = this.userStores.get(retailerId)
+        await services.deleteUserStore(userStore!.id)
       } else {
-        await services.saveUserShopLocation(this.adaptToServer(retailerId, updatedLocation))
+        await services.saveUserStore(this.adaptToServer(retailerId, updatedStore))
       }
 
-      await this.fetchUserShopLocations()
+      await this.fetchUserStores()
     },
-    isShopLocationConfigured(shopId: number) {
-      return this.userShopLocations.has(shopId)
+    isStoreConfigured(retailerId: number) {
+      return this.userStores.has(retailerId)
     },
   },
 })

@@ -1,18 +1,18 @@
 <template>
   <form class="is-flex is-flex-direction-column">
-    <div v-for="shop in retailerStore.shops" :key="shop.id" class="field mt-3">
-      Выберите адрес вашего магазина <b>{{ shop.displayTitle }}</b
+    <div v-for="retailer in retailerStore.shops" :key="retailer.id" class="field mt-3">
+      Выберите адрес вашего магазина <b>{{ retailer.displayTitle }}</b
       >.
       <div class="control mt-2">
         <VueSelect
           :disabled="saving"
-          :model-value="storeStore.userShopLocations.get(shop.id)"
-          :options="shopLocationOptions"
+          :model-value="storeStore.userStores.get(retailer.id)"
+          :options="storeOptions"
           :filterable="false"
           placeholder="Поиск"
-          :get-option-label="getShopLocationOptionLabel"
-          @search="(search: string, loading: () => void) => fetchOptions(shop.id, search, loading)"
-          @update:model-value="updateShopLocation(shop.id, $event)"
+          :get-option-label="getStoreOptionLabel"
+          @search="(search: string, loading: () => void) => fetchOptions(retailer.id, search, loading)"
+          @update:model-value="updateStore(retailer.id, $event)"
           @close="clearOptions"
         >
           <template #no-options> Нет результатов </template>
@@ -48,7 +48,7 @@ export default defineComponent({
   async beforeRouteEnter() {
     const retailerStore = useRetailerStore()
     const storeStore = useStoreStore()
-    const promise = Promise.all([retailerStore.fetchShops(), storeStore.fetchUserShopLocations()])
+    const promise = Promise.all([retailerStore.fetchShops(), storeStore.fetchUserStores()])
     await useProgress().attach(promise)
   },
   data() {
@@ -56,7 +56,7 @@ export default defineComponent({
       settingsTabs,
       saving: false,
       saved: false,
-      shopLocationOptions: [] as Array<StoreSearchSuggestion>,
+      storeOptions: [] as Array<StoreSearchSuggestion>,
       fetchOptions: null as any,
       unsubscribe: () => {},
     }
@@ -71,13 +71,13 @@ export default defineComponent({
   },
   methods: {
     clearOptions() {
-      this.shopLocationOptions = []
+      this.storeOptions = []
     },
-    async updateShopLocation(shopId: number, shopLocation: ShopLocation | null) {
+    async updateStore(retailerId: number, store: ShopLocation | null) {
       this.saving = true
 
       try {
-        await this.storeStore.saveUserShopLocation(shopId, shopLocation)
+        await this.storeStore.saveUserStore(retailerId, store)
         toast.success("Магазин обновлен.")
       } catch (e) {
         toast.warning("Не удалось обновить магазин.")
@@ -86,19 +86,16 @@ export default defineComponent({
         this.saving = false
       }
     },
-    getShopLocationOptionLabel(shopLocation: ShopLocation) {
-      return `${shopLocation.address} (${shopLocation.title})`
+    getStoreOptionLabel(store: ShopLocation) {
+      return `${store.address} (${store.title})`
     },
-    async _fetchOptions(shopId: number, search: string, loading: Function) {
+    async _fetchOptions(retailerId: number, search: string, loading: Function) {
       if (!search) return
 
       loading(true)
 
       try {
-        this.shopLocationOptions = await this.storeStore.fetchShopLocationSuggestions(
-          shopId,
-          search
-        )
+        this.storeOptions = await this.storeStore.fetchStoreSuggestions(retailerId, search)
       } finally {
         loading(false)
       }

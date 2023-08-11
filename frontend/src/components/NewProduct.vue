@@ -5,7 +5,7 @@
         <input
           :value="url"
           class="input"
-          :disabled="storeStore.noShopLocationsConfigured"
+          :disabled="storeStore.noUserStoreConfigured"
           type="text"
           placeholder="Добавить"
           @input="emitURL"
@@ -54,7 +54,7 @@ export default defineComponent({
       const retailer = this.retailerStore.getShopByProductURL(this.url)
 
       if (!retailer) return false
-      return this.storeStore.isShopLocationConfigured(retailer.id)
+      return this.storeStore.isStoreConfigured(retailer.id)
     },
   },
   methods: {
