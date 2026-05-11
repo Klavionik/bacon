@@ -55,8 +55,9 @@ class TelegramAPIError(Exception):
 class Client:
     TELEGRAM_API_URL = "https://api.telegram.org/bot"
 
-    def __init__(self, token: str):
+    def __init__(self, token: str, proxy: str):
         self.api_url = self.TELEGRAM_API_URL + token
+        self.proxy = proxy
 
     def get_webhook_info(self) -> dict:
         return self.request("GET", "getWebhookInfo")
@@ -73,7 +74,7 @@ class Client:
         return self.request("POST", "sendMessage", data)
 
     def request(self, method: str, url: str, data: dict = None):
-        with httpx.Client(base_url=self.api_url) as client:
+        with httpx.Client(base_url=self.api_url, proxies={"http://": self.proxy}) as client:
             response = client.request(method, url, data=data)
 
         data = response.json()
@@ -86,7 +87,7 @@ class Client:
 
 @cache
 def get_client() -> Client:
-    return Client(token=settings.TELEGRAM_AUTH_TOKEN)
+    return Client(token=settings.TELEGRAM_AUTH_TOKEN, proxy=settings.PROXY)
 
 
 def initialize_webhook(client: Client):

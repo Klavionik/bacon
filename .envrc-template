@@ -4,6 +4,7 @@ export SERVER_URL=
 export SERVER_SECRET=
 export TELEGRAM_AUTH_TOKEN=
 export TELEGRAM_SECRET=
+export PROXY=
 export DB_NAME=postgres
 export DB_USER=postgres
 export DB_PASSWORD=postgres

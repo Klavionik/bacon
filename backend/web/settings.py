@@ -146,6 +146,7 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://bacon.
 TELEGRAM_BOT_NAME = env.str("TELEGRAM_BOT_NAME", default="GetBaconTestBot")
 TELEGRAM_AUTH_TOKEN = env.str("TELEGRAM_AUTH_TOKEN", default="")
 TELEGRAM_SECRET = env.str("TELEGRAM_SECRET", default="")
+PROXY = env.str("PROXY", default="")
 
 # Static settings.
 STATIC_ROOT = BASE_DIR / "staticfiles"
