@@ -1,6 +1,8 @@
 FROM python:3.10.2-slim-bullseye
 ENV PYTHONUNBUFFERED=1
 ARG POETRY_VERSION='1.4.2'
+ARG CI="false"
+ENV CI=$CI
 
 RUN useradd --no-create-home --uid 1000 app
 WORKDIR /app/backend

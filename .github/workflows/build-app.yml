@@ -40,6 +40,8 @@ jobs:
         with:
           context: backend
           service: backend
+          build-args: |
+            CI=true
           cache-bucket: ${{ env.S3_BUCKET }}
           cache-access-key: ${{ secrets.S3_ACCESS_KEY }}
           cache-secret-key: ${{ secrets.S3_SECRET_KEY }}

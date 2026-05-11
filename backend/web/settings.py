@@ -206,3 +206,5 @@ SERVER_URL = env.str("SERVER_URL", default="")
 
 # Sentry settings.
 SENTRY_DSN = env.str("SENTRY_DSN", default="")
+
+CI = env.bool("CI")
